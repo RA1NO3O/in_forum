@@ -31,6 +31,7 @@ dependencies:
   http: ^0.12.2
   animations: ^1.1.2
   simple_animations: ^2.2.3
+  shared_preferences: ^0.5.12+4
 
 dev_dependencies:
   flutter_test:
