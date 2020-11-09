@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'firstRun.dart';
+import 'main.dart';
 import 'home.dart';
 
 class LoginPage extends StatefulWidget {
@@ -178,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
 
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (BuildContext context) {
-      return HomePage();
+      return HomeScreen();
     }), result: "null");
   }
 }

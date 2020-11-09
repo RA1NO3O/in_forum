@@ -6,7 +6,7 @@ import 'package:inforum/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_animations/simple_animations.dart';
 
-import 'login.dart';
+import 'package:inforum/login.dart';
 
 //主方法
 void main() => runApp(MyApp());
