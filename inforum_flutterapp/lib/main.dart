@@ -2,7 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:inforum_app/home.dart';
+import 'package:inforum/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_animations/simple_animations.dart';
 
@@ -16,12 +16,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      routes: {
-        '/':(context) => HomeScreen(),
-        '/login':(context) => LoginPage(),
-        // '/reg':(context) =>
-
-      },
+      // routes: {
+      //   '/': (context) => MainPage(),
+      //   '/login': (context) => LoginPage(),
+      //   // '/reg':(context) =>
+      // },
       title: 'Inforum',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -41,8 +40,8 @@ class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
 }
-class _MainPageState extends State<MainPage> {
 
+class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     onBottom(Widget child) => Positioned.fill(
@@ -158,17 +157,15 @@ class _MainPageState extends State<MainPage> {
 
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (BuildContext context) {
-      return HomePage();
+      return HomeScreen();
     }), result: "null");
   }
 
   //登录按钮
   void btnLoginClick() {
-    Navigator.push(context,MaterialPageRoute(builder: (BuildContext context){
+    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
       return LoginPage();
-    })
-
-    );
+    }));
   }
 }
 
@@ -199,6 +196,7 @@ class AnimatedBackground extends StatelessWidget {
     );
   }
 }
+
 //动画波
 class AnimatedWave extends StatelessWidget {
   final double height;
@@ -226,6 +224,7 @@ class AnimatedWave extends StatelessWidget {
     });
   }
 }
+
 //自定义波形绘制器
 class CurvePainter extends CustomPainter {
   final double value;
