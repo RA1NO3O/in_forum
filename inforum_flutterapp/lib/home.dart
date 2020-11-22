@@ -1,6 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
-import 'package:inforum/editPost.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+import 'package:inforum/subPage/editPost.dart';
+import 'package:inforum/subPage/primaryPage.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -9,65 +12,121 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  Color _currentColor = Colors.blue;
   IconData _actionIcon = Icons.post_add;
+  PageController _pageController;
+
+  void pageChanged() {
+    switch (_currentIndex) {
+      case 0:
+        _currentColor = Colors.blue;
+        _actionIcon = Icons.post_add;
+        break;
+      case 1:
+        _currentColor = Colors.pink;
+        _actionIcon = Icons.add_comment;
+        break;
+      case 2:
+        _currentColor = Colors.cyan;
+        _actionIcon = Icons.more_horiz;
+        break;
+      case 3:
+        _currentColor = Colors.orange;
+        _actionIcon = Icons.edit;
+        break;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     var bottomNavigationBarItems = <BottomNavigationBarItem>[
       BottomNavigationBarItem(
-          icon: const Icon(Icons.home, size: 30, color: Colors.blue),
-          label: '首页'),
+        icon: Icon(
+          Icons.home,
+          size: 30,
+          color: Colors.blue,
+        ),
+        label: '首页',
+      ),
       BottomNavigationBarItem(
-          icon:
-              const Icon(Icons.local_post_office, size: 30, color: Colors.pink),
+          icon: Icon(
+            Icons.local_post_office,
+            size: 30,
+            color: Colors.pink,
+          ),
           label: '私信'),
       BottomNavigationBarItem(
-          icon: const Icon(Icons.search, size: 30, color: Colors.cyan),
+          icon: Icon(
+            Icons.search,
+            size: 30,
+            color: Colors.cyan,
+          ),
           label: '搜索'),
       BottomNavigationBarItem(
-          icon: const Icon(Icons.person, size: 30, color: Colors.orange),
+          icon: Icon(
+            Icons.person,
+            size: 30,
+            color: Colors.orange,
+          ),
           label: '我')
     ];
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       body: Center(
-        child: PageTransitionSwitcher(
-          child: _NavigationDestinationView(
-            // Adding [UniqueKey] to make sure the widget rebuilds when transitioning.
-            key: UniqueKey(),
-            item: bottomNavigationBarItems[_currentIndex],
-          ),
-          transitionBuilder: (child, animation, secondaryAnimation) {
-            return FadeThroughTransition(
-              child: child,
-              animation: animation,
-              secondaryAnimation: secondaryAnimation,
-            );
+          child: PageTransitionSwitcher(
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() {
+              _currentIndex = index;
+              pageChanged();
+            });
           },
+          children: <Widget>[
+            PrimaryPage(),
+            Container(
+              color: Colors.pink,
+            ),
+            Container(color: Colors.cyan),
+            Container(color: Colors.orange),
+          ],
         ),
-      ),
+        transitionBuilder: (child, animation, secondaryAnimation) {
+          return FadeThroughTransition(
+            child: child,
+            animation: animation,
+            secondaryAnimation: secondaryAnimation,
+          );
+        },
+      )),
       bottomNavigationBar: BottomNavigationBar(
-        items: bottomNavigationBarItems,
+        fixedColor: _currentColor,
         currentIndex: _currentIndex,
-        type: BottomNavigationBarType.fixed,
-        showUnselectedLabels: false,
-        fixedColor: Colors.black,
+        items: bottomNavigationBarItems,
         onTap: (index) {
           setState(() {
             _currentIndex = index;
-            switch (_currentIndex) {
-              case 0:
-                _actionIcon = Icons.post_add;
-                break;
-              case 1:
-                _actionIcon = Icons.add_comment;
-                break;
-            }
+            _pageController.jumpToPage(index);
+            pageChanged();
           });
         },
       ),
       floatingActionButton: _currentIndex == 0 || _currentIndex == 1
           ? new FloatingActionButton(
+              backgroundColor: _currentColor,
               child: AnimatedSwitcher(
                 transitionBuilder: (Widget child, Animation<double> anim) {
                   return ScaleTransition(child: child, scale: anim);
@@ -90,21 +149,6 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             )
           : null,
-    );
-  }
-}
-
-class _NavigationDestinationView extends StatelessWidget {
-  _NavigationDestinationView({Key key, this.item}) : super(key: key);
-
-  final BottomNavigationBarItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Center(child: Text('123')),
-      ],
     );
   }
 }

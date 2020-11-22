@@ -1,15 +1,16 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:inforum/home.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:inforum/subPage/reg.dart';
 import 'package:simple_animations/simple_animations.dart';
-
-import 'package:inforum/login.dart';
+import 'package:inforum/subPage/login.dart';
 
 //主方法
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+}
 
 //app主入口
 class MyApp extends StatelessWidget {
@@ -42,14 +43,69 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  var state = 0; //0代表初始界面,1代表登录,2代表注册
   @override
   Widget build(BuildContext context) {
-    onBottom(Widget child) => Positioned.fill(
+    onBottom(Widget child) =>
+        Positioned.fill(
           child: Align(
             alignment: Alignment.bottomCenter,
             child: child,
           ),
         );
+    Widget setUI(var state) {
+      switch (state) {
+        case 0:
+          return Column(
+            children: [
+              Container(
+                child: Text(
+                  '\n来体验一下全新的论坛app\n',
+                  textAlign: TextAlign.left,
+                  style: new TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      height: 1.1, //行高
+                      fontSize: 25),
+                ),
+                alignment: Alignment.centerLeft,
+              ),
+              Row(
+                children: [
+                  Text(
+                    '已有账号? 点此',
+                    style: new TextStyle(fontSize: 15, color: Colors.white),
+                  ),
+                  Container(
+                    width: 40,
+                    height: 25,
+                    child: FlatButton(
+                      onPressed: btnLoginClick,
+                      child: Text(
+                        '登录',
+                        textAlign: TextAlign.left,
+                        style: new TextStyle(
+                          fontSize: 15,
+                          color: Colors.lightBlue,
+                        ),
+                      ),
+                      padding: EdgeInsets.all(0),
+                    ),
+                  )
+                ],
+              )
+            ],
+          );
+          break;
+        case 1:
+          return LoginPage();
+          break;
+        case 2:
+          return RegPage();
+          break;
+      }
+    }
+
     return Scaffold(
       body: Stack(
         children: [
@@ -91,81 +147,43 @@ class _MainPageState extends State<MainPage> {
                     ),
                     alignment: Alignment.centerLeft,
                   ),
-                  Column(
-                    children: [
-                      Container(
-                        child: Text(
-                          '\n来体验一下全新的论坛app\n',
-                          textAlign: TextAlign.left,
-                          style: new TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              height: 1.1, //行高
-                              fontSize: 25),
-                        ),
-                        alignment: Alignment.centerLeft,
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            '已有账号? 点此',
-                            style: new TextStyle(
-                                fontSize: 15, color: Colors.white),
-                          ),
-                          Container(
-                            width: 40,
-                            height: 25,
-                            child: FlatButton(
-                              onPressed: btnLoginClick,
-                              child: Text(
-                                '登录',
-                                textAlign: TextAlign.left,
-                                style: new TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.lightBlue,
-                                ),
-                              ),
-                              padding: EdgeInsets.all(0),
-                            ),
-                          )
-                        ],
-                      )
-                    ],
-                  ),
+                  setUI(state),
                 ],
-              ))
+              )),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        //扩展版浮动按钮
+      floatingActionButton: state == 0
+          ? new FloatingActionButton.extended(
         onPressed: btnCreateClick,
         icon: Icon(Icons.arrow_forward),
         label: Text('创建账户'),
         backgroundColor: Colors.blue,
-      ),
+      )
+          : null,
     );
   }
 
   //创建账户按钮
   void btnCreateClick() {
-    _incrementCounter() async {
-      //写入登录状态
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      int counter = (prefs.getInt('counter') ?? 0) + 1;
-      await prefs.setInt('counter', counter);
-    }
+    // //写入登录状态
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // await prefs.setBool('isLogined', true);
 
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) {
-      return HomeScreen();
-    }), result: "null");
+    setState(() {
+      state = 2;
+    });
   }
 
   //登录按钮
   void btnLoginClick() {
-    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-      return LoginPage();
-    }));
+    setState(() {
+      state = 1;
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
 
@@ -233,7 +251,8 @@ class CurvePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final white = Paint()..color = Colors.white.withAlpha(60);
+    final white = Paint()
+      ..color = Colors.white.withAlpha(60);
     final path = Path();
 
     final y1 = sin(value);
