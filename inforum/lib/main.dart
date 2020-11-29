@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:inforum/subPage/reg.dart';
 import 'package:simple_animations/simple_animations.dart';
 import 'package:inforum/subPage/login.dart';
@@ -10,6 +11,10 @@ import 'package:inforum/subPage/login.dart';
 //主方法
 void main() {
   runApp(MyApp());
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Color(0xFFFAFAFA),
+    statusBarIconBrightness: Brightness.light
+  ));
 }
 
 //app主入口

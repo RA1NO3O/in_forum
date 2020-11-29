@@ -51,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
               new Container(
                 padding:
                     EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
-                child: TextFormField(
+                child: TextField(
                   obscureText: !passwordVisible,
                   textInputAction: TextInputAction.done,
                   decoration: InputDecoration(

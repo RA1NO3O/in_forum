@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-class PrimaryPage extends StatefulWidget{
+class SearchPage extends StatefulWidget{
   @override
-  _PrimaryPage createState() => _PrimaryPage();
+  _SearchPage createState() {
+    return _SearchPage();
+  }
 }
-class _PrimaryPage extends State<PrimaryPage>{
+class _SearchPage extends State<SearchPage>{
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Color(0xFFFAFAFA),
       child: Column(
         children: [
-
         ],
       ),
     );

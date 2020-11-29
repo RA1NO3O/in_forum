@@ -51,7 +51,6 @@ class _RegPage extends State<RegPage> {
                 child: TextFormField(
                   obscureText: !passwordVisible,
                   textInputAction: TextInputAction.done,
-                  initialValue: '', //接收上次登录的用户名.
                   decoration: InputDecoration(
                       labelText: '密码',
                       prefixIcon: Icon(Icons.lock),

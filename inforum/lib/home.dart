@@ -1,13 +1,22 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:inforum/subPage/editPost.dart';
+import 'package:inforum/subPage/messagePage.dart';
 import 'package:inforum/subPage/primaryPage.dart';
+import 'package:inforum/subPage/searchPage.dart';
+import 'package:inforum/subPage/userPage.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomeScreenState createState() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarIconBrightness: Brightness.dark
+    ));
+        return _HomeScreenState();
+  }
 }
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -87,30 +96,28 @@ class _HomeScreenState extends State<HomeScreen> {
       extendBodyBehindAppBar: true,
       body: Center(
           child: PageTransitionSwitcher(
-        child: PageView(
-          controller: _pageController,
-          onPageChanged: (index) {
-            setState(() {
-              _currentIndex = index;
-              pageChanged();
-            });
-          },
-          children: <Widget>[
-            PrimaryPage(),
-            Container(
-              color: Colors.pink,
+            child: PageView(
+              physics: NeverScrollableScrollPhysics(),
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentIndex = index;
+                  pageChanged();
+                });
+              },
+              children: <Widget>[
+                PrimaryPage(),
+                MessagePage(),
+                SearchPage(),
+                UserPage()
+              ],
             ),
-            Container(color: Colors.cyan),
-            Container(color: Colors.orange),
-          ],
-        ),
-        transitionBuilder: (child, animation, secondaryAnimation) {
-          return FadeThroughTransition(
-            child: child,
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-          );
-        },
+            transitionBuilder: (child, animation, secondaryAnimation) {
+              return FadeThroughTransition(
+                child: child,
+                animation: animation,
+                secondaryAnimation: secondaryAnimation,
+              );},
       )),
       bottomNavigationBar: BottomNavigationBar(
         fixedColor: _currentColor,
@@ -129,9 +136,9 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: _currentColor,
               child: AnimatedSwitcher(
                 transitionBuilder: (Widget child, Animation<double> anim) {
-                  return ScaleTransition(child: child, scale: anim);
+                  return FadeScaleTransition(animation: anim,child: child,);
                 },
-                duration: Duration(milliseconds: 150),
+                duration: Duration(milliseconds: 200),
                 child: Icon(_actionIcon, key: ValueKey(_actionIcon)),
               ),
               onPressed: () {
