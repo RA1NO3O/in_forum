@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   case 0:
                     Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
-                      return EditPostScreen();
+                      return EditPostScreen(titleText: '',summaryText: '',);
                     }));
                     break;
                   case 1:
@@ -154,6 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     break;
                 }
               },
+        tooltip: _currentIndex==0?'新建帖子':'新私信',
             )
           : null,
     );

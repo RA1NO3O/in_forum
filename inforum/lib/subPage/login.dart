@@ -104,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
     //写入登录状态
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('userId', idController.text);
-
+    await prefs.setBool('isLogin', true);
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (BuildContext context) {
       return HomeScreen();

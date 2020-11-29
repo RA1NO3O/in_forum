@@ -4,17 +4,25 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:inforum/home.dart';
 import 'package:inforum/subPage/reg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_animations/simple_animations.dart';
 import 'package:inforum/subPage/login.dart';
 
 //主方法
-void main() {
-  runApp(MyApp());
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    systemNavigationBarColor: Color(0xFFFAFAFA),
-    statusBarIconBrightness: Brightness.light
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isLogin =
+      prefs.getBool('isLogin') == null ? false : prefs.getBool('isLogin');
+  print(isLogin);
+  runApp(MaterialApp(
+    home: isLogin ? HomeScreen() : MyApp(),
   ));
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: Color(0xFFFAFAFA),
+      statusBarIconBrightness: Brightness.light));
 }
 
 //app主入口
@@ -51,8 +59,7 @@ class _MainPageState extends State<MainPage> {
   var state = 0; //0代表初始界面,1代表登录,2代表注册
   @override
   Widget build(BuildContext context) {
-    onBottom(Widget child) =>
-        Positioned.fill(
+    onBottom(Widget child) => Positioned.fill(
           child: Align(
             alignment: Alignment.bottomCenter,
             child: child,
@@ -108,6 +115,9 @@ class _MainPageState extends State<MainPage> {
         case 2:
           return RegPage();
           break;
+        default:
+          return Container();
+          break;
       }
     }
 
@@ -159,20 +169,20 @@ class _MainPageState extends State<MainPage> {
       ),
       floatingActionButton: state == 0
           ? new FloatingActionButton.extended(
-        onPressed: btnCreateClick,
-        icon: Icon(Icons.arrow_forward),
-        label: Text('创建账户'),
-        backgroundColor: Colors.blue,
-      )
+              onPressed: btnCreateClick,
+              icon: Icon(Icons.arrow_forward),
+              label: Text('创建账户'),
+              backgroundColor: Colors.blue,
+            )
           : null,
     );
   }
 
   //创建账户按钮
-  void btnCreateClick() {
-    // //写入登录状态
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // await prefs.setBool('isLogined', true);
+  void btnCreateClick() async {
+    //写入登录状态
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLogin', true);
 
     setState(() {
       state = 2;
@@ -256,8 +266,7 @@ class CurvePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final white = Paint()
-      ..color = Colors.white.withAlpha(60);
+    final white = Paint()..color = Colors.white.withAlpha(60);
     final path = Path();
 
     final y1 = sin(value);

@@ -3,6 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:inforum/component/tagItem.dart';
 
 class EditPostScreen extends StatefulWidget {
+  final String titleText;
+  final String summaryText;
+
+  const EditPostScreen({Key key, this.titleText, this.summaryText}) : super(key: key);
   @override
   _EditPostScreenState createState() => _EditPostScreenState();
 }
