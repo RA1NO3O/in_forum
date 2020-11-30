@@ -10,6 +10,9 @@ import 'package:inforum/subPage/searchPage.dart';
 import 'package:inforum/subPage/userPage.dart';
 
 class HomeScreen extends StatefulWidget {
+  final String userId;
+
+  const HomeScreen({Key key, this.userId}) : super(key: key);
   @override
   _HomeScreenState createState() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -85,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
           label: '搜索'),
       BottomNavigationBarItem(
           icon: Icon(
-            Icons.person,
+            Icons.notifications,
             size: 30,
             color: Colors.orange,
           ),
@@ -106,10 +109,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
               children: <Widget>[
-                PrimaryPage(),
+                PrimaryPage(userId: widget.userId,),
                 MessagePage(),
                 SearchPage(),
-                UserPage()
+                NotificationPage()
               ],
             ),
             transitionBuilder: (child, animation, secondaryAnimation) {
@@ -146,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   case 0:
                     Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
-                      return EditPostScreen(titleText: '',summaryText: '',);
+                      return EditPostScreen(titleText: '',summaryText: '',mode: 0,);
                     }));
                     break;
                   case 1:

@@ -62,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                           passwordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
-                          color: passwordVisible ? Colors.blue : Colors.black26,
+                          color: passwordVisible ? Colors.blue : Colors.black54,
                         ),
                         onPressed: () => setState(() {
                           passwordVisible = !passwordVisible;
@@ -107,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
     await prefs.setBool('isLogin', true);
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (BuildContext context) {
-      return HomeScreen();
+      return HomeScreen(userId: idController.text,);
     }), result: "null");
   }
 }

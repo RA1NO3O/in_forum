@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:inforum/component/forumListItem.dart';
 class PrimaryPage extends StatefulWidget{
+  final String userId;
+
+  const PrimaryPage({Key key, this.userId}) : super(key: key);
   @override
   _PrimaryPage createState() {
     return _PrimaryPage();
@@ -31,6 +34,7 @@ class _PrimaryPage extends State<PrimaryPage>{
                 imgThumbnail: 'images/test.jpg',
                 authorName: 'レエイン',
                 imgAuthor: 'images/test.jpg',
+                isAuthor: true,
               ),
               ForumListItem(
                 titleText: '2',
@@ -43,6 +47,7 @@ class _PrimaryPage extends State<PrimaryPage>{
                 summaryText: 'This is a Test2.',
                 authorName: 'RA1N',
                 imgAuthor: 'images/test.jpg',
+                isAuthor: false,
               ),
               ForumListItem(
                 titleText: '3',
@@ -55,6 +60,7 @@ class _PrimaryPage extends State<PrimaryPage>{
                 summaryText: 'This is a Test3.',
                 authorName: 'RA1N',
                 imgAuthor: 'images/test.jpg',
+                isAuthor: false,
               ),
               ForumListItem(
                 titleText: '4',
@@ -67,6 +73,7 @@ class _PrimaryPage extends State<PrimaryPage>{
                 summaryText: 'This is a Test.',
                 authorName: 'RA1N',
                 imgAuthor: 'images/test.jpg',
+                isAuthor: false,
               ),ForumListItem(
                 titleText: '5',
                 likeState: 0,
@@ -78,6 +85,7 @@ class _PrimaryPage extends State<PrimaryPage>{
                 summaryText: 'This is a Test.',
                 authorName: 'RA1N',
                 imgAuthor: 'images/test.jpg',
+                isAuthor: false,
               ),ForumListItem(
                 titleText: '6',
                 likeState: 0,
@@ -89,6 +97,7 @@ class _PrimaryPage extends State<PrimaryPage>{
                 summaryText: 'This is a Test.',
                 authorName: 'RA1N',
                 imgAuthor: 'images/test.jpg',
+                isAuthor: false,
               ),ForumListItem(
                 titleText: '7',
                 likeState: 0,
@@ -100,6 +109,7 @@ class _PrimaryPage extends State<PrimaryPage>{
                 summaryText: 'This is a Test.',
                 authorName: 'RA1N',
                 imgAuthor: 'images/test.jpg',
+                isAuthor: false,
               )
             ],
           ),

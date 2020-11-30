@@ -15,7 +15,7 @@ class ForumListItem extends StatefulWidget {
   final bool isCollect;
   final String authorName;
   final String imgAuthor;
-
+  final bool isAuthor;
   const ForumListItem(
       {Key key,
       this.titleText,
@@ -28,7 +28,8 @@ class ForumListItem extends StatefulWidget {
       this.likeState,
       this.isCollect,
       this.imgAuthor,
-      this.authorName})
+      this.authorName,
+      this.isAuthor})
       : super(key: key);
 
   @override
@@ -78,12 +79,13 @@ class _ForumListItem extends State<ForumListItem> {
                           isCollect: isCollect,
                           imgAuthor: widget.imgAuthor,
                           authorName: widget.authorName,
+                          isAuthor: widget.isAuthor,
                         );
                       })),
                   child: Column(
                     children: [
                       Container(
-                          margin: EdgeInsets.only(top: 10, left: 5,bottom: 5),
+                          margin: EdgeInsets.only(top: 10, left: 5, bottom: 5),
                           child: Flex(direction: Axis.horizontal, children: [
                             Text(
                               widget.titleText,
@@ -109,24 +111,27 @@ class _ForumListItem extends State<ForumListItem> {
                                               AssetImage(widget.imgAuthor)))
                                 ]))
                           ])),
-                      Flex(direction: Axis.horizontal, children: [
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            padding: EdgeInsets.all(5),
-                            child: Text(
-                              widget.summaryText,
-                            ),
+                      Container(
+                        alignment: Alignment.topLeft,
+                        padding: EdgeInsets.all(5),
+                        child: Text(
+                          widget.summaryText,
+                          style: new TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Container(
+                        width: widget.imgThumbnail != null ? 400 : 0,
+                        height: widget.imgThumbnail != null ? 200 : 0,
+                        child: widget.imgThumbnail != null
+                            ? ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Image.asset(
+                            widget.imgThumbnail,
+                            fit: BoxFit.fitWidth,
                           ),
-                        ),
-                        Container(
-                          width: widget.imgThumbnail != null ? 100 : 0,
-                          height: widget.imgThumbnail != null ? 80 : 0,
-                          child: widget.imgThumbnail != null
-                              ? Image.asset(widget.imgThumbnail)
-                              : null,
-                        ),
-                      ]),
+                        )
+                            : null,
+                      ),
                       Row(
                         children: [TagItem(label: 'Test', v: 1)],
                       ),

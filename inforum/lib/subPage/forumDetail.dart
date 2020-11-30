@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/component/tagItem.dart';
+import 'package:inforum/subPage/editPost.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ForumDetailPage extends StatefulWidget {
   final String titleText;
@@ -15,6 +17,7 @@ class ForumDetailPage extends StatefulWidget {
   final bool isCollect;
   final String authorName;
   final String imgAuthor;
+  final bool isAuthor;
 
   const ForumDetailPage(
       {Key key,
@@ -27,7 +30,8 @@ class ForumDetailPage extends StatefulWidget {
       this.isCollect,
       this.likeState,
       this.authorName,
-      this.imgAuthor})
+      this.imgAuthor,
+      this.isAuthor})
       : super(key: key);
 
   @override
@@ -40,14 +44,18 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   int likeCount;
   int dislikeCount;
   int commentCount;
+  SharedPreferences sp;
+  bool isAuthor;
 
   @override
   void initState() {
+    isAuthor = widget.isAuthor;
     isCollect = widget.isCollect;
     likeCount = widget.likeCount;
     dislikeCount = widget.dislikeCount;
     likeState = widget.likeState;
     commentCount = widget.commentCount;
+
     super.initState();
   }
 
@@ -57,23 +65,37 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
       appBar: AppBar(
         title: const Text('帖子'),
         actions: [
-          new IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {},
-            tooltip: '编辑',
-          ),
+          isAuthor
+              ? new Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      tooltip: '编辑',
+                      onPressed: ()=>Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                            return EditPostScreen(titleText: widget.titleText,summaryText: widget.summaryText,mode: 1,);
+                          })),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete_rounded),
+                      tooltip: '删除',
+                      onPressed: () {},
+                    )
+                  ],
+                )
+              : Container(),
           new IconButton(
             icon: isCollect ? Icon(Icons.star) : Icon(Icons.star_border),
             onPressed: () => _starButtonClick(),
             tooltip: isCollect ? '取消收藏' : '收藏',
-          ),
+          )
         ],
       ),
-      body: Column(
+      body: ListView(
         children: [
           Container(
             height: 70,
-            margin: EdgeInsets.only(top: 10, left: 22,right: 10),
+            margin: EdgeInsets.only(top: 10, left: 22, right: 10),
             child: Flex(
               direction: Axis.horizontal,
               children: [
@@ -87,16 +109,20 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     Expanded(
                         flex: 1,
                         child: Container(
-                          margin: EdgeInsets.only(top: 15,left: 10),
+                          margin: EdgeInsets.only(top: 15, left: 10),
                           child: Text(
                             widget.authorName,
-                            style: new TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
+                            style: new TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                         )),
                     Container(
                       height: 25,
                       margin: EdgeInsets.only(left: 10),
-                      child: Text('@ra1n7246',style: new TextStyle(color: Colors.black54),),
+                      child: Text(
+                        '@ra1n7246',
+                        style: new TextStyle(color: Colors.black54),
+                      ),
                     )
                   ],
                 ),
@@ -106,7 +132,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                 ),
                 IconButton(
                   icon: Icon(Icons.keyboard_arrow_down_rounded),
-                  onPressed: (){},
+                  //TODO:用户下拉菜单
+                  onPressed: () {},
                 )
               ],
             ),
@@ -128,7 +155,10 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
           ),
           new Container(
               margin: EdgeInsets.only(top: 10, left: 25, right: 25),
-              child: Text(widget.summaryText,style: new TextStyle(fontSize: 18),)),
+              child: Text(
+                widget.summaryText,
+                style: new TextStyle(fontSize: 18),
+              )),
           new Container(
             margin: EdgeInsets.only(left: 25, right: 25),
             child: Row(
@@ -138,9 +168,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
             ),
           ),
           Container(
-            margin: EdgeInsets.only(left: 25, right: 25,bottom: 5),
+            margin: EdgeInsets.only(left: 25, right: 25, bottom: 5),
             width: widget.imgThumbnail != null ? 400 : 0,
-            height: widget.imgThumbnail != null ? 220 : 0,
             child: widget.imgThumbnail != null
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(5),

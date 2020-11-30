@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-class UserPage extends StatefulWidget{
+class NotificationPage extends StatefulWidget{
   @override
-  _UserPage createState() {
-    return _UserPage();
+  _NotificationPage createState() {
+    return _NotificationPage();
   }
 }
-class _UserPage extends State<UserPage>{
+class _NotificationPage extends State<NotificationPage>{
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Color(0xFFFAFAFA),
       child: Column(
         children: [
+
         ],
       ),
     );

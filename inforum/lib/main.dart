@@ -14,42 +14,27 @@ import 'package:inforum/subPage/login.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool isLogin =
-      prefs.getBool('isLogin') == null ? false : prefs.getBool('isLogin');
+  bool isLogin = prefs.getBool('isLogin') == null ? false : prefs.getBool('isLogin');
+  String userId = prefs.getString('userId');
   print(isLogin);
   runApp(MaterialApp(
-    home: isLogin ? HomeScreen() : MyApp(),
+    title: 'Inforum',
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+    ),
+    home: isLogin ? HomeScreen(userId: userId,) : MainPage(title: 'Inforum',),
+    debugShowCheckedModeBanner: false, //隐藏debug横幅
   ));
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: Color(0xFFFAFAFA),
       statusBarIconBrightness: Brightness.light));
 }
 
-//app主入口
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      // routes: {
-      //   '/': (context) => MainPage(),
-      //   '/login': (context) => LoginPage(),
-      //   // '/reg':(context) =>
-      // },
-      title: 'Inforum',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MainPage(title: 'Inforum'),
-      debugShowCheckedModeBanner: false, //隐藏debug横幅
-    );
-  }
-}
-
 //主界面
 class MainPage extends StatefulWidget {
-  MainPage({Key key, this.title}) : super(key: key);
   final String title;
+  MainPage({Key key, this.title}) : super(key: key);
 
   @override
   _MainPageState createState() => _MainPageState();
