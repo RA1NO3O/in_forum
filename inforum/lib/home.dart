@@ -8,17 +8,18 @@ import 'package:inforum/subPage/messagePage.dart';
 import 'package:inforum/subPage/primaryPage.dart';
 import 'package:inforum/subPage/searchPage.dart';
 import 'package:inforum/subPage/userPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userId;
 
   const HomeScreen({Key key, this.userId}) : super(key: key);
+
   @override
   _HomeScreenState createState() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarIconBrightness: Brightness.dark
-    ));
-        return _HomeScreenState();
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(statusBarIconBrightness: Brightness.dark));
+    return _HomeScreenState();
   }
 }
 
@@ -99,28 +100,31 @@ class _HomeScreenState extends State<HomeScreen> {
       extendBodyBehindAppBar: true,
       body: Center(
           child: PageTransitionSwitcher(
-            child: PageView(
-              physics: NeverScrollableScrollPhysics(),
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentIndex = index;
-                  pageChanged();
-                });
-              },
-              children: <Widget>[
-                PrimaryPage(userId: widget.userId,),
-                MessagePage(),
-                SearchPage(),
-                NotificationPage()
-              ],
+        child: PageView(
+          physics: NeverScrollableScrollPhysics(),
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() {
+              _currentIndex = index;
+              pageChanged();
+            });
+          },
+          children: <Widget>[
+            PrimaryPage(
+              userId: widget.userId,
             ),
-            transitionBuilder: (child, animation, secondaryAnimation) {
-              return FadeThroughTransition(
-                child: child,
-                animation: animation,
-                secondaryAnimation: secondaryAnimation,
-              );},
+            MessagePage(),
+            SearchPage(),
+            NotificationPage()
+          ],
+        ),
+        transitionBuilder: (child, animation, secondaryAnimation) {
+          return FadeThroughTransition(
+            child: child,
+            animation: animation,
+            secondaryAnimation: secondaryAnimation,
+          );
+        },
       )),
       bottomNavigationBar: BottomNavigationBar(
         fixedColor: _currentColor,
@@ -139,7 +143,10 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: _currentColor,
               child: AnimatedSwitcher(
                 transitionBuilder: (Widget child, Animation<double> anim) {
-                  return FadeScaleTransition(animation: anim,child: child,);
+                  return FadeScaleTransition(
+                    animation: anim,
+                    child: child,
+                  );
                 },
                 duration: Duration(milliseconds: 200),
                 child: Icon(_actionIcon, key: ValueKey(_actionIcon)),
@@ -149,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   case 0:
                     Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
-                      return EditPostScreen(titleText: '',summaryText: '',mode: 0,);
+                      return EditPostScreen(mode: 0,);
                     }));
                     break;
                   case 1:
@@ -157,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     break;
                 }
               },
-        tooltip: _currentIndex==0?'新建帖子':'新私信',
+              tooltip: _currentIndex == 0 ? '新建帖子' : '新私信',
             )
           : null,
     );

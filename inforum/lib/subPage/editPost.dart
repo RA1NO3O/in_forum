@@ -15,15 +15,22 @@ class EditPostScreen extends StatefulWidget {
 }
 
 class _EditPostScreenState extends State<EditPostScreen> {
-  SharedPreferences sp;
   final titleController = new TextEditingController();
   final contentController = new TextEditingController();
   var tagChips;
+  bool edited = false;
+  String draftTitle;
+  String draftContent;
 
   @override
   void initState() {
-    titleController.text = widget.mode == 1 ? widget.titleText : '';
-    contentController.text = widget.mode == 1 ? widget.summaryText : '';
+    getDraft();
+    titleController.addListener(txtListener);
+    contentController.addListener(txtListener);
+    if (widget.mode == 1) {
+      titleController.text = widget.titleText;
+      contentController.text = widget.summaryText;
+    }
     tagChips = List<Widget>();
     tagChips.add(Text('标签:    '));
     //TODO:非新建状态下导入标签
@@ -38,103 +45,127 @@ class _EditPostScreenState extends State<EditPostScreen> {
     super.initState();
   }
 
+  Future<void> getDraft() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    draftTitle = sp.getString('draft_title');
+    draftContent = sp.getString('draft_content');
+    if (widget.mode == 0) {
+      titleController.text = draftTitle;
+      contentController.text = draftContent;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        child: Scaffold(
-            appBar: AppBar(
-              title: const Text('编辑帖子'),
-              actions: [
-                new IconButton(
-                  icon: Icon(Icons.save),
-                  //TODO:存为草稿
-                  onPressed: ()=>save(context),
-                  tooltip: '存为草稿',
+      child: Scaffold(
+          appBar: AppBar(
+            title: const Text('编辑帖子'),
+            actions: [
+              edited
+                  ? _SaveButton(
+                      title: titleController.text,
+                      content: contentController.text,
+                      style: 0,
+                    )
+                  : IconButton(icon: Icon(Icons.save_rounded)),
+              new IconButton(
+                icon: widget.mode == 0
+                    ? Icon(Icons.send_rounded)
+                    : Icon(Icons.done),
+                //TODO:发布新帖
+                onPressed: () => print('posted.'),
+                tooltip: widget.mode == 0 ? '发帖' : '提交更改',
+              )
+            ],
+          ),
+          body: Container(
+            padding: EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
+            child: Column(
+              children: [
+                new TextFormField(
+                  maxLength: 128,
+                  controller: titleController,
+                  decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.title),
+                      labelText: '标题',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0))),
                 ),
-                new IconButton(
-                  icon: widget.mode == 0
-                      ? Icon(Icons.send_rounded)
-                      : Icon(Icons.done),
-                  //TODO:发布新帖
-                  onPressed: () => print('posted.'),
-                  tooltip: widget.mode == 0 ? '发帖' : '提交更改',
-                )
-              ],
-            ),
-            body: Container(
-              padding:
-                  EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
-              child: Column(
-                children: [
-                  new TextFormField(
-                    maxLength: 128,
-                    controller: titleController,
+                new Container(
+                  margin: EdgeInsets.only(top: 10),
+                  child: new TextFormField(
+                    controller: contentController,
+                    maxLines: 10,
                     decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.title),
-                        labelText: '标题',
+                        labelText: '正文',
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0))),
                   ),
-                  new Container(
-                    margin: EdgeInsets.only(top: 10),
-                    child: new TextFormField(
-                      controller: contentController,
-                      maxLines: 10,
-                      decoration: InputDecoration(
-                          labelText: '正文',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0))),
-                    ),
-                  ),
-                  new Row(
-                    children: tagChips,
-                  )
-                ],
-              ),
-            )),
-        onWillPop: _onBackPressed);
+                ),
+                new Row(
+                  children: tagChips,
+                )
+              ],
+            ),
+          )),
+      onWillPop: _onBackPressed,
+    );
+  }
+
+  void txtListener() {
+    if (titleController.text.trim().isEmpty &&
+        contentController.text.trim().isEmpty) {
+      setState(() {
+        edited = false;
+      });
+    } else {
+      setState(() {
+        edited = true;
+      });
+    }
   }
 
   void addTag() {}
 
-  Future<void> save(BuildContext context) async {
-    sp = await SharedPreferences.getInstance();
-    sp.setString('draft_title', titleController.text);
-    sp.setString('draft_content', contentController.text);
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text('已存为草稿.')));
-  }
-
+  //退出前事件，返回true时即退出
   Future<bool> _onBackPressed() async {
-    sp = await SharedPreferences.getInstance();
-    //如果没有改动或内容,不拦截退出
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    bool isAllEmpty = titleController.text.trim().isEmpty &&
+        contentController.text.trim().isEmpty;
+    bool isNotChanged = titleController.text == sp.getString('draft_title') &&
+        contentController.text == sp.getString('draft_content');
+    //如果没有改动内容或内容为空,不拦截退出
     if (widget.mode == 1 &&
         titleController.text == widget.titleText &&
         contentController.text == widget.summaryText) {
       return Future<bool>.value(true);
     }
-    if (widget.mode == 0 &&
-        titleController.text == sp.getString('draft_title') &&
-        contentController.text == sp.getString('draft_content')) {
-      return Future<bool>.value(true);
+    if (widget.mode == 0) {
+      if (isAllEmpty || isNotChanged) {
+        return Future<bool>.value(true);
+      }
     }
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
               title: Text('要保存为草稿吗?'),
               actions: <Widget>[
-                FlatButton.icon(
-                  icon: Icon(Icons.save),
-                  label: Text('保存'),
-                  onPressed: () {
-                    save(context);
-                    Navigator.pop(context, true);
-                  },
+                _SaveButton(
+                  style: 1,
+                  title: titleController.text,
+                  content: contentController.text,
                 ),
                 FlatButton.icon(
                   textColor: Colors.red,
                   icon: Icon(Icons.delete_rounded),
                   label: Text('舍弃'),
-                  onPressed: () => Navigator.pop(context, true),
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                    //舍弃时会清空草稿存储
+                    sp.setString('draft_title', '');
+                    sp.setString('draft_content', '');
+                  },
                 ),
               ],
             ));
@@ -144,6 +175,50 @@ class _EditPostScreenState extends State<EditPostScreen> {
   void dispose() {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarIconBrightness: Brightness.dark));
+    titleController.dispose();
+    contentController.dispose();
     super.dispose();
+  }
+}
+
+class _SaveButton extends StatelessWidget {
+  final String title;
+  final String content;
+  final int style;
+
+  const _SaveButton({Key key, this.title, this.content, this.style})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (style == 0) {
+      return new IconButton(
+        icon: Icon(Icons.save),
+        //TODO:存为草稿
+        onPressed: () => save(context, title, content),
+        tooltip: '存为草稿',
+      );
+    }
+    return FlatButton.icon(
+      icon: Icon(Icons.save),
+      label: Text('保存'),
+      onPressed: () {
+        save(context, title, content);
+        Navigator.pop(context, true);
+      },
+    );
+  }
+
+  Future<void> save(
+    BuildContext context,
+    String title,
+    String content,
+  ) async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    sp.setString('draft_title', title);
+    sp.setString('draft_content', content);
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text('已存为草稿.')));
+    print(sp.getString('draft_title'));
+    print(sp.getString('draft_content'));
   }
 }

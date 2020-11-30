@@ -10,7 +10,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final idController = new TextEditingController();
   bool passwordVisible = false;
-  String userID = "unknown";
   @override
   Widget build(BuildContext context) {
     return Expanded(
