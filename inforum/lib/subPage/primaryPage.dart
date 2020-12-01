@@ -20,8 +20,7 @@ class _PrimaryPage extends State<PrimaryPage>{
             children: [
               ForumListItem(
                 //TODO:从API获取信息并填充
-                titleText: '以下的内容仅供测试.\n'
-                    'Hello World',
+                titleText: '以下的内容仅供测试.',
                 summaryText: 'This is a Test. All of the text below is used to test widget.'
                     '\nThis is 2nd line. '
                     '\nThis is 3rd line.'
@@ -38,7 +37,7 @@ class _PrimaryPage extends State<PrimaryPage>{
                 isAuthor: true,
               ),
               ForumListItem(
-                titleText: '2',
+                titleText: 'Hello World',
                 likeState: 1,
                 likeCount: 1,
                 dislikeCount: 0,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:inforum/component/actionButton.dart';
-import 'package:inforum/component/tagItem.dart';
 import 'package:inforum/subPage/forumDetail.dart';
 
 class ForumListItem extends StatefulWidget {
@@ -133,7 +132,17 @@ class _ForumListItem extends State<ForumListItem> {
                             : null,
                       ),
                       Row(
-                        children: [TagItem(label: 'Test', v: 1)],
+                        children: [Chip(
+                          avatar: const Icon(
+                            Icons.tag,
+                            color: Colors.blue,
+                          ),
+                          label: Text(
+                            'Test',
+                            style: new TextStyle(color: Colors.blue),
+                          ),
+                          backgroundColor: Color(0xffFFFFFF),
+                        )],
                       ),
                     ],
                   )),

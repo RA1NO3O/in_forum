@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:inforum/component/popUpTextField.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditPostScreen extends StatefulWidget {
@@ -17,13 +19,44 @@ class EditPostScreen extends StatefulWidget {
 class _EditPostScreenState extends State<EditPostScreen> {
   final titleController = new TextEditingController();
   final contentController = new TextEditingController();
+  var tags = List<String>();
   var tagChips;
   bool edited = false;
   String draftTitle;
   String draftContent;
-
+  void refreshTagList(){
+    tagChips = List<Widget>();
+    tagChips.add(Container(
+      margin: EdgeInsets.only(top: 9,bottom: 9,right: 5),
+      child: Text('标签：'),));
+    tagChips.add(Container(
+      height: 30,
+      child: ActionChip(
+        label: Text('添加标签'),
+        avatar: Icon(Icons.add_rounded),
+        onPressed: addTag,
+      ),
+    ));
+    tagChips.addAll(tags
+        .map((s) =>
+        Container(
+          height: 30,
+          child: InputChip(
+            label: Text('$s'),
+            avatar: Icon(Icons.tag),
+            onDeleted: () {
+              setState(() {
+                tags.remove('$s');
+                refreshTagList();
+              });
+            },
+          ),
+        ))
+        .toList());
+  }
   @override
   void initState() {
+    refreshTagList();
     getDraft();
     titleController.addListener(txtListener);
     contentController.addListener(txtListener);
@@ -31,17 +64,11 @@ class _EditPostScreenState extends State<EditPostScreen> {
       titleController.text = widget.titleText;
       contentController.text = widget.summaryText;
     }
-    tagChips = List<Widget>();
-    tagChips.add(Text('标签:    '));
     //TODO:非新建状态下导入标签
     // for(var i in ){
     //   tagChips.add()
     // }
-    tagChips.add(ActionChip(
-      onPressed: () => addTag(),
-      avatar: const Icon(Icons.add),
-      label: Text('添加标签'),
-    ));
+
     super.initState();
   }
 
@@ -64,11 +91,14 @@ class _EditPostScreenState extends State<EditPostScreen> {
             actions: [
               edited
                   ? _SaveButton(
-                      title: titleController.text,
-                      content: contentController.text,
-                      style: 0,
-                    )
-                  : IconButton(icon: Icon(Icons.save_rounded)),
+                title: titleController.text,
+                content: contentController.text,
+                style: 0,
+              )
+                  : IconButton(
+                icon: Icon(Icons.save_rounded),
+                onPressed: null,
+              ),
               new IconButton(
                 icon: widget.mode == 0
                     ? Icon(Icons.send_rounded)
@@ -80,11 +110,13 @@ class _EditPostScreenState extends State<EditPostScreen> {
             ],
           ),
           body: Container(
-            padding: EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
-            child: Column(
+            padding: EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 10),
+            child: Flex(
+              direction: Axis.vertical,
               children: [
                 new TextFormField(
                   maxLength: 128,
+                  style: new TextStyle(fontSize: 20),
                   controller: titleController,
                   decoration: InputDecoration(
                       prefixIcon: Icon(Icons.title),
@@ -92,20 +124,31 @@ class _EditPostScreenState extends State<EditPostScreen> {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5.0))),
                 ),
-                new Container(
-                  margin: EdgeInsets.only(top: 10),
-                  child: new TextFormField(
-                    controller: contentController,
-                    maxLines: 10,
-                    decoration: InputDecoration(
-                        labelText: '正文',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0))),
+                new Expanded(
+                  flex: 1,
+                  child: Container(
+                    margin: EdgeInsets.only(top: 10),
+                    child: new TextFormField(
+                      controller: contentController,
+                      maxLines: 10,
+                      style: new TextStyle(fontSize: 18),
+                      decoration: InputDecoration(
+                          labelText: '正文',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0))),
+                    ),
                   ),
                 ),
-                new Row(
-                  children: tagChips,
-                )
+                Container(
+                  margin: EdgeInsets.only(top: 5),
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    spacing: 5,
+                    runSpacing: 1,
+                    children: tagChips,
+                  ),
+                ),
+                Expanded(flex: 1,child: Container())
               ],
             ),
           )),
@@ -114,8 +157,12 @@ class _EditPostScreenState extends State<EditPostScreen> {
   }
 
   void txtListener() {
-    if (titleController.text.trim().isEmpty &&
-        contentController.text.trim().isEmpty) {
+    if (titleController.text
+        .trim()
+        .isEmpty &&
+        contentController.text
+            .trim()
+            .isEmpty) {
       setState(() {
         edited = false;
       });
@@ -126,13 +173,30 @@ class _EditPostScreenState extends State<EditPostScreen> {
     }
   }
 
-  void addTag() {}
+  void addTag() {
+    Navigator.push(
+        context,
+        PopRoute(
+            child: PopUpTextField(
+              hintText: '输入标签名称',
+              onEditingCompleteText: (text) {
+                setState(() {
+                  tags.add(text);
+                  refreshTagList();
+                });
+              },
+            )));
+  }
 
   //退出前事件，返回true时即退出
   Future<bool> _onBackPressed() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    bool isAllEmpty = titleController.text.trim().isEmpty &&
-        contentController.text.trim().isEmpty;
+    bool isAllEmpty = titleController.text
+        .trim()
+        .isEmpty &&
+        contentController.text
+            .trim()
+            .isEmpty;
     bool isNotChanged = titleController.text == sp.getString('draft_title') &&
         contentController.text == sp.getString('draft_content');
     //如果没有改动内容或内容为空,不拦截退出
@@ -148,7 +212,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
     }
     return showDialog(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (context) =>
+            AlertDialog(
               title: Text('要保存为草稿吗?'),
               actions: <Widget>[
                 _SaveButton(
@@ -209,11 +274,9 @@ class _SaveButton extends StatelessWidget {
     );
   }
 
-  Future<void> save(
-    BuildContext context,
-    String title,
-    String content,
-  ) async {
+  Future<void> save(BuildContext context,
+      String title,
+      String content,) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     sp.setString('draft_title', title);
     sp.setString('draft_content', content);

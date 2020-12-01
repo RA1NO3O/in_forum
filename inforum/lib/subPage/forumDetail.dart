@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:inforum/component/actionButton.dart';
-import 'package:inforum/component/tagItem.dart';
 import 'package:inforum/subPage/editPost.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -163,7 +162,17 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
             margin: EdgeInsets.only(left: 25, right: 25),
             child: Row(
               children: [
-                TagItem(label: '标签', v: 1),
+                Chip(
+                  avatar: const Icon(
+                    Icons.tag,
+                    color: Colors.blue,
+                  ),
+                  label: Text(
+                    '标签',
+                    style: new TextStyle(color: Colors.blue),
+                  ),
+                  backgroundColor: Color(0xffFFFFFF),
+                ),
               ],
             ),
           ),
