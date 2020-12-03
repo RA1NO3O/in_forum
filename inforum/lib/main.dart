@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,11 +24,19 @@ Future<void> main() async {
       visualDensity: VisualDensity.adaptivePlatformDensity,
     ),
     home: isLogin ? HomeScreen(userId: userId,) : MainPage(title: 'Inforum',),
+    localizationsDelegates: [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate
+    ],
+    supportedLocales: [
+      const Locale("zh", "CH"),
+      const Locale("en", "US")
+    ],
     debugShowCheckedModeBanner: false, //隐藏debug横幅
   ));
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: Color(0xFFFAFAFA),
-      statusBarIconBrightness: Brightness.light));
+      systemNavigationBarColor: isLogin?Color(0xFFFAFAFA):Color(0x00000000),
+      statusBarIconBrightness: isLogin?Brightness.dark:Brightness.light));
 }
 
 //主界面
@@ -107,6 +115,7 @@ class _MainPageState extends State<MainPage> {
     }
 
     return Scaffold(
+
       body: Stack(
         children: [
           //动画波&渐变背景

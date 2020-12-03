@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:inforum/component/actionButton.dart';
+import 'package:inforum/component/popUpTextField.dart';
+import 'package:inforum/data/dateTimeFormat.dart';
 import 'package:inforum/subPage/forumDetail.dart';
 
 class ForumListItem extends StatefulWidget {
+  final int forumID;
   final String titleText;
-  final String summaryText;
+  final String contentText;
   final int likeState;
   final int likeCount;
   final int dislikeCount;
@@ -15,21 +18,25 @@ class ForumListItem extends StatefulWidget {
   final String authorName;
   final String imgAuthor;
   final bool isAuthor;
-  const ForumListItem(
-      {Key key,
-      this.titleText,
-      this.summaryText,
-      this.likeCount,
-      this.dislikeCount,
-      this.commentCount,
-      this.collectCount,
-      this.imgThumbnail,
-      this.likeState,
-      this.isCollect,
-      this.imgAuthor,
-      this.authorName,
-      this.isAuthor})
-      : super(key: key);
+  final String time;
+
+  const ForumListItem({
+    Key key,
+    this.titleText,
+    this.contentText,
+    this.likeCount,
+    this.dislikeCount,
+    this.commentCount,
+    this.collectCount,
+    this.imgThumbnail,
+    this.likeState,
+    this.isCollect,
+    this.imgAuthor,
+    this.authorName,
+    this.isAuthor,
+    this.forumID,
+    this.time,
+  }) : super(key: key);
 
   @override
   _ForumListItem createState() => _ForumListItem();
@@ -69,7 +76,7 @@ class _ForumListItem extends State<ForumListItem> {
                           MaterialPageRoute(builder: (BuildContext context) {
                         return ForumDetailPage(
                           titleText: widget.titleText,
-                          summaryText: widget.summaryText,
+                          contentText: widget.contentText,
                           likeCount: likeCount,
                           dislikeCount: dislikeCount,
                           likeState: likeState,
@@ -79,6 +86,7 @@ class _ForumListItem extends State<ForumListItem> {
                           imgAuthor: widget.imgAuthor,
                           authorName: widget.authorName,
                           isAuthor: widget.isAuthor,
+                          forumID: widget.forumID,
                         );
                       })),
                   child: Column(
@@ -86,13 +94,19 @@ class _ForumListItem extends State<ForumListItem> {
                       Container(
                           margin: EdgeInsets.only(top: 10, left: 5, bottom: 5),
                           child: Flex(direction: Axis.horizontal, children: [
-                            Text(
-                              widget.titleText,
-                              style: new TextStyle(
-                                  color: Color(0xFF000000),
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.left,
+                            Container(
+                              child: Row(
+                                children: [
+                                  Container(
+                                      margin: EdgeInsets.only(right: 5),
+                                      child: CircleAvatar(
+                                          radius: 15,
+                                          backgroundImage:
+                                          AssetImage(widget.imgAuthor))),
+                                  Text(widget.authorName),
+
+                                ],
+                              ),
                             ),
                             Expanded(
                               flex: 1,
@@ -100,21 +114,26 @@ class _ForumListItem extends State<ForumListItem> {
                             ),
                             Container(
                                 padding: EdgeInsets.only(right: 13),
-                                child: Row(children: [
-                                  Text(widget.authorName),
-                                  Container(
-                                      margin: EdgeInsets.only(left: 5),
-                                      child: CircleAvatar(
-                                          radius: 15,
-                                          backgroundImage:
-                                              AssetImage(widget.imgAuthor)))
-                                ]))
+                                child: Text(
+                                    DateTimeFormat.handleDate(widget.time)))
                           ])),
                       Container(
                         alignment: Alignment.topLeft,
                         padding: EdgeInsets.all(5),
                         child: Text(
-                          widget.summaryText,
+                          widget.titleText,
+                          style: new TextStyle(
+                              color: Color(0xFF000000),
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.topLeft,
+                        padding: EdgeInsets.all(5),
+                        child: Text(
+                          widget.contentText,
                           style: new TextStyle(fontSize: 16),
                         ),
                       ),
@@ -123,26 +142,28 @@ class _ForumListItem extends State<ForumListItem> {
                         height: widget.imgThumbnail != null ? 200 : 0,
                         child: widget.imgThumbnail != null
                             ? ClipRRect(
-                          borderRadius: BorderRadius.circular(5),
-                          child: Image.asset(
-                            widget.imgThumbnail,
-                            fit: BoxFit.fitWidth,
-                          ),
-                        )
+                                borderRadius: BorderRadius.circular(5),
+                                child: Image.asset(
+                                  widget.imgThumbnail,
+                                  fit: BoxFit.fitWidth,
+                                ),
+                              )
                             : null,
                       ),
                       Row(
-                        children: [Chip(
-                          avatar: const Icon(
-                            Icons.tag,
-                            color: Colors.blue,
-                          ),
-                          label: Text(
-                            'Test',
-                            style: new TextStyle(color: Colors.blue),
-                          ),
-                          backgroundColor: Color(0xffFFFFFF),
-                        )],
+                        children: [
+                          Chip(
+                            avatar: const Icon(
+                              Icons.tag,
+                              color: Colors.blue,
+                            ),
+                            label: Text(
+                              'Test',
+                              style: new TextStyle(color: Colors.blue),
+                            ),
+                            backgroundColor: Color(0xffFFFFFF),
+                          )
+                        ],
                       ),
                     ],
                   )),
@@ -169,7 +190,17 @@ class _ForumListItem extends State<ForumListItem> {
                     flex: 1,
                     child: ActionButton(
                         //TODO:实现评论按钮
-                        fun: () => print('clicked comment button'),
+                        fun: () => Navigator.push(
+                            context,
+                            PopRoute(
+                                child: PopUpTextField(
+                              hintText: '发表评论',
+                              onEditingCompleteText: (text) {
+                                setState(() {
+                                  //TODO:添加评论
+                                });
+                              },
+                            ))),
                         ico: Icon(Icons.mode_comment_outlined),
                         txt: commentCount.toString())),
                 Expanded(

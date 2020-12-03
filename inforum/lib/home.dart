@@ -8,7 +8,6 @@ import 'package:inforum/subPage/messagePage.dart';
 import 'package:inforum/subPage/primaryPage.dart';
 import 'package:inforum/subPage/searchPage.dart';
 import 'package:inforum/subPage/userPage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userId;
@@ -93,13 +92,11 @@ class _HomeScreenState extends State<HomeScreen> {
             size: 30,
             color: Colors.orange,
           ),
-          label: '我')
+          label: '通知')
     ];
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      body: Center(
-          child: PageTransitionSwitcher(
+      body: PageTransitionSwitcher(
         child: PageView(
           physics: NeverScrollableScrollPhysics(),
           controller: _pageController,
@@ -110,12 +107,13 @@ class _HomeScreenState extends State<HomeScreen> {
             });
           },
           children: <Widget>[
+
             PrimaryPage(
               userId: widget.userId,
             ),
             MessagePage(),
             SearchPage(),
-            NotificationPage()
+            NotificationPage(),
           ],
         ),
         transitionBuilder: (child, animation, secondaryAnimation) {
@@ -125,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
             secondaryAnimation: secondaryAnimation,
           );
         },
-      )),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         fixedColor: _currentColor,
         currentIndex: _currentIndex,
@@ -156,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   case 0:
                     Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
-                      return EditPostScreen(mode: 0,);
+                      return EditPostScreen(mode: 0);
                     }));
                     break;
                   case 1:

@@ -6,8 +6,9 @@ import 'package:inforum/subPage/editPost.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ForumDetailPage extends StatefulWidget {
+  final int forumID;
   final String titleText;
-  final String summaryText;
+  final String contentText;
   final int likeCount;
   final int dislikeCount;
   final int likeState;
@@ -21,7 +22,7 @@ class ForumDetailPage extends StatefulWidget {
   const ForumDetailPage(
       {Key key,
       this.titleText,
-      this.summaryText,
+      this.contentText,
       this.likeCount,
       this.dislikeCount,
       this.commentCount,
@@ -30,7 +31,8 @@ class ForumDetailPage extends StatefulWidget {
       this.likeState,
       this.authorName,
       this.imgAuthor,
-      this.isAuthor})
+      this.isAuthor,
+      this.forumID})
       : super(key: key);
 
   @override
@@ -60,6 +62,147 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> forumDetailUI = [
+      Container(
+        height: 70,
+        margin: EdgeInsets.only(top: 10, left: 22, right: 10),
+        child: Flex(
+          direction: Axis.horizontal,
+          children: [
+            CircleAvatar(
+              radius: 33,
+              backgroundImage: AssetImage(widget.imgAuthor),
+            ),
+            Flex(
+              direction: Axis.vertical,
+              children: [
+                Expanded(
+                    flex: 1,
+                    child: Container(
+                      margin: EdgeInsets.only(top: 15, left: 10),
+                      child: Text(
+                        widget.authorName,
+                        style: new TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    )),
+                Container(
+                  height: 25,
+                  margin: EdgeInsets.only(left: 10),
+                  child: Text(
+                    '@ra1n7246',
+                    style: new TextStyle(color: Colors.black54),
+                  ),
+                )
+              ],
+            ),
+            Expanded(
+              flex: 1,
+              child: Container(),
+            ),
+            IconButton(
+              icon: Icon(Icons.keyboard_arrow_down_rounded),
+              //TODO:用户下拉菜单
+              onPressed: () {},
+            )
+          ],
+        ),
+      ),
+      new Container(
+        margin: EdgeInsets.only(
+          top: 10,
+          left: 25,
+        ),
+        alignment: Alignment.centerLeft,
+        child: Text(
+          widget.titleText,
+          style: new TextStyle(
+              color: Color(0xFF000000),
+              fontSize: 25,
+              fontWeight: FontWeight.bold),
+          textAlign: TextAlign.left,
+        ),
+      ),
+      new Container(
+          margin: EdgeInsets.only(top: 10, left: 25, right: 25),
+          child: Text(
+            widget.contentText,
+            style: new TextStyle(fontSize: 18),
+          )),
+      new Container(
+        margin: EdgeInsets.only(left: 25, right: 25),
+        child: Row(
+          children: [
+            Chip(
+              avatar: const Icon(
+                Icons.tag,
+                color: Colors.blue,
+              ),
+              label: Text(
+                '标签',
+                style: new TextStyle(color: Colors.blue),
+              ),
+              backgroundColor: Color(0xffFFFFFF),
+            ),
+          ],
+        ),
+      ),
+      Container(
+        margin: EdgeInsets.only(left: 25, right: 25, bottom: 5),
+        width: widget.imgThumbnail != null ? 400 : 0,
+        child: widget.imgThumbnail != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Image.asset(
+                  widget.imgThumbnail,
+                  fit: BoxFit.fitWidth,
+                ),
+              )
+            : null,
+      ),
+      Divider(thickness: 2),
+      Container(
+        padding: EdgeInsets.only(left: 20, right: 20),
+        height: 40,
+        child: Flex(direction: Axis.horizontal, children: [
+          Expanded(
+            flex: 1,
+            child: ActionButton(
+                fun: () => _likeButtonClick(),
+                ico: likeState == 0 || likeState == 2
+                    ? Icon(Icons.thumb_up_outlined)
+                    : Icon(Icons.thumb_up),
+                txt: likeCount.toString()),
+          ),
+          Expanded(
+            flex: 1,
+            child: ActionButton(
+                fun: () => _dislikeButtonClick(),
+                ico: likeState == 0 || likeState == 1
+                    ? Icon(Icons.thumb_down_outlined)
+                    : Icon(Icons.thumb_down),
+                txt: dislikeCount.toString()),
+          ),
+          Expanded(
+              flex: 1,
+              child: ActionButton(
+                  //TODO:实现评论按钮
+                  fun: () => print('clicked comment button'),
+                  ico: Icon(Icons.mode_comment_outlined),
+                  txt: commentCount.toString())),
+          Expanded(
+            flex: 0,
+            child: ActionButton(
+              //TODO:实现分享按钮
+              fun: () => print('clicked Share button'),
+              ico: Icon(Icons.share_outlined),
+            ),
+          ),
+        ]),
+      ),
+      Divider(thickness: 2),
+    ];
+    getComments();
     return Scaffold(
       appBar: AppBar(
         title: const Text('帖子'),
@@ -70,10 +213,14 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     IconButton(
                       icon: Icon(Icons.edit),
                       tooltip: '编辑',
-                      onPressed: ()=>Navigator.push(context,
+                      onPressed: () => Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {
-                            return EditPostScreen(titleText: widget.titleText,summaryText: widget.summaryText,mode: 1,);
-                          })),
+                        return EditPostScreen(
+                          titleText: widget.titleText,
+                          contentText: widget.contentText,
+                          mode: 1,
+                        );
+                      })),
                     ),
                     IconButton(
                       icon: Icon(Icons.delete_rounded),
@@ -90,147 +237,14 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
           )
         ],
       ),
-      body: ListView(
-        children: [
-          Container(
-            height: 70,
-            margin: EdgeInsets.only(top: 10, left: 22, right: 10),
-            child: Flex(
-              direction: Axis.horizontal,
-              children: [
-                CircleAvatar(
-                  radius: 33,
-                  backgroundImage: AssetImage(widget.imgAuthor),
-                ),
-                Flex(
-                  direction: Axis.vertical,
-                  children: [
-                    Expanded(
-                        flex: 1,
-                        child: Container(
-                          margin: EdgeInsets.only(top: 15, left: 10),
-                          child: Text(
-                            widget.authorName,
-                            style: new TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                        )),
-                    Container(
-                      height: 25,
-                      margin: EdgeInsets.only(left: 10),
-                      child: Text(
-                        '@ra1n7246',
-                        style: new TextStyle(color: Colors.black54),
-                      ),
-                    )
-                  ],
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(),
-                ),
-                IconButton(
-                  icon: Icon(Icons.keyboard_arrow_down_rounded),
-                  //TODO:用户下拉菜单
-                  onPressed: () {},
-                )
-              ],
-            ),
+      body: RefreshIndicator(
+        onRefresh: (){},
+        child: Scrollbar(
+          radius: Radius.circular(5),
+          child: ListView(
+            children: forumDetailUI,
           ),
-          new Container(
-            margin: EdgeInsets.only(
-              top: 10,
-              left: 25,
-            ),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              widget.titleText,
-              style: new TextStyle(
-                  color: Color(0xFF000000),
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.left,
-            ),
-          ),
-          new Container(
-              margin: EdgeInsets.only(top: 10, left: 25, right: 25),
-              child: Text(
-                widget.summaryText,
-                style: new TextStyle(fontSize: 18),
-              )),
-          new Container(
-            margin: EdgeInsets.only(left: 25, right: 25),
-            child: Row(
-              children: [
-                Chip(
-                  avatar: const Icon(
-                    Icons.tag,
-                    color: Colors.blue,
-                  ),
-                  label: Text(
-                    '标签',
-                    style: new TextStyle(color: Colors.blue),
-                  ),
-                  backgroundColor: Color(0xffFFFFFF),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 25, right: 25, bottom: 5),
-            width: widget.imgThumbnail != null ? 400 : 0,
-            child: widget.imgThumbnail != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Image.asset(
-                      widget.imgThumbnail,
-                      fit: BoxFit.fitWidth,
-                    ),
-                  )
-                : null,
-          ),
-          Divider(thickness: 2),
-          Container(
-            padding: EdgeInsets.only(left: 20, right: 20),
-            height: 40,
-            child: Flex(direction: Axis.horizontal, children: [
-              Expanded(
-                flex: 1,
-                child: ActionButton(
-                    fun: () => _likeButtonClick(),
-                    ico: likeState == 0 || likeState == 2
-                        ? Icon(Icons.thumb_up_outlined)
-                        : Icon(Icons.thumb_up),
-                    txt: likeCount.toString()),
-              ),
-              Expanded(
-                flex: 1,
-                child: ActionButton(
-                    fun: () => _dislikeButtonClick(),
-                    ico: likeState == 0 || likeState == 1
-                        ? Icon(Icons.thumb_down_outlined)
-                        : Icon(Icons.thumb_down),
-                    txt: dislikeCount.toString()),
-              ),
-              Expanded(
-                  flex: 1,
-                  child: ActionButton(
-                      //TODO:实现评论按钮
-                      fun: () => print('clicked comment button'),
-                      ico: Icon(Icons.mode_comment_outlined),
-                      txt: commentCount.toString())),
-              Expanded(
-                flex: 0,
-                child: ActionButton(
-                  //TODO:实现分享按钮
-                  fun: () => print('clicked Share button'),
-                  ico: Icon(Icons.share_outlined),
-                ),
-              ),
-            ]),
-          ),
-          Divider(thickness: 2),
-        ],
+        ),
       ),
     );
   }
@@ -300,5 +314,9 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
           break;
       }
     });
+  }
+
+  void getComments() {
+
   }
 }
