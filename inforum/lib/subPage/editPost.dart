@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:inforum/component/popUpTextField.dart';
@@ -26,6 +27,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   bool edited = false;
   String draftTitle;
   String draftContent;
+  List<String> draftTags;
 
   void refreshTagList() {
     tagChips = [
@@ -82,14 +84,18 @@ class _EditPostScreenState extends State<EditPostScreen> {
     SharedPreferences sp = await SharedPreferences.getInstance();
     draftTitle = sp.getString('draft_title');
     draftContent = sp.getString('draft_content');
+    draftTags = sp.getStringList('draft_tags');
     titleController.text = draftTitle;
     contentController.text = draftContent;
-    tags.addAll(sp.getStringList('draft_tags'));
+    if (draftTags != null) {
+      tags = draftTags;
+    }
     refreshTagList();
   }
 
   @override
   Widget build(BuildContext context) {
+    refreshTagList();
     return WillPopScope(
       child: Scaffold(
           appBar: AppBar(
@@ -194,9 +200,11 @@ class _EditPostScreenState extends State<EditPostScreen> {
   Future<bool> _onBackPressed() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     bool isAllEmpty = titleController.text.trim().isEmpty &&
-        contentController.text.trim().isEmpty;
-    bool isNotChanged = titleController.text == sp.getString('draft_title') &&
-        contentController.text == sp.getString('draft_content');
+        contentController.text.trim().isEmpty &&
+        tags.isEmpty;
+    bool isNotChanged = titleController.text == draftTitle &&
+        contentController.text == draftContent &&
+        IterableEquality().equals(tags, draftTags);
     //如果没有改动内容或内容为空,不拦截退出
     if (widget.mode == 1 &&
         titleController.text == widget.titleText &&
