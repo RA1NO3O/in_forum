@@ -99,7 +99,11 @@ class _EditPostScreenState extends State<EditPostScreen> {
     return WillPopScope(
       child: Scaffold(
           appBar: AppBar(
-            title: const Text('编辑帖子'),
+            elevation: 1,
+            backgroundColor: Color(0xFFFAFAFA),
+            brightness: Brightness.light,
+            iconTheme: IconThemeData(color: Colors.black),
+            title: const Text('编辑帖子',style: TextStyle(color: Colors.black),),
             actions: [
               edited
                   ? _SaveButton(
@@ -199,12 +203,16 @@ class _EditPostScreenState extends State<EditPostScreen> {
   //退出前事件，返回true时即退出
   Future<bool> _onBackPressed() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
+    String dt = sp.getString('draft_title');
+    String dc = sp.getString('draft_content');
+    List<String> dtags = sp.getStringList('draft_tags');
+
     bool isAllEmpty = titleController.text.trim().isEmpty &&
         contentController.text.trim().isEmpty &&
         tags.isEmpty;
-    bool isNotChanged = titleController.text == draftTitle &&
-        contentController.text == draftContent &&
-        IterableEquality().equals(tags, draftTags);
+    bool isNotChanged = titleController.text == dt &&
+        contentController.text == dc &&
+        IterableEquality().equals(tags, dtags);
     //如果没有改动内容或内容为空,不拦截退出
     if (widget.mode == 1 &&
         titleController.text == widget.titleText &&
@@ -267,8 +275,9 @@ class _SaveButton extends StatelessWidget {
     if (style == 0) {
       return new IconButton(
         icon: Icon(Icons.save),
-        //TODO:存为草稿
-        onPressed: () => save(context, title, content, tags),
+        onPressed: () {
+          save(context, title, content, tags);
+        },
         tooltip: '存为草稿',
       );
     }

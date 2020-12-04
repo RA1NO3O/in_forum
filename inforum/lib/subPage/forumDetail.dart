@@ -153,11 +153,13 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
         child: widget.imgThumbnail != null
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(5),
-                child: Image.asset(
-                  widget.imgThumbnail,
-                  fit: BoxFit.fitWidth,
-                ),
-              )
+                child: Hero(
+                  tag: 'imgThumbnail',
+                  child: Image.asset(
+                    widget.imgThumbnail,
+                    fit: BoxFit.fitWidth,
+                  ),
+                ))
             : null,
       ),
       Divider(thickness: 2),
@@ -205,7 +207,11 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     getComments();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('帖子'),
+        elevation: 1,
+        backgroundColor: Color(0xFFFAFAFA),
+        brightness: Brightness.light,
+        iconTheme: IconThemeData(color: Colors.black),
+        title: const Text('帖子',style: TextStyle(color: Colors.black)),
         actions: [
           isAuthor
               ? new Row(
@@ -238,7 +244,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: (){},
+        onRefresh: () {},
         child: Scrollbar(
           radius: Radius.circular(5),
           child: ListView(
@@ -316,7 +322,5 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     });
   }
 
-  void getComments() {
-
-  }
+  void getComments() {}
 }

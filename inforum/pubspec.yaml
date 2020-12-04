@@ -30,6 +30,7 @@ dependencies:
   animations: ^1.1.2
   simple_animations: ^2.2.3
   shared_preferences: ^0.5.12+4
+  extended_nested_scroll_view: ^2.0.0
 
 
 dev_dependencies:

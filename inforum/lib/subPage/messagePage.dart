@@ -10,10 +10,8 @@ class _MessagePage extends State<MessagePage>{
   Widget build(BuildContext context) {
     return Container(
       color: Color(0xFFFAFAFA),
-      child: Column(
-        children: [
-
-        ],
+      child: ListView(
+        children: [],
       ),
     );
   }

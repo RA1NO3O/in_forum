@@ -2,7 +2,6 @@ import 'package:animations/animations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:inforum/subPage/editPost.dart';
 import 'package:inforum/subPage/messagePage.dart';
 import 'package:inforum/subPage/primaryPage.dart';
@@ -16,8 +15,9 @@ class HomeScreen extends StatefulWidget {
 
   @override
   _HomeScreenState createState() {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarIconBrightness: Brightness.dark));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor: Color(0xFFFAFAFA),
+        statusBarIconBrightness: Brightness.dark));
     return _HomeScreenState();
   }
 }
@@ -96,25 +96,192 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     return Scaffold(
-      body: PageTransitionSwitcher(
-        child: PageView(
-          physics: NeverScrollableScrollPhysics(),
-          controller: _pageController,
-          onPageChanged: (index) {
-            setState(() {
-              _currentIndex = index;
-              pageChanged();
-            });
-          },
+      drawer: new Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
           children: <Widget>[
-
-            PrimaryPage(
-              userId: widget.userId,
+            Container(
+              height: 230,
+              child: DrawerHeader(
+                child: Column(
+                  children: [
+                    Material(
+                      elevation: 3,
+                      shape: CircleBorder(),
+                      clipBehavior: Clip.hardEdge,
+                      color: Colors.transparent,
+                      child: Ink.image(
+                        image: AssetImage('images/test.jpg'),
+                        fit: BoxFit.cover,
+                        width: 85,
+                        height: 85,
+                        child: InkWell(
+                          onTap: () {},
+                        ),
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.only(top: 5),
+                      child: Text(
+                        widget.userId.isEmpty ? 'User' : widget.userId,
+                        style: new TextStyle(fontSize: 32),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 5),
+                      child: Row(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(right: 10),
+                            child: Text('123',
+                                style: new TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                          ),
+                          Text('正在关注'),
+                          Container(
+                            margin: EdgeInsets.only(left: 20, right: 10),
+                            child: Text('98',
+                                style: new TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                          ),
+                          Text('关注者')
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
-            MessagePage(),
-            SearchPage(),
-            NotificationPage(),
+            Container(
+                margin: EdgeInsets.only(left: 5, right: 5),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.star_rounded),
+                      title: Text('收藏'),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)),
+                      onTap: () {},
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.help_rounded),
+                      title: Text('帮助'),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)),
+                      onTap: () {},
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.settings),
+                      title: Text('设置'),
+                      onTap: () {},
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.login_rounded),
+                      title: Text('登出'),
+                      onTap: () {},
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)),
+                    ),
+                  ],
+                )),
           ],
+        ),
+      ),
+      body: PageTransitionSwitcher(
+        // child: CustomScrollView(
+        //   controller: _pageController,
+        //   slivers: <Widget>[
+        //     SliverAppBar(
+        //       backgroundColor: Color(0xFFFAFAFA),
+        //       brightness: Brightness.light,
+        //       iconTheme: IconThemeData(color: Colors.black),
+        //       elevation: 5,
+        //       title: Hero(
+        //         tag: 'title',
+        //         child: Text(
+        //           'Inforum',
+        //           style: TextStyle(color: Colors.black),
+        //         ),
+        //       ),
+        //       centerTitle: true,
+        //       floating: true,
+        //     ),
+        //     SliverToBoxAdapter(
+        //       child: SizedBox(
+        //         height: 715,
+        //         child: PageView(
+        //           physics: NeverScrollableScrollPhysics(),
+        //           controller: _pageController,
+        //           onPageChanged: (index) {
+        //             setState(() {
+        //               _currentIndex = index;
+        //               pageChanged();
+        //             });
+        //           },
+        //           children: <Widget>[
+        //             PrimaryPage(
+        //               userId: widget.userId.isEmpty?'':widget.userId,
+        //             ),
+        //             MessagePage(),
+        //             SearchPage(),
+        //             NotificationPage(),
+        //           ],
+        //         ),
+        //       )
+        //     )
+        //   ],
+        // ),
+        child: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverOverlapAbsorber(
+                handle:
+                    NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                sliver: SliverAppBar(
+                  backgroundColor: Color(0xFFFAFAFA),
+                  brightness: Brightness.light,
+                  iconTheme: IconThemeData(color: Colors.black),
+                  elevation: 5,
+                  title: Hero(
+                    tag: 'title',
+                    child: Text(
+                      'Inforum',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  centerTitle: true,
+                  floating: true,
+                  forceElevated: innerBoxIsScrolled,
+                ),
+              )
+            ];
+          },
+          body: PageView(
+
+            physics: NeverScrollableScrollPhysics(),
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+                pageChanged();
+              });
+            },
+            children: <Widget>[
+              PrimaryPage(
+                userId: widget.userId.isEmpty ? '' : widget.userId,
+              ),
+              MessagePage(),
+              SearchPage(),
+              NotificationPage(),
+            ],
+          ),
         ),
         transitionBuilder: (child, animation, secondaryAnimation) {
           return FadeThroughTransition(

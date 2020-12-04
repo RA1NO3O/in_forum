@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,8 @@ import 'package:inforum/subPage/login.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool isLogin = prefs.getBool('isLogin') == null ? false : prefs.getBool('isLogin');
+  bool isLogin =
+      prefs.getBool('isLogin') == null ? false : prefs.getBool('isLogin');
   String userId = prefs.getString('userId');
   print(isLogin);
   runApp(MaterialApp(
@@ -23,25 +25,29 @@ Future<void> main() async {
       primarySwatch: Colors.blue,
       visualDensity: VisualDensity.adaptivePlatformDensity,
     ),
-    home: isLogin ? HomeScreen(userId: userId,) : MainPage(title: 'Inforum',),
+    home: isLogin
+        ? HomeScreen(
+            userId: userId.isEmpty ? 'User' : userId,
+          )
+        : MainPage(
+            title: 'Inforum',
+          ),
     localizationsDelegates: [
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate
     ],
-    supportedLocales: [
-      const Locale("zh", "CH"),
-      const Locale("en", "US")
-    ],
+    supportedLocales: [const Locale("zh", "CH"), const Locale("en", "US")],
     debugShowCheckedModeBanner: false, //隐藏debug横幅
   ));
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: isLogin?Color(0xFFFAFAFA):Color(0x00000000),
-      statusBarIconBrightness: isLogin?Brightness.dark:Brightness.light));
+      systemNavigationBarColor: isLogin ? Color(0xFFFAFAFA) : Color(0x00000000),
+      statusBarIconBrightness: isLogin ? Brightness.dark : Brightness.light));
 }
 
 //主界面
 class MainPage extends StatefulWidget {
   final String title;
+
   MainPage({Key key, this.title}) : super(key: key);
 
   @override
@@ -58,64 +64,8 @@ class _MainPageState extends State<MainPage> {
             child: child,
           ),
         );
-    Widget setUI(var state) {
-      switch (state) {
-        case 0:
-          return Column(
-            children: [
-              Container(
-                child: Text(
-                  '\n来体验一下全新的论坛app\n',
-                  textAlign: TextAlign.left,
-                  style: new TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      height: 1.1, //行高
-                      fontSize: 25),
-                ),
-                alignment: Alignment.centerLeft,
-              ),
-              Row(
-                children: [
-                  Text(
-                    '已有账号? 点此',
-                    style: new TextStyle(fontSize: 15, color: Colors.white),
-                  ),
-                  Container(
-                    width: 40,
-                    height: 25,
-                    child: FlatButton(
-                      onPressed: btnLoginClick,
-                      child: Text(
-                        '登录',
-                        textAlign: TextAlign.left,
-                        style: new TextStyle(
-                          fontSize: 15,
-                          color: Colors.lightBlue,
-                        ),
-                      ),
-                      padding: EdgeInsets.all(0),
-                    ),
-                  )
-                ],
-              )
-            ],
-          );
-          break;
-        case 1:
-          return LoginPage();
-          break;
-        case 2:
-          return RegPage();
-          break;
-        default:
-          return Container();
-          break;
-      }
-    }
 
     return Scaffold(
-
       body: Stack(
         children: [
           //动画波&渐变背景
@@ -145,18 +95,67 @@ class _MainPageState extends State<MainPage> {
               child: Column(
                 children: [
                   new Container(
-                    child: Text(
-                      'Inforum',
-                      textAlign: TextAlign.left,
-                      style: new TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          height: 1.1, //行高
-                          fontSize: 50),
+                    child: Hero(
+                      tag: 'title',
+                      child: Text(
+                        'Inforum',
+                        textAlign: TextAlign.left,
+                        style: new TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            height: 1.1, //行高
+                            fontSize: 50),
+                      ),
                     ),
                     alignment: Alignment.centerLeft,
                   ),
-                  setUI(state),
+                  AnimatedContainer(
+                    duration: Duration(milliseconds: 500),
+                    child: Flex(
+                      direction: Axis.vertical,
+                      children: [
+                        Container(
+                          child: state==0?Text(
+                            '\n来体验一下全新的论坛app\n',
+                            textAlign: TextAlign.left,
+                            style: new TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                height: 1.1, //行高
+                                fontSize: 25),
+                          ):null,
+                          alignment: Alignment.centerLeft,
+                        ),
+                        Container(child: state==0?Row(
+                          children: [
+                            Text(
+                              '已有账号? 点此',
+                              style: new TextStyle(
+                                  fontSize: 15, color: Colors.white),
+                            ),
+                            Container(
+                              width: 40,
+                              height: 25,
+                              child: FlatButton(
+                                onPressed: btnLoginClick,
+                                child: Text(
+                                  '登录',
+                                  textAlign: TextAlign.left,
+                                  style: new TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.lightBlue,
+                                  ),
+                                ),
+                                padding: EdgeInsets.all(0),
+                              ),
+                            )
+                          ],
+                        ):null),
+                        Container(child: state==1?LoginPage():null,),
+                        Container(child: state==2?RegPage():null,)
+                      ],
+                    ),
+                  )
                 ],
               )),
         ],
