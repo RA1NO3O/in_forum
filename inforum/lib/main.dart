@@ -95,17 +95,14 @@ class _MainPageState extends State<MainPage> {
               child: Column(
                 children: [
                   new Container(
-                    child: Hero(
-                      tag: 'title',
-                      child: Text(
-                        'Inforum',
-                        textAlign: TextAlign.left,
-                        style: new TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            height: 1.1, //行高
-                            fontSize: 50),
-                      ),
+                    child: Text(
+                      widget.title,
+                      textAlign: TextAlign.left,
+                      style: new TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          height: 1.1, //行高
+                          fontSize: 40),
                     ),
                     alignment: Alignment.centerLeft,
                   ),
@@ -115,44 +112,53 @@ class _MainPageState extends State<MainPage> {
                       direction: Axis.vertical,
                       children: [
                         Container(
-                          child: state==0?Text(
-                            '\n来体验一下全新的论坛app\n',
-                            textAlign: TextAlign.left,
-                            style: new TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                height: 1.1, //行高
-                                fontSize: 25),
-                          ):null,
-                          alignment: Alignment.centerLeft,
-                        ),
-                        Container(child: state==0?Row(
-                          children: [
-                            Text(
-                              '已有账号? 点此',
-                              style: new TextStyle(
-                                  fontSize: 15, color: Colors.white),
-                            ),
-                            Container(
-                              width: 40,
-                              height: 25,
-                              child: FlatButton(
-                                onPressed: btnLoginClick,
-                                child: Text(
-                                  '登录',
+                          child: state == 0
+                              ? Text(
+                                  '\n来体验一下全新的论坛app\n',
                                   textAlign: TextAlign.left,
                                   style: new TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.lightBlue,
-                                  ),
-                                ),
-                                padding: EdgeInsets.all(0),
-                              ),
-                            )
-                          ],
-                        ):null),
-                        Container(child: state==1?LoginPage():null,),
-                        Container(child: state==2?RegPage():null,)
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.1, //行高
+                                      fontSize: 25),
+                                )
+                              : null,
+                          alignment: Alignment.centerLeft,
+                        ),
+                        Container(
+                            child: state == 0
+                                ? Row(
+                                    children: [
+                                      Text(
+                                        '已有账号? 点此',
+                                        style: new TextStyle(
+                                            fontSize: 15, color: Colors.white),
+                                      ),
+                                      Container(
+                                        width: 40,
+                                        height: 25,
+                                        child: FlatButton(
+                                          onPressed: btnLoginClick,
+                                          child: Text(
+                                            '登录',
+                                            textAlign: TextAlign.left,
+                                            style: new TextStyle(
+                                              fontSize: 15,
+                                              color: Colors.lightBlue,
+                                            ),
+                                          ),
+                                          padding: EdgeInsets.all(0),
+                                        ),
+                                      )
+                                    ],
+                                  )
+                                : null),
+                        Container(
+                          child: state == 1 ? LoginPage() : null,
+                        ),
+                        Container(
+                          child: state == 2 ? RegPage() : null,
+                        )
                       ],
                     ),
                   )

@@ -26,22 +26,18 @@ class _PrimaryPage extends State<PrimaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: RefreshIndicator(
-        strokeWidth: 2.5,
-        onRefresh: _refresh,
-        child: Container(
-          child: ListView(
-            children: _list,
-          ),
-        ),
+    return RefreshIndicator(
+      strokeWidth: 2.5,
+      onRefresh: _refresh,
+      child: ListView(
+        controller: PrimaryScrollController.of(context),
+        children: _list,
       ),
     );
   }
 
   Future<void> _refresh() async {
     await _getStream();
-    return;
   }
 
   _getStream() {

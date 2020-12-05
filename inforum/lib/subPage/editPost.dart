@@ -63,8 +63,6 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   @override
   void initState() {
-    titleController.addListener(txtListener);
-    contentController.addListener(txtListener);
     if (widget.mode == 0) {
       getDraft();
     }
@@ -72,6 +70,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
       titleController.text = widget.titleText;
       contentController.text = widget.contentText;
     }
+    titleController.addListener(txtListener);
+    contentController.addListener(txtListener);
     //TODO:非新建状态下导入标签
     // for(var i in ){
     //   tagChips.add()

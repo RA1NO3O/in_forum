@@ -7,6 +7,10 @@ import 'package:inforum/subPage/messagePage.dart';
 import 'package:inforum/subPage/primaryPage.dart';
 import 'package:inforum/subPage/searchPage.dart';
 import 'package:inforum/subPage/userPage.dart';
+// import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'main.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userId;
@@ -27,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Color _currentColor = Colors.blue;
   IconData _actionIcon = Icons.post_add;
   PageController _pageController;
+  ScrollController _scrollController;
 
   void pageChanged() {
     switch (_currentIndex) {
@@ -52,7 +57,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
+    _pageController = PageController(initialPage: 0);
+    _scrollController = ScrollController();
+    _scrollController.addListener(() { });
   }
 
   @override
@@ -185,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ListTile(
                       leading: Icon(Icons.login_rounded),
                       title: Text('登出'),
-                      onTap: () {},
+                      onTap: logOut,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5)),
                     ),
@@ -239,33 +246,26 @@ class _HomeScreenState extends State<HomeScreen> {
         //   ],
         // ),
         child: NestedScrollView(
+          controller: _scrollController,
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
-              SliverOverlapAbsorber(
-                handle:
-                    NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                sliver: SliverAppBar(
-                  backgroundColor: Color(0xFFFAFAFA),
-                  brightness: Brightness.light,
-                  iconTheme: IconThemeData(color: Colors.black),
-                  elevation: 5,
-                  title: Hero(
-                    tag: 'title',
-                    child: Text(
-                      'Inforum',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                  centerTitle: true,
-                  floating: true,
-                  forceElevated: innerBoxIsScrolled,
+              SliverAppBar(
+                backgroundColor: Color(0xFFFAFAFA),
+                brightness: Brightness.light,
+                iconTheme: IconThemeData(color: Colors.black),
+                elevation: 5,
+                title: Text(
+                  'Inforum',
+                  style: TextStyle(color: Colors.black),
                 ),
-              )
+                snap: true,
+                centerTitle: true,
+                floating: true,
+                forceElevated: innerBoxIsScrolled,
+              ),
             ];
           },
           body: PageView(
-
-            physics: NeverScrollableScrollPhysics(),
             controller: _pageController,
             onPageChanged: (index) {
               setState(() {
@@ -274,9 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
             children: <Widget>[
-              PrimaryPage(
-                userId: widget.userId.isEmpty ? '' : widget.userId,
-              ),
+              PrimaryPage(userId: widget.userId.isEmpty ? '' : widget.userId),
               MessagePage(),
               SearchPage(),
               NotificationPage(),
@@ -333,5 +331,16 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           : null,
     );
+  }
+
+  Future<void> logOut() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    sp.setBool('isLogin', false);
+    Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (BuildContext context) {
+          return MainPage(
+            title:'欢迎回来'
+          );
+        }), result: "null");
   }
 }
