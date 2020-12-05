@@ -7,6 +7,7 @@ import 'package:inforum/subPage/messagePage.dart';
 import 'package:inforum/subPage/primaryPage.dart';
 import 'package:inforum/subPage/searchPage.dart';
 import 'package:inforum/subPage/userPage.dart';
+
 // import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,6 +21,7 @@ class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Color(0xAAFAFAFA),
         systemNavigationBarColor: Color(0xFFFAFAFA),
         statusBarIconBrightness: Brightness.dark));
     return _HomeScreenState();
@@ -59,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _pageController = PageController(initialPage: 0);
     _scrollController = ScrollController();
-    _scrollController.addListener(() { });
+    _scrollController.addListener(() {});
   }
 
   @override
@@ -69,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context0) {
     var bottomNavigationBarItems = <BottomNavigationBarItem>[
       BottomNavigationBarItem(
         icon: Icon(
@@ -192,7 +194,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     ListTile(
                       leading: Icon(Icons.login_rounded),
                       title: Text('登出'),
-                      onTap: logOut,
+                      onTap: () async {
+                        bool i = await logOutDialog();
+                        if (i) {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) => MainPage(
+                                        title: 'Inforum',
+                                      )));
+                        }
+                      },
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5)),
                     ),
@@ -202,49 +214,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: PageTransitionSwitcher(
-        // child: CustomScrollView(
-        //   controller: _pageController,
-        //   slivers: <Widget>[
-        //     SliverAppBar(
-        //       backgroundColor: Color(0xFFFAFAFA),
-        //       brightness: Brightness.light,
-        //       iconTheme: IconThemeData(color: Colors.black),
-        //       elevation: 5,
-        //       title: Hero(
-        //         tag: 'title',
-        //         child: Text(
-        //           'Inforum',
-        //           style: TextStyle(color: Colors.black),
-        //         ),
-        //       ),
-        //       centerTitle: true,
-        //       floating: true,
-        //     ),
-        //     SliverToBoxAdapter(
-        //       child: SizedBox(
-        //         height: 715,
-        //         child: PageView(
-        //           physics: NeverScrollableScrollPhysics(),
-        //           controller: _pageController,
-        //           onPageChanged: (index) {
-        //             setState(() {
-        //               _currentIndex = index;
-        //               pageChanged();
-        //             });
-        //           },
-        //           children: <Widget>[
-        //             PrimaryPage(
-        //               userId: widget.userId.isEmpty?'':widget.userId,
-        //             ),
-        //             MessagePage(),
-        //             SearchPage(),
-        //             NotificationPage(),
-        //           ],
-        //         ),
-        //       )
-        //     )
-        //   ],
-        // ),
         child: NestedScrollView(
           controller: _scrollController,
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -333,14 +302,42 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> logOut() async {
+  Future<bool> logOutDialog() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    sp.setBool('isLogin', false);
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) {
-          return MainPage(
-            title:'欢迎回来'
+    bool result = await showDialog<bool>(
+        context: context,
+        barrierDismissible: true, //是否可点按空白处退出对话框
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Column(
+              children: [
+                Icon(
+                  Icons.warning_rounded,
+                  size: 40,
+                  color: Colors.grey,
+                ),
+                Text('确定要退出账号吗?')
+              ],
+            ),
+            actions: <Widget>[
+              FlatButton.icon(
+                  textColor: Colors.redAccent,
+                  onPressed: () {
+                    sp.setBool('isLogin', false);
+                    Navigator.of(context).pop(true);
+                  },
+                  icon: Icon(Icons.done_rounded),
+                  label: Text('是')),
+              FlatButton.icon(
+                  textColor: Colors.blue,
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  icon: Icon(Icons.close_rounded),
+                  label: Text('手滑了')),
+            ],
           );
-        }), result: "null");
+        });
+    return result;
   }
 }

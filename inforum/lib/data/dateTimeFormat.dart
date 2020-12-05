@@ -2,21 +2,20 @@ class DateTimeFormat {
   static handleDate(String oldTime) {
     String nowTime =
         new DateTime.now().toString().split('.')[0].replaceAll('-', '/');
-    print(nowTime);
-    int nowyear = int.parse(nowTime.split(" ")[0].split('/')[0]);
-    int nowmonth = int.parse(nowTime.split(" ")[0].split('/')[1]);
-    int nowday = int.parse(nowTime.split(" ")[0].split('/')[2]);
-    int nowhour = int.parse(nowTime.split(" ")[1].split(':')[0]);
-    int nowmin = int.parse(nowTime.split(" ")[1].split(':')[1]);
+    int nowYear = int.parse(nowTime.split(" ")[0].split('/')[0]);
+    int nowMonth = int.parse(nowTime.split(" ")[0].split('/')[1]);
+    int nowDay = int.parse(nowTime.split(" ")[0].split('/')[2]);
+    int nowHour = int.parse(nowTime.split(" ")[1].split(':')[0]);
+    int nowMinute = int.parse(nowTime.split(" ")[1].split(':')[1]);
 
-    int oldyear = int.parse(oldTime.split(" ")[0].split('/')[0]);
-    int oldmonth = int.parse(oldTime.split(" ")[0].split('/')[1]);
-    int oldday = int.parse(oldTime.split(" ")[0].split('/')[2]);
-    int oldhour = int.parse(oldTime.split(" ")[1].split(':')[0]);
-    int oldmin = int.parse(oldTime.split(" ")[1].split(':')[1]);
+    int oldYear = int.parse(oldTime.split(" ")[0].split('/')[0]);
+    int oldMonth = int.parse(oldTime.split(" ")[0].split('/')[1]);
+    int oldDay = int.parse(oldTime.split(" ")[0].split('/')[2]);
+    int oldHour = int.parse(oldTime.split(" ")[1].split(':')[0]);
+    int oldMinute = int.parse(oldTime.split(" ")[1].split(':')[1]);
 
-    var now = new DateTime(nowyear, nowmonth, nowday, nowhour, nowmin);
-    var old = new DateTime(oldyear, oldmonth, oldday, oldhour, oldmin);
+    var now = new DateTime(nowYear, nowMonth, nowDay, nowHour, nowMinute);
+    var old = new DateTime(oldYear, oldMonth, oldDay, oldHour, oldMinute);
     var difference = now.difference(old);
     if (difference.inDays > 1 && difference.inDays < 10) {
       return (difference.inDays).toString() + '天前';
@@ -29,6 +28,6 @@ class DateTimeFormat {
     } else if (difference.inMinutes <= 5) {
       return '刚刚';
     }
-    return '${oldyear}/${oldmonth}/${oldday}';
+    return '$oldYear/$oldMonth/$oldDay';
   }
 }

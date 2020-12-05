@@ -65,7 +65,10 @@ class _ForumListItem extends State<ForumListItem> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Divider(thickness: 1,height: 1,),
+        Divider(
+          thickness: 1,
+          height: 1,
+        ),
         Container(
           padding: EdgeInsets.all(15.0),
           child: Container(
@@ -142,7 +145,7 @@ class _ForumListItem extends State<ForumListItem> {
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(5),
                                 child: Hero(
-                                  tag: 'imgThumbnail',
+                                  tag: 'img',
                                   child: Image.asset(
                                     widget.imgThumbnail,
                                     fit: BoxFit.fitWidth,

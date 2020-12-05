@@ -154,12 +154,13 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Hero(
-                  tag: 'imgThumbnail',
+                  tag: 'img',
                   child: Image.asset(
                     widget.imgThumbnail,
                     fit: BoxFit.fitWidth,
                   ),
-                ))
+                ),
+              )
             : null,
       ),
       Divider(thickness: 2),
@@ -211,7 +212,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
         backgroundColor: Color(0xFFFAFAFA),
         brightness: Brightness.light,
         iconTheme: IconThemeData(color: Colors.black),
-        title: const Text('帖子',style: TextStyle(color: Colors.black)),
+        title: const Text('帖子', style: TextStyle(color: Colors.black)),
         actions: [
           isAuthor
               ? new Row(
@@ -322,5 +323,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     });
   }
 
-  void getComments() {}
+  void getComments() {
+    //TODO:获取回复List
+  }
 }

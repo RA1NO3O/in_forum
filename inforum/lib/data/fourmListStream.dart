@@ -23,7 +23,7 @@ class ForumListStream {
         authorName: 'レエイン',
         imgAuthor: 'images/test.jpg',
         isAuthor: true,
-        time: '2020/12/03 16:59:00',
+        time: '2020/12/05 15:02:16',
       ),
       ForumListItem(
         forumID: 2,

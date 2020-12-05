@@ -103,7 +103,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
             backgroundColor: Color(0xFFFAFAFA),
             brightness: Brightness.light,
             iconTheme: IconThemeData(color: Colors.black),
-            title: const Text('编辑帖子',style: TextStyle(color: Colors.black),),
+            title: const Text(
+              '编辑帖子',
+              style: TextStyle(color: Colors.black),
+            ),
             actions: [
               edited
                   ? _SaveButton(
@@ -227,7 +230,19 @@ class _EditPostScreenState extends State<EditPostScreen> {
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text('要保存为草稿吗?'),
+              title: Column(
+                children: [
+                  Icon(
+                    Icons.help_rounded,
+                    size: 40,
+                    color: Colors.grey,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 10),
+                    child: Text('要保存为草稿吗?'),
+                  )
+                ],
+              ),
               actions: <Widget>[
                 _SaveButton(
                   style: 1,
@@ -236,7 +251,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   tags: tags,
                 ),
                 FlatButton.icon(
-                  textColor: Colors.red,
+                  textColor: Colors.redAccent,
                   icon: Icon(Icons.delete_rounded),
                   label: Text('舍弃'),
                   onPressed: () {
