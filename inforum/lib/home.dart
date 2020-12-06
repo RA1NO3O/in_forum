@@ -306,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
     SharedPreferences sp = await SharedPreferences.getInstance();
     bool result = await showDialog<bool>(
         context: context,
-        barrierDismissible: true, //是否可点按空白处退出对话框
+        barrierDismissible: false, //是否可点按空白处退出对话框
         builder: (BuildContext context) {
           return AlertDialog(
             title: Column(

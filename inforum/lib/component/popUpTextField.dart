@@ -28,10 +28,10 @@ class PopUpTextField extends StatelessWidget {
               padding: EdgeInsets.only(left: 16,top: 8,bottom: 8,right: 16),
               child:  Container(
                 decoration: BoxDecoration(
-                    color: Colors.white
+                    color: Color(0xFFFAFAFA)
                 ),
 
-                child: TextField(
+                child: TextFormField(
                   controller: controller,
                   autofocus: true,
                   style: TextStyle(
@@ -42,7 +42,6 @@ class PopUpTextField extends StatelessWidget {
                   keyboardType: TextInputType.multiline,
                   onEditingComplete: (){
                     //点击发送调用
-                    print('onEditingComplete');
                     onEditingCompleteText(controller.text);
                     Navigator.pop(context);
 

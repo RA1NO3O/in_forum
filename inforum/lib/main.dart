@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
+import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/foundation.dart';
@@ -51,7 +52,15 @@ class MainPage extends StatefulWidget {
   MainPage({Key key, this.title}) : super(key: key);
 
   @override
-  _MainPageState createState() => _MainPageState();
+  _MainPageState createState() {
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          systemNavigationBarColor: Color(0x00000000),
+          statusBarIconBrightness: Brightness.light),
+    );
+    return _MainPageState();
+  }
 }
 
 class _MainPageState extends State<MainPage> {
@@ -89,81 +98,93 @@ class _MainPageState extends State<MainPage> {
             ],
           ),
           //布局
-          new Container(
-              margin: const EdgeInsets.only(
-                  left: 30.0, top: 50.0, bottom: 30.0, right: 30.0),
-              child: Column(
-                children: [
-                  new Container(
-                    child: Text(
-                      widget.title,
-                      textAlign: TextAlign.left,
-                      style: new TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          height: 1.1, //行高
-                          fontSize: 40),
-                    ),
-                    alignment: Alignment.centerLeft,
-                  ),
-                  AnimatedContainer(
-                    duration: Duration(milliseconds: 500),
-                    child: Flex(
-                      direction: Axis.vertical,
-                      children: [
-                        Container(
-                          child: state == 0
-                              ? Text(
-                                  '\n来体验一下全新的论坛app\n',
-                                  textAlign: TextAlign.left,
-                                  style: new TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.1, //行高
-                                      fontSize: 25),
-                                )
-                              : null,
-                          alignment: Alignment.centerLeft,
-                        ),
-                        Container(
+          SafeArea(
+              child: Container(
+                  margin: EdgeInsets.all(30),
+                  alignment: Alignment.center,
+                  child: Container(
+                    height: 600,
+                    child: Scaffold(
+                      appBar: AppBar(
+                        iconTheme: IconThemeData(color: Colors.black),
+                        backgroundColor: Colors.white,
+                        title: Text(widget.title,style: TextStyle(color: Colors.black),),
+                        leading: state != 0
+                            ? IconButton(
+                                icon: Icon(Icons.arrow_back),
+                                onPressed: () {
+                                  setState(() {
+                                    state = 0;
+                                  });
+                                },
+                              )
+                            : null,
+                      ),
+                      backgroundColor: Colors.transparent,
+                      body: Column(
+                        children: [
+                          PageTransitionSwitcher(
+                            duration: const Duration(milliseconds: 500),
+                            reverse: state == 0,
+                            transitionBuilder:
+                                (child, animation, secondaryAnimation) {
+                              return SharedAxisTransition(
+                                child: child,
+                                animation: animation,
+                                secondaryAnimation: secondaryAnimation,
+                                transitionType:
+                                    SharedAxisTransitionType.horizontal,
+                              );
+                            },
                             child: state == 0
-                                ? Row(
+                                ? Column(
                                     children: [
-                                      Text(
-                                        '已有账号? 点此',
-                                        style: new TextStyle(
-                                            fontSize: 15, color: Colors.white),
+                                      Container(
+                                        margin: EdgeInsets.only(
+                                            top: 40, bottom: 20),
+                                        child: Text(
+                                          '来体验一下全新的论坛app\n',
+                                          style: new TextStyle(fontSize: 22),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                        alignment: Alignment.center,
                                       ),
                                       Container(
-                                        width: 40,
-                                        height: 25,
-                                        child: FlatButton(
-                                          onPressed: btnLoginClick,
-                                          child: Text(
-                                            '登录',
-                                            textAlign: TextAlign.left,
-                                            style: new TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.lightBlue,
+                                        margin: EdgeInsets.only(bottom: 80),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text('已有账号? 点此'),
+                                            Container(
+                                              width: 40,
+                                              height: 25,
+                                              child: FlatButton(
+                                                onPressed: btnLoginClick,
+                                                child: Text(
+                                                  '登录',
+                                                  textAlign: TextAlign.left,
+                                                  style: new TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.lightBlue,
+                                                  ),
+                                                ),
+                                                padding: EdgeInsets.all(0),
+                                              ),
                                             ),
-                                          ),
-                                          padding: EdgeInsets.all(0),
+                                          ],
                                         ),
-                                      )
+                                      ),
                                     ],
                                   )
-                                : null),
-                        Container(
-                          child: state == 1 ? LoginPage() : null,
-                        ),
-                        Container(
-                          child: state == 2 ? RegPage() : null,
-                        )
-                      ],
+                                : state == 1
+                                    ? LoginPage()
+                                    : RegPage(),
+                          ),
+                        ],
+                      ),
                     ),
-                  )
-                ],
-              )),
+                  ))),
         ],
       ),
       floatingActionButton: state == 0
