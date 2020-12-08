@@ -5,8 +5,10 @@ import 'package:inforum/data/fourmListStream.dart';
 
 class PrimaryPage extends StatefulWidget {
   final String userId;
+  final ScrollController scrollController;
 
-  const PrimaryPage({Key key, this.userId}) : super(key: key);
+  const PrimaryPage({Key key, this.userId, this.scrollController})
+      : super(key: key);
 
   @override
   _PrimaryPage createState() {
@@ -29,7 +31,7 @@ class _PrimaryPage extends State<PrimaryPage> {
       strokeWidth: 2.5,
       onRefresh: _refresh,
       child: ListView(
-        controller: PrimaryScrollController.of(context),
+        controller: widget.scrollController,
         children: _list,
       ),
     );

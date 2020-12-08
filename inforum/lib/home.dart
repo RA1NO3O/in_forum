@@ -62,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _pageController = PageController(initialPage: 0);
     _scrollController = ScrollController();
-    _scrollController.addListener(() {});
   }
 
   @override
@@ -108,54 +107,63 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       drawer: mainDrawer(),
       body: SafeArea(
-          child: PageTransitionSwitcher(
-        child: NestedScrollView(
-          controller: _scrollController,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                backgroundColor: Color(0xFFFAFAFA),
-                brightness: Brightness.light,
-                iconTheme: IconThemeData(color: Colors.black),
-                elevation: 5,
-                title: Hero(
-                  tag: 'title',
-                  child: Text(
-                    'Inforum',
-                    style: titleTextStyle(),
+        child: PageTransitionSwitcher(
+          child: NestedScrollView(
+            controller: _scrollController,
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                SliverAppBar(
+                  backgroundColor: Color(0xFFFAFAFA),
+                  brightness: Brightness.light,
+                  iconTheme: IconThemeData(color: Colors.black),
+                  elevation: 5,
+                  title: InkWell(
+                    onDoubleTap: (){
+                      setState(() {
+                        _scrollController.animateTo(.0, duration: Duration(milliseconds: 300), curve: Curves.ease);
+                      });
+                    },
+                    child: Hero(
+                      tag: 'title',
+                      child: Text(
+                        'Inforum',
+                        style: titleTextStyle(),
+                      ),
+                    ),
                   ),
+                  snap: true,
+                  centerTitle: true,
+                  floating: true,
+                  forceElevated: innerBoxIsScrolled,
                 ),
-                snap: true,
-                centerTitle: true,
-                floating: true,
-                forceElevated: innerBoxIsScrolled,
-              ),
-            ];
-          },
-          body: PageView(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentIndex = index;
-                pageChanged();
-              });
+              ];
             },
-            children: <Widget>[
-              PrimaryPage(userId: widget.userId.isEmpty ? '' : widget.userId),
-              MessagePage(),
-              SearchPage(),
-              NotificationPage(),
-            ],
+            body: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentIndex = index;
+                  pageChanged();
+                });
+              },
+              children: <Widget>[
+                PrimaryPage(userId: widget.userId.isEmpty ? '' : widget.userId),
+                MessagePage(),
+                SearchPage(),
+                NotificationPage(),
+              ],
+            ),
           ),
+          transitionBuilder: (child, animation, secondaryAnimation) {
+            return FadeThroughTransition(
+              child: child,
+              animation: animation,
+              secondaryAnimation: secondaryAnimation,
+            );
+          },
         ),
-        transitionBuilder: (child, animation, secondaryAnimation) {
-          return FadeThroughTransition(
-            child: child,
-            animation: animation,
-            secondaryAnimation: secondaryAnimation,
-          );
-        },
-      )),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         fixedColor: _currentColor,
         currentIndex: _currentIndex,
