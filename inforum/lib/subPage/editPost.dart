@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:inforum/component/popUpTextField.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditPostScreen extends StatefulWidget {
@@ -109,11 +108,15 @@ class _EditPostScreenState extends State<EditPostScreen> {
             ),
             actions: [
               edited
-                  ? _SaveButton(
-                      title: titleController.text,
-                      content: contentController.text,
-                      tags: tags,
-                      style: 0,
+                  ? IconButton(
+                      icon: Icon(Icons.save),
+                      onPressed: () {
+                        save(
+                            titleController.text, contentController.text, tags);
+                        Scaffold.of(context)
+                            .showSnackBar(SnackBar(content: Text('已存为草稿.')));
+                      },
+                      tooltip: '存为草稿',
                     )
                   : IconButton(
                       icon: Icon(Icons.save_rounded),
@@ -211,14 +214,14 @@ class _EditPostScreenState extends State<EditPostScreen> {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String dt = sp.getString('draft_title');
     String dc = sp.getString('draft_content');
-    List<String> dtags = sp.getStringList('draft_tags');
+    List<String> dTags = sp.getStringList('draft_tags');
 
     bool isAllEmpty = titleController.text.trim().isEmpty &&
         contentController.text.trim().isEmpty &&
         tags.isEmpty;
     bool isNotChanged = titleController.text == dt &&
         contentController.text == dc &&
-        IterableEquality().equals(tags, dtags);
+        IterableEquality().equals(tags, dTags);
     //如果没有改动内容或内容为空,不拦截退出
     if (widget.mode == 1 &&
         titleController.text == widget.titleText &&
@@ -230,7 +233,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
         return Future<bool>.value(true);
       }
     }
-    return showDialog(
+    bool result = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
               title: Column(
@@ -247,11 +250,13 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 ],
               ),
               actions: <Widget>[
-                _SaveButton(
-                  style: 1,
-                  title: titleController.text,
-                  content: contentController.text,
-                  tags: tags,
+                FlatButton.icon(
+                  icon: Icon(Icons.save),
+                  label: Text('保存'),
+                  onPressed: () {
+                    save(titleController.text, contentController.text, tags);
+                    Navigator.pop(context, true);
+                  },
                 ),
                 FlatButton.icon(
                   textColor: Colors.redAccent,
@@ -267,6 +272,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 ),
               ],
             ));
+    if (result == null) {
+      return false;
+    }
+    return result;
   }
 
   @override
@@ -277,44 +286,11 @@ class _EditPostScreenState extends State<EditPostScreen> {
     contentController.dispose();
     super.dispose();
   }
-}
 
-class _SaveButton extends StatelessWidget {
-  final String title;
-  final String content;
-  final int style;
-  final List<String> tags;
-
-  const _SaveButton({Key key, this.title, this.content, this.style, this.tags})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    if (style == 0) {
-      return new IconButton(
-        icon: Icon(Icons.save),
-        onPressed: () {
-          save(context, title, content, tags);
-        },
-        tooltip: '存为草稿',
-      );
-    }
-    return FlatButton.icon(
-      icon: Icon(Icons.save),
-      label: Text('保存'),
-      onPressed: () {
-        save(context, title, content, tags);
-        Navigator.pop(context, true);
-      },
-    );
-  }
-
-  Future<void> save(BuildContext context, String title, String content,
-      List<String> tags) async {
+  Future<void> save(String title, String content, List<String> tags) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     sp.setString('draft_title', title);
     sp.setString('draft_content', content);
     sp.setStringList('draft_tags', tags);
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text('已存为草稿.')));
   }
 }

@@ -107,7 +107,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       drawer: mainDrawer(),
-      body: PageTransitionSwitcher(
+      body: SafeArea(
+          child: PageTransitionSwitcher(
         child: NestedScrollView(
           controller: _scrollController,
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -154,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
             secondaryAnimation: secondaryAnimation,
           );
         },
-      ),
+      )),
       bottomNavigationBar: BottomNavigationBar(
         fixedColor: _currentColor,
         currentIndex: _currentIndex,

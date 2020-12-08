@@ -92,7 +92,7 @@ class _ForumListItem extends State<ForumListItem> {
   Widget build(BuildContext context) {
     _getTagWidgets();
     return Card(
-      margin: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+      margin: EdgeInsets.only(left: 10, right: 10, bottom: 5,top: 5),
       elevation: 1,
       child: Column(
         children: [
