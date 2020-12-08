@@ -32,7 +32,7 @@ class _RegPage extends State<RegPage> {
     return Container(
       alignment: Alignment.center,
       width: 350,
-      height: 500,
+      height: 350,
       child: Column(
         children: [
           //卡片内容

@@ -6,6 +6,7 @@ import 'package:inforum/subPage/editPost.dart';
 import 'package:inforum/subPage/messagePage.dart';
 import 'package:inforum/subPage/primaryPage.dart';
 import 'package:inforum/subPage/searchPage.dart';
+import 'package:inforum/subPage/settingsPage.dart';
 import 'package:inforum/subPage/userPage.dart';
 
 // import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
@@ -105,114 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     return Scaffold(
-      drawer: new Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            Container(
-              height: 230,
-              child: DrawerHeader(
-                child: Column(
-                  children: [
-                    Material(
-                      elevation: 3,
-                      shape: CircleBorder(),
-                      clipBehavior: Clip.hardEdge,
-                      color: Colors.transparent,
-                      child: Ink.image(
-                        image: AssetImage('images/test.jpg'),
-                        fit: BoxFit.cover,
-                        width: 85,
-                        height: 85,
-                        child: InkWell(
-                          onTap: () {},
-                        ),
-                      ),
-                    ),
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.only(top: 5),
-                      child: Text(
-                        widget.userId.isEmpty ? 'User' : widget.userId,
-                        style: new TextStyle(fontSize: 32),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 5),
-                      child: Row(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(right: 10),
-                            child: Text('123',
-                                style: new TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                          ),
-                          Text('正在关注'),
-                          Container(
-                            margin: EdgeInsets.only(left: 20, right: 10),
-                            child: Text('98',
-                                style: new TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                          ),
-                          Text('关注者')
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Container(
-                margin: EdgeInsets.only(left: 5, right: 5),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.star_rounded),
-                      title: Text('收藏'),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                      onTap: () {},
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.help_rounded),
-                      title: Text('帮助'),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                      onTap: () {},
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.settings),
-                      title: Text('设置'),
-                      onTap: () {},
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.login_rounded),
-                      title: Text('登出'),
-                      onTap: () async {
-                        bool i = await logOutDialog();
-                        if (i) {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) => MainPage(
-                                        title: 'Inforum',
-                                      )));
-                        }
-                      },
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                    ),
-                  ],
-                )),
-          ],
-        ),
-      ),
+      drawer: mainDrawer(),
       body: PageTransitionSwitcher(
         child: NestedScrollView(
           controller: _scrollController,
@@ -223,9 +117,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 brightness: Brightness.light,
                 iconTheme: IconThemeData(color: Colors.black),
                 elevation: 5,
-                title: Text(
-                  'Inforum',
-                  style: TextStyle(color: Colors.black),
+                title: Hero(
+                  tag: 'title',
+                  child: Text(
+                    'Inforum',
+                    style: titleTextStyle(),
+                  ),
                 ),
                 snap: true,
                 centerTitle: true,
@@ -302,11 +199,131 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  //抽屉
+  Widget mainDrawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          Container(
+            height: 230,
+            child: DrawerHeader(
+              child: Column(
+                children: [
+                  Material(
+                    elevation: 3,
+                    shape: CircleBorder(),
+                    clipBehavior: Clip.hardEdge,
+                    color: Colors.transparent,
+                    child: Ink.image(
+                      image: AssetImage('images/test.jpg'),
+                      fit: BoxFit.cover,
+                      width: 85,
+                      height: 85,
+                      child: InkWell(
+                        onTap: () {},
+                      ),
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    margin: EdgeInsets.only(top: 5),
+                    child: Text(
+                      widget.userId.isEmpty ? 'User' : widget.userId,
+                      style: new TextStyle(fontSize: 32),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 5),
+                    child: Row(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(right: 10),
+                          child: Text('123',
+                              style: new TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              )),
+                        ),
+                        Text('正在关注'),
+                        Container(
+                          margin: EdgeInsets.only(left: 20, right: 10),
+                          child: Text('98',
+                              style: new TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              )),
+                        ),
+                        Text('关注者')
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          Container(
+              margin: EdgeInsets.only(left: 5, right: 5),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.star_rounded),
+                    title: Text('收藏'),
+                    shape: roundedRectangleBorder,
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.help_rounded),
+                    title: Text('帮助'),
+                    shape: roundedRectangleBorder,
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.settings),
+                    title: Text('设置'),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return SettingsPage();
+                      }));
+                    },
+                    shape: roundedRectangleBorder,
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.login_rounded),
+                    title: Text('登出'),
+                    onTap: () async {
+                      bool i = await logOutDialog();
+                      if (i) {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) => MainPage(
+                                      title: 'Inforum',
+                                    )));
+                      }
+                    },
+                    shape: roundedRectangleBorder,
+                  ),
+                ],
+              )),
+        ],
+      ),
+    );
+  }
+
+  RoundedRectangleBorder roundedRectangleBorder =
+      RoundedRectangleBorder(borderRadius: BorderRadius.circular(5));
+
+  TextStyle titleTextStyle() => Theme.of(context)
+      .primaryTextTheme
+      .caption
+      .copyWith(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black);
+
   Future<bool> logOutDialog() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     bool result = await showDialog<bool>(
         context: context,
-        barrierDismissible: false, //是否可点按空白处退出对话框
         builder: (BuildContext context) {
           return AlertDialog(
             title: Column(
@@ -338,6 +355,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           );
         });
+    if (result == null) {
+      return false;
+    }
     return result;
   }
 }

@@ -18,6 +18,7 @@ class ForumDetailPage extends StatefulWidget {
   final String authorName;
   final String imgAuthor;
   final bool isAuthor;
+  final List<String> tags;
 
   const ForumDetailPage(
       {Key key,
@@ -32,7 +33,8 @@ class ForumDetailPage extends StatefulWidget {
       this.authorName,
       this.imgAuthor,
       this.isAuthor,
-      this.forumID})
+      this.forumID,
+      this.tags})
       : super(key: key);
 
   @override
@@ -47,6 +49,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   int commentCount;
   SharedPreferences sp;
   bool isAuthor;
+  List<String> tagStrings;
+  List<Widget> tagWidgets;
 
   @override
   void initState() {
@@ -62,6 +66,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    _getTagWidgets();
     List<Widget> forumDetailUI = [
       Container(
         height: 70,
@@ -130,22 +135,15 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
             style: new TextStyle(fontSize: 18),
           )),
       new Container(
-        margin: EdgeInsets.only(left: 25, right: 25),
-        child: Row(
-          children: [
-            Chip(
-              avatar: const Icon(
-                Icons.tag,
-                color: Colors.blue,
-              ),
-              label: Text(
-                '标签',
-                style: new TextStyle(color: Colors.blue),
-              ),
-              backgroundColor: Color(0xffFFFFFF),
-            ),
-          ],
-        ),
+        margin: EdgeInsets.only(left: 25, right: 25,top: 5,bottom: 5),
+        alignment: Alignment.centerLeft,
+        child: tagWidgets != null
+            ? Wrap(
+                spacing: 5,
+                runSpacing: 1,
+                children: tagWidgets,
+              )
+            : null,
       ),
       Container(
         margin: EdgeInsets.only(left: 25, right: 25, bottom: 5),
@@ -225,6 +223,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                         return EditPostScreen(
                           titleText: widget.titleText,
                           contentText: widget.contentText,
+                          tags: widget.tags,
                           mode: 1,
                         );
                       })),
@@ -321,6 +320,29 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
           break;
       }
     });
+  }
+
+  void _getTagWidgets() {
+    tagWidgets = [];
+    tagStrings = widget.tags;
+    if (tagStrings != null) {
+      tagWidgets.addAll(tagStrings
+          .map((e) => Container(
+                height: 32,
+                child: Chip(
+                  avatar: const Icon(
+                    Icons.tag,
+                    color: Colors.blue,
+                  ),
+                  label: Text(
+                    '$e',
+                    style: new TextStyle(color: Colors.blue),
+                  ),
+                  backgroundColor: Color(0xffF8F8F8),
+                ),
+              ))
+          .toList());
+    }
   }
 
   void getComments() {

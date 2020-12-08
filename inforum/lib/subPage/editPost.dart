@@ -29,6 +29,22 @@ class _EditPostScreenState extends State<EditPostScreen> {
   String draftContent;
   List<String> draftTags;
 
+  @override
+  void initState() {
+    if (widget.mode == 0) {
+      getDraft();
+    }
+    if (widget.mode == 1) {
+      titleController.text = widget.titleText;
+      contentController.text = widget.contentText;
+      tags.addAll(widget.tags);
+    }
+    titleController.addListener(txtListener);
+    contentController.addListener(txtListener);
+
+    super.initState();
+  }
+
   void refreshTagList() {
     tagChips = [
       Container(
@@ -59,25 +75,9 @@ class _EditPostScreenState extends State<EditPostScreen> {
               ),
             ))
         .toList());
-  }
-
-  @override
-  void initState() {
-    if (widget.mode == 0) {
-      getDraft();
+    if (tags != widget.tags) {
+      edited = true;
     }
-    if (widget.mode == 1) {
-      titleController.text = widget.titleText;
-      contentController.text = widget.contentText;
-    }
-    titleController.addListener(txtListener);
-    contentController.addListener(txtListener);
-    //TODO:非新建状态下导入标签
-    // for(var i in ){
-    //   tagChips.add()
-    // }
-
-    super.initState();
   }
 
   Future<void> getDraft() async {
@@ -103,8 +103,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
             backgroundColor: Color(0xFFFAFAFA),
             brightness: Brightness.light,
             iconTheme: IconThemeData(color: Colors.black),
-            title: const Text(
-              '编辑帖子',
+            title: Text(
+              widget.mode == 0 ? '新帖子' : '编辑帖子',
               style: TextStyle(color: Colors.black),
             ),
             actions: [
@@ -129,63 +129,66 @@ class _EditPostScreenState extends State<EditPostScreen> {
               )
             ],
           ),
-          body: Container(
-            margin: EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 10),
-            child: Flex(
-              direction: Axis.vertical,
-              children: [
-                new TextFormField(
-                  maxLength: 128,
-                  style:
-                      new TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  controller: titleController,
-                  decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.title),
-                      labelText: '标题',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0))),
+          body: ListView(
+            children: [
+              Container(
+                margin:
+                    EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 10),
+                child: Flex(
+                  direction: Axis.vertical,
+                  children: [
+                    new TextFormField(
+                      maxLength: 128,
+                      style: new TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                      controller: titleController,
+                      decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.title),
+                          labelText: '标题',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0))),
+                    ),
+                    Container(
+                      constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height),
+                      margin: EdgeInsets.only(top: 10, bottom: 10),
+                      child: new TextFormField(
+                        controller: contentController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        style: new TextStyle(fontSize: 20),
+                        decoration: InputDecoration(
+                            labelText: '正文',
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0))),
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Wrap(
+                        spacing: 5,
+                        runSpacing: 1,
+                        children: tagChips,
+                      ),
+                    ),
+                  ],
                 ),
-                Container(
-                  constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height),
-                  margin: EdgeInsets.only(top: 10, bottom: 10),
-                  child: new TextFormField(
-                    controller: contentController,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    style: new TextStyle(fontSize: 20),
-                    decoration: InputDecoration(
-                        labelText: '正文',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0))),
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: Wrap(
-                    spacing: 5,
-                    runSpacing: 1,
-                    children: tagChips,
-                  ),
-                ),
-              ],
-            ),
+              )
+            ],
           )),
       onWillPop: _onBackPressed,
     );
   }
 
   void txtListener() {
-    if (titleController.text.trim().isEmpty &&
-        contentController.text.trim().isEmpty) {
-      setState(() {
+    setState(() {
+      if (titleController.text.trim().isEmpty &&
+          contentController.text.trim().isEmpty) {
         edited = false;
-      });
-    } else {
-      setState(() {
+      } else {
         edited = true;
-      });
-    }
+      }
+    });
   }
 
   void addTag() {

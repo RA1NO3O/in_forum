@@ -4,12 +4,12 @@ class ForumListStream {
   //TODO:改写为HTTP请求获取
 
   static List<ForumListItem> getList() {
-    List<ForumListItem> streamlist = [
+    List<ForumListItem> streamList = [
       ForumListItem(
         forumID: 1,
         titleText: '以下的内容仅供测试.',
         contentText:
-        'This is a Test. All of the text below is used to test widget.'
+            'This is a Test. All of the text below is used to test widget.'
             '\nThis is 2nd line. '
             '\nThis is 3rd line.'
             '\nThis is 4th line.',
@@ -24,6 +24,7 @@ class ForumListStream {
         imgAuthor: 'images/test.jpg',
         isAuthor: true,
         time: '2020/12/05 15:02:16',
+        tags: ['Test', '123', '456'],
       ),
       ForumListItem(
         forumID: 2,
@@ -39,6 +40,7 @@ class ForumListStream {
         imgAuthor: 'images/test.jpg',
         isAuthor: false,
         time: '2020/12/03 14:21:55',
+        tags: ['321', '654'],
       ),
       ForumListItem(
         forumID: 3,
@@ -116,6 +118,6 @@ class ForumListStream {
         time: '2019/11/27 14:21:55',
       )
     ];
-    return streamlist;
+    return streamList;
   }
 }

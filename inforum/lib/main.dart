@@ -99,92 +99,52 @@ class _MainPageState extends State<MainPage> {
           ),
           //布局
           SafeArea(
-              child: Container(
-                  margin: EdgeInsets.all(30),
-                  alignment: Alignment.center,
-                  child: Container(
-                    height: 600,
-                    child: Scaffold(
-                      appBar: AppBar(
-                        iconTheme: IconThemeData(color: Colors.black),
-                        backgroundColor: Colors.white,
-                        title: Text(widget.title,style: TextStyle(color: Colors.black),),
-                        leading: state != 0
-                            ? IconButton(
-                                icon: Icon(Icons.arrow_back),
-                                onPressed: () {
-                                  setState(() {
-                                    state = 0;
-                                  });
-                                },
-                              )
-                            : null,
-                      ),
-                      backgroundColor: Colors.transparent,
-                      body: Column(
-                        children: [
-                          PageTransitionSwitcher(
-                            duration: const Duration(milliseconds: 500),
-                            reverse: state == 0,
-                            transitionBuilder:
-                                (child, animation, secondaryAnimation) {
-                              return SharedAxisTransition(
-                                child: child,
-                                animation: animation,
-                                secondaryAnimation: secondaryAnimation,
-                                transitionType:
-                                    SharedAxisTransitionType.horizontal,
-                              );
-                            },
-                            child: state == 0
-                                ? Column(
-                                    children: [
-                                      Container(
-                                        margin: EdgeInsets.only(
-                                            top: 40, bottom: 20),
-                                        child: Text(
-                                          '来体验一下全新的论坛app\n',
-                                          style: new TextStyle(fontSize: 22),
-                                          textAlign: TextAlign.left,
-                                        ),
-                                        alignment: Alignment.center,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(bottom: 80),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text('已有账号? 点此'),
-                                            Container(
-                                              width: 40,
-                                              height: 25,
-                                              child: FlatButton(
-                                                onPressed: btnLoginClick,
-                                                child: Text(
-                                                  '登录',
-                                                  textAlign: TextAlign.left,
-                                                  style: new TextStyle(
-                                                    fontSize: 15,
-                                                    color: Colors.lightBlue,
-                                                  ),
-                                                ),
-                                                padding: EdgeInsets.all(0),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                : state == 1
-                                    ? LoginPage()
-                                    : RegPage(),
-                          ),
-                        ],
-                      ),
+            child: Container(
+              margin: EdgeInsets.all(30),
+              alignment: Alignment.center,
+              child: Scaffold(
+                appBar: AppBar(
+                  iconTheme: IconThemeData(color: Colors.black),
+                  backgroundColor: Colors.white,
+                  title: Hero(
+                      tag: 'title',
+                      child: Text(widget.title, style: titleTextStyle())),
+                  leading: state != 0
+                      ? IconButton(
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: () {
+                            setState(() {
+                              state = 0;
+                            });
+                          },
+                        )
+                      : null,
+                ),
+                backgroundColor: Colors.transparent,
+                body: ListView(
+                  children: [
+                    PageTransitionSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                      reverse: state == 0,
+                      transitionBuilder: (child, animation, secondaryAnimation) {
+                        return SharedAxisTransition(
+                          child: child,
+                          animation: animation,
+                          secondaryAnimation: secondaryAnimation,
+                          transitionType: SharedAxisTransitionType.horizontal,
+                        );
+                      },
+                      child: state == 0
+                          ? defaultPage()
+                          : state == 1
+                          ? LoginPage()
+                          : RegPage(),
                     ),
-                  ))),
+                  ],
+                )
+              ),
+            ),
+          ),
         ],
       ),
       floatingActionButton: state == 0
@@ -195,6 +155,56 @@ class _MainPageState extends State<MainPage> {
               backgroundColor: Colors.blue,
             )
           : null,
+    );
+  }
+
+  TextStyle titleTextStyle() => Theme.of(context)
+      .primaryTextTheme
+      .caption
+      .copyWith(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black);
+
+  Widget defaultPage() {
+    return Container(
+      height: 350,
+      width: 350,
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 40, bottom: 100),
+            child: Text(
+              '来体验一下全新的论坛app\n',
+              style: new TextStyle(fontSize: 22),
+              textAlign: TextAlign.left,
+            ),
+            alignment: Alignment.center,
+          ),
+          Container(
+            margin: EdgeInsets.only(bottom: 80),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('已有账号? 点此'),
+                Container(
+                  width: 40,
+                  height: 25,
+                  child: FlatButton(
+                    onPressed: btnLoginClick,
+                    child: Text(
+                      '登录',
+                      textAlign: TextAlign.left,
+                      style: new TextStyle(
+                        fontSize: 15,
+                        color: Colors.lightBlue,
+                      ),
+                    ),
+                    padding: EdgeInsets.all(0),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
