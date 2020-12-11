@@ -119,16 +119,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   iconTheme: IconThemeData(color: Colors.black),
                   elevation: 5,
                   title: InkWell(
-                    onDoubleTap: (){
+                    onDoubleTap: () {
                       setState(() {
-                        _scrollController.animateTo(.0, duration: Duration(milliseconds: 300), curve: Curves.ease);
+                        _scrollController.animateTo(.0,
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.ease);
                       });
                     },
-                    child: Hero(
-                      tag: 'title',
-                      child: Text(
-                        'Inforum',
-                        style: titleTextStyle(),
+                    child: Tooltip(
+                      message: '双击标题回到顶部',
+                      child: Hero(
+                        tag: 'title',
+                        child: Text(
+                          'Inforum',
+                          style: titleTextStyle(),
+                        ),
                       ),
                     ),
                   ),

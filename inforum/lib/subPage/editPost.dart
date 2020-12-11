@@ -113,8 +113,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
                       onPressed: () {
                         save(
                             titleController.text, contentController.text, tags);
-                        Scaffold.of(context)
-                            .showSnackBar(SnackBar(content: Text('已存为草稿.')));
+                        final snackBar = SnackBar(content: Text('已存为草稿'));
+                        Scaffold.of(context).showSnackBar(snackBar);
                       },
                       tooltip: '存为草稿',
                     )
@@ -137,8 +137,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
               Container(
                 margin:
                     EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 10),
-                child: Flex(
-                  direction: Axis.vertical,
+                child: Column(
                   children: [
                     new TextFormField(
                       maxLength: 128,
@@ -146,7 +145,6 @@ class _EditPostScreenState extends State<EditPostScreen> {
                           fontSize: 20, fontWeight: FontWeight.bold),
                       controller: titleController,
                       decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.title),
                           labelText: '标题',
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(5.0))),
@@ -255,6 +253,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   label: Text('保存'),
                   onPressed: () {
                     save(titleController.text, contentController.text, tags);
+
                     Navigator.pop(context, true);
                   },
                 ),

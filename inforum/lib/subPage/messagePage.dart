@@ -15,4 +15,8 @@ class _MessagePage extends State<MessagePage>{
       ),
     );
   }
+  // 滚动消息至聊天底部
+  // void scrollMsgBottom() {
+  //   timer = Timer(Duration(milliseconds: 100), () => _msgController.jumpTo(_msgController.position.maxScrollExtent));
+  // }
 }

@@ -51,9 +51,11 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   bool isAuthor;
   List<String> tagStrings;
   List<Widget> tagWidgets;
+  TextEditingController commentController;
 
   @override
   void initState() {
+    commentController = new TextEditingController();
     isAuthor = widget.isAuthor;
     isCollect = widget.isCollect;
     likeCount = widget.likeCount;
@@ -67,143 +69,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   @override
   Widget build(BuildContext context) {
     _getTagWidgets();
-    List<Widget> forumDetailUI = [
-      Container(
-        height: 70,
-        margin: EdgeInsets.only(top: 10, left: 22, right: 10),
-        child: Flex(
-          direction: Axis.horizontal,
-          children: [
-            CircleAvatar(
-              radius: 33,
-              backgroundImage: AssetImage(widget.imgAuthor),
-            ),
-            Flex(
-              direction: Axis.vertical,
-              children: [
-                Expanded(
-                    flex: 1,
-                    child: Container(
-                      margin: EdgeInsets.only(top: 15, left: 10),
-                      child: Text(
-                        widget.authorName,
-                        style: new TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    )),
-                Container(
-                  height: 25,
-                  margin: EdgeInsets.only(left: 10),
-                  child: Text(
-                    '@ra1n7246',
-                    style: new TextStyle(color: Colors.black54),
-                  ),
-                )
-              ],
-            ),
-            Expanded(
-              flex: 1,
-              child: Container(),
-            ),
-            IconButton(
-              icon: Icon(Icons.keyboard_arrow_down_rounded),
-              //TODO:用户下拉菜单
-              onPressed: () {},
-            )
-          ],
-        ),
-      ),
-      new Container(
-        margin: EdgeInsets.only(
-          top: 10,
-          left: 25,
-        ),
-        alignment: Alignment.centerLeft,
-        child: Text(
-          widget.titleText,
-          style: new TextStyle(
-              color: Color(0xFF000000),
-              fontSize: 25,
-              fontWeight: FontWeight.bold),
-          textAlign: TextAlign.left,
-        ),
-      ),
-      new Container(
-          margin: EdgeInsets.only(top: 10, left: 25, right: 25),
-          child: Text(
-            widget.contentText,
-            style: new TextStyle(fontSize: 18),
-          )),
-      new Container(
-        margin: EdgeInsets.only(left: 25, right: 25,top: 5,bottom: 5),
-        alignment: Alignment.centerLeft,
-        child: tagWidgets != null
-            ? Wrap(
-                spacing: 5,
-                runSpacing: 1,
-                children: tagWidgets,
-              )
-            : null,
-      ),
-      Container(
-        margin: EdgeInsets.only(left: 25, right: 25, bottom: 5),
-        width: widget.imgThumbnail != null ? 400 : 0,
-        child: widget.imgThumbnail != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Hero(
-                  tag: 'img',
-                  child: Image.asset(
-                    widget.imgThumbnail,
-                    fit: BoxFit.fitWidth,
-                  ),
-                ),
-              )
-            : null,
-      ),
-      Divider(thickness: 2),
-      Container(
-        padding: EdgeInsets.only(left: 20, right: 20),
-        height: 40,
-        child: Flex(direction: Axis.horizontal, children: [
-          Expanded(
-            flex: 1,
-            child: ActionButton(
-                fun: () => _likeButtonClick(),
-                ico: likeState == 0 || likeState == 2
-                    ? Icon(Icons.thumb_up_outlined)
-                    : Icon(Icons.thumb_up),
-                txt: likeCount.toString()),
-          ),
-          Expanded(
-            flex: 1,
-            child: ActionButton(
-                fun: () => _dislikeButtonClick(),
-                ico: likeState == 0 || likeState == 1
-                    ? Icon(Icons.thumb_down_outlined)
-                    : Icon(Icons.thumb_down),
-                txt: dislikeCount.toString()),
-          ),
-          Expanded(
-              flex: 1,
-              child: ActionButton(
-                  //TODO:实现评论按钮
-                  fun: () => print('clicked comment button'),
-                  ico: Icon(Icons.mode_comment_outlined),
-                  txt: commentCount.toString())),
-          Expanded(
-            flex: 0,
-            child: ActionButton(
-              //TODO:实现分享按钮
-              fun: () => print('clicked Share button'),
-              ico: Icon(Icons.share_outlined),
-            ),
-          ),
-        ]),
-      ),
-      Divider(thickness: 2),
-    ];
     getComments();
+
     return Scaffold(
       appBar: AppBar(
         elevation: 1,
@@ -243,16 +110,218 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
           )
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () {},
-        child: Scrollbar(
-          radius: Radius.circular(5),
-          child: ListView(
-            children: forumDetailUI,
-          ),
-        ),
-      ),
+      body: Builder(builder: (BuildContext c) {
+        return Flex(
+          direction: Axis.vertical,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Scrollbar(
+                radius: Radius.circular(5),
+                child: ListView(children: [
+                  Container(
+                    height: 70,
+                    margin: EdgeInsets.only(top: 10, left: 22, right: 10),
+                    child: Flex(
+                      direction: Axis.horizontal,
+                      children: [
+                        CircleAvatar(
+                          radius: 33,
+                          backgroundImage: AssetImage(widget.imgAuthor),
+                        ),
+                        Flex(
+                          direction: Axis.vertical,
+                          children: [
+                            Expanded(
+                                flex: 1,
+                                child: Container(
+                                  margin: EdgeInsets.only(top: 15, left: 10),
+                                  child: Text(
+                                    widget.authorName,
+                                    style: new TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                )),
+                            Container(
+                              height: 25,
+                              margin: EdgeInsets.only(left: 10),
+                              child: Text(
+                                '@ra1n7246',
+                                style: new TextStyle(color: Colors.black54),
+                              ),
+                            )
+                          ],
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.keyboard_arrow_down_rounded),
+                          //TODO:用户下拉菜单
+                          onPressed: () {},
+                        )
+                      ],
+                    ),
+                  ),
+                  new Container(
+                    margin: EdgeInsets.only(
+                      top: 10,
+                      left: 25,
+                    ),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      widget.titleText,
+                      style: new TextStyle(
+                          color: Color(0xFF000000),
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  new Container(
+                      margin: EdgeInsets.only(top: 10, left: 25, right: 25),
+                      child: Text(
+                        widget.contentText,
+                        style: new TextStyle(fontSize: 18),
+                      )),
+                  new Container(
+                    margin:
+                        EdgeInsets.only(left: 25, right: 25, top: 5, bottom: 5),
+                    alignment: Alignment.centerLeft,
+                    child: tagWidgets != null
+                        ? Wrap(
+                            spacing: 5,
+                            runSpacing: 1,
+                            children: tagWidgets,
+                          )
+                        : null,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 25, right: 25, bottom: 5),
+                    width: widget.imgThumbnail != null ? 400 : 0,
+                    child: widget.imgThumbnail != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: Hero(
+                              tag: 'img',
+                              child: Image.asset(
+                                widget.imgThumbnail,
+                                fit: BoxFit.fitWidth,
+                              ),
+                            ),
+                          )
+                        : null,
+                  ),
+                  Divider(thickness: 2),
+                  Container(
+                    padding: EdgeInsets.only(left: 20, right: 20),
+                    height: 40,
+                    child: Flex(direction: Axis.horizontal, children: [
+                      Expanded(
+                        flex: 1,
+                        child: ActionButton(
+                            fun: () => _likeButtonClick(),
+                            ico: likeState == 0 || likeState == 2
+                                ? Icon(Icons.thumb_up_outlined)
+                                : Icon(Icons.thumb_up),
+                            txt: likeCount.toString()),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: ActionButton(
+                            fun: () => _dislikeButtonClick(),
+                            ico: likeState == 0 || likeState == 1
+                                ? Icon(Icons.thumb_down_outlined)
+                                : Icon(Icons.thumb_down),
+                            txt: dislikeCount.toString()),
+                      ),
+                      Expanded(
+                          flex: 1,
+                          child: ActionButton(
+                              //TODO:实现评论按钮
+                              fun: () => Scaffold.of(c)
+                                  .showBottomSheet((c) => commentContainer()),
+                              ico: Icon(Icons.mode_comment_outlined),
+                              txt: commentCount.toString())),
+                      Expanded(
+                        flex: 0,
+                        child: ActionButton(
+                          //TODO:实现分享按钮
+                          fun: () => print('clicked Share button'),
+                          ico: Icon(Icons.share_outlined),
+                        ),
+                      ),
+                    ]),
+                  ),
+                  Divider(thickness: 2),
+                ]),
+              ),
+            ),
+            Expanded(
+              flex: 0,
+              child: Container(
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  child: InkWell(
+                    onTap: () => Scaffold.of(c)
+                        .showBottomSheet((c) => commentContainer()),
+                    child: TextField(
+                      controller: commentController,
+                      textInputAction: TextInputAction.send,
+                      decoration: InputDecoration(
+                          enabled: false,
+                          hintText: '发布回复',
+                          suffixIcon: IconButton(
+                              icon: Icon(Icons.photo_outlined),
+                              onPressed: () {})),
+                    ),
+                  )),
+            ),
+          ],
+        );
+      }),
     );
+  }
+
+  Container commentContainer() {
+    return Container(
+        height: 101,
+        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+        child: Column(
+          children: [
+            TextField(
+              autofocus: true,
+              textInputAction: TextInputAction.send,
+              decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                      icon: Icon(Icons.open_in_full_rounded),
+                      onPressed: () {})),
+            ),
+            Flex(
+              direction: Axis.horizontal,
+              children: [
+                Expanded(
+                    flex: 0,
+                    child: IconButton(
+                        icon: Icon(
+                          Icons.photo_outlined,
+                          color: Colors.blue,
+                        ),
+                        onPressed: () {})),
+                Expanded(flex: 1, child: Container()),
+                Expanded(
+                    flex: 0,
+                    child: FlatButton(
+                      child: Text('发送'),
+                      colorBrightness: Brightness.dark,
+                      color: Colors.blue,
+                      onPressed: () {},
+                    ))
+              ],
+            )
+          ],
+        ));
   }
 
   @override
