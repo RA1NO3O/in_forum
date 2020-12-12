@@ -8,7 +8,6 @@ import 'package:inforum/subPage/primaryPage.dart';
 import 'package:inforum/subPage/searchPage.dart';
 import 'package:inforum/subPage/settingsPage.dart';
 import 'package:inforum/subPage/userPage.dart';
-
 // import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

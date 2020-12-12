@@ -18,7 +18,6 @@ class PrimaryPage extends StatefulWidget {
 
 class _PrimaryPage extends State<PrimaryPage> {
   List<ForumListItem> _list = ForumListStream.getList();
-
   @override
   void initState() {
     _getStream();
@@ -46,5 +45,10 @@ class _PrimaryPage extends State<PrimaryPage> {
       _list.clear();
       _list.addAll(ForumListStream.getList());
     });
+  }
+  @override
+  void dispose() {
+
+    super.dispose();
   }
 }

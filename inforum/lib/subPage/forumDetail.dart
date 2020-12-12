@@ -51,11 +51,9 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   bool isAuthor;
   List<String> tagStrings;
   List<Widget> tagWidgets;
-  TextEditingController commentController;
 
   @override
   void initState() {
-    commentController = new TextEditingController();
     isAuthor = widget.isAuthor;
     isCollect = widget.isCollect;
     likeCount = widget.likeCount;
@@ -264,19 +262,28 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
               child: Container(
                   padding: EdgeInsets.only(left: 10, right: 10),
                   child: InkWell(
-                    onTap: () => Scaffold.of(c)
-                        .showBottomSheet((c) => commentContainer()),
-                    child: TextField(
-                      controller: commentController,
-                      textInputAction: TextInputAction.send,
-                      decoration: InputDecoration(
-                          enabled: false,
-                          hintText: '发布回复',
-                          suffixIcon: IconButton(
-                              icon: Icon(Icons.photo_outlined),
-                              onPressed: () {})),
-                    ),
-                  )),
+                      onTap: () => Scaffold.of(c)
+                          .showBottomSheet((c) => commentContainer()),
+                      child: Flex(
+                        direction: Axis.horizontal,
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              textInputAction: TextInputAction.send,
+                              decoration: InputDecoration(
+                                enabled: false,
+                                hintText: '发布回复',
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                              icon: Icon(
+                                Icons.photo_outlined,
+                                color: Colors.blue,
+                              ),
+                              onPressed: () {})
+                        ],
+                      ))),
             ),
           ],
         );
@@ -285,15 +292,19 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   }
 
   Container commentContainer() {
+    TextEditingController _commentController = new TextEditingController();
     return Container(
-        height: 101,
+        height: 102,
         padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
         child: Column(
           children: [
             TextField(
               autofocus: true,
+              keyboardType: TextInputType.text,
               textInputAction: TextInputAction.send,
+              controller: _commentController,
               decoration: InputDecoration(
+                  hintText: '发布回复',
                   suffixIcon: IconButton(
                       icon: Icon(Icons.open_in_full_rounded),
                       onPressed: () {})),
@@ -326,9 +337,6 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
 
   @override
   void dispose() {
-    //退出时切换状态栏UI前景色
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarIconBrightness: Brightness.dark));
     super.dispose();
   }
 

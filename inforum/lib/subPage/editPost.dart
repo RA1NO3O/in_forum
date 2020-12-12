@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:inforum/component/popUpTextField.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditPostScreen extends StatefulWidget {
@@ -23,6 +22,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   final contentController = new TextEditingController();
   var tags = List<String>();
   var tagChips;
+  bool saved = false;
   bool edited = false;
   String draftTitle;
   String draftContent;
@@ -38,8 +38,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
       contentController.text = widget.contentText;
       tags.addAll(widget.tags);
     }
-    titleController.addListener(txtListener);
-    contentController.addListener(txtListener);
+    titleController.addListener(titleListener);
+    contentController.addListener(contentListener);
 
     super.initState();
   }
@@ -50,14 +50,18 @@ class _EditPostScreenState extends State<EditPostScreen> {
         margin: EdgeInsets.only(top: 6, bottom: 6, right: 5),
         child: Text('标签：'),
       ),
-      Container(
-        height: 32,
-        child: ActionChip(
-          label: Text('添加标签'),
-          avatar: Icon(Icons.add_rounded),
-          onPressed: addTag,
-        ),
-      )
+      Builder(
+        builder: (BuildContext bc) {
+          return Container(
+            height: 32,
+            child: ActionChip(
+              label: Text('添加标签'),
+              avatar: Icon(Icons.add_rounded),
+              onPressed: () => addTag(bc),
+            ),
+          );
+        },
+      ),
     ];
     tagChips.addAll(tags
         .map((s) => Container(
@@ -74,7 +78,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
               ),
             ))
         .toList());
-    if (tags != widget.tags) {
+    if (!IterableEquality().equals(tags, widget.tags)) {
       edited = true;
     }
   }
@@ -107,21 +111,27 @@ class _EditPostScreenState extends State<EditPostScreen> {
               style: TextStyle(color: Colors.black),
             ),
             actions: [
-              edited
-                  ? IconButton(
-                      icon: Icon(Icons.save),
-                      onPressed: () {
-                        save(
-                            titleController.text, contentController.text, tags);
-                        final snackBar = SnackBar(content: Text('已存为草稿'));
-                        Scaffold.of(context).showSnackBar(snackBar);
-                      },
-                      tooltip: '存为草稿',
-                    )
-                  : IconButton(
-                      icon: Icon(Icons.save_rounded),
-                      onPressed: null,
-                    ),
+              Builder(builder: (BuildContext b) {
+                Widget saveButton = edited
+                    ? IconButton(
+                        icon: Icon(Icons.save),
+                        onPressed: () {
+                          save(titleController.text, contentController.text,
+                              tags);
+                          Scaffold.of(b).showSnackBar(SnackBar(
+                            content: Text('已存为草稿.'),
+                            backgroundColor: Colors.blue,
+                          ));
+                          saved = false;
+                        },
+                        tooltip: '存为草稿',
+                      )
+                    : IconButton(
+                        icon: Icon(Icons.save_rounded),
+                        onPressed: null,
+                      );
+                return saveButton;
+              }),
               new IconButton(
                 icon: widget.mode == 0
                     ? Icon(Icons.send_rounded)
@@ -181,30 +191,81 @@ class _EditPostScreenState extends State<EditPostScreen> {
     );
   }
 
-  void txtListener() {
+  void titleListener() {
     setState(() {
-      if (titleController.text.trim().isEmpty &&
-          contentController.text.trim().isEmpty) {
-        edited = false;
-      } else {
-        edited = true;
+      if (widget.mode == 0) {
+        if (titleController.text.trim().isEmpty &&
+            contentController.text.trim().isEmpty) {
+          edited = false;
+        } else {
+          edited = true;
+        }
+      }
+      if (widget.mode == 1) {
+        if (titleController.text == widget.titleText &&
+            contentController.text == widget.contentText) {
+          edited = false;
+        } else {
+          edited = true;
+        }
       }
     });
   }
 
-  void addTag() {
-    Navigator.push(
-        context,
-        PopRoute(
-            child: PopUpTextField(
-          hintText: '输入标签名称',
-          onEditingCompleteText: (text) {
+  void contentListener() {
+    setState(() {
+      if (widget.mode == 0) {
+        if (titleController.text.trim().isEmpty &&
+            contentController.text.trim().isEmpty) {
+          edited = false;
+        } else {
+          edited = true;
+        }
+      }
+      if (widget.mode == 1) {
+        if (titleController.text == widget.titleText &&
+            contentController.text == widget.contentText) {
+          edited = false;
+        } else {
+          edited = true;
+        }
+      }
+    });
+  }
+
+  void addTag(BuildContext bc) {
+    TextEditingController _tagEditor = new TextEditingController();
+    Scaffold.of(bc).showBottomSheet(
+      (bc) => Container(
+        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+        child: TextField(
+          autofocus: true,
+          controller: _tagEditor,
+          textInputAction: TextInputAction.done,
+          onEditingComplete: () {
             setState(() {
-              tags.add(text);
+              tags.add(_tagEditor.text);
               refreshTagList();
+              Navigator.pop(context);
             });
           },
-        )));
+          decoration: InputDecoration(
+            hintText: '输入标签名称',
+            suffixIcon: IconButton(
+              icon: Icon(
+                Icons.done_rounded,
+                color: Colors.blue,
+              ),
+              onPressed: () {
+                tags.add(_tagEditor.text);
+                refreshTagList();
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   //退出前事件，返回true时即退出
@@ -213,23 +274,9 @@ class _EditPostScreenState extends State<EditPostScreen> {
     String dt = sp.getString('draft_title');
     String dc = sp.getString('draft_content');
     List<String> dTags = sp.getStringList('draft_tags');
-
-    bool isAllEmpty = titleController.text.trim().isEmpty &&
-        contentController.text.trim().isEmpty &&
-        tags.isEmpty;
-    bool isNotChanged = titleController.text == dt &&
-        contentController.text == dc &&
-        IterableEquality().equals(tags, dTags);
-    //如果没有改动内容或内容为空,不拦截退出
-    if (widget.mode == 1 &&
-        titleController.text == widget.titleText &&
-        contentController.text == widget.contentText) {
+    //如果没有改动内容或内容为空或是已保存,不拦截退出
+    if (saved || !edited) {
       return Future<bool>.value(true);
-    }
-    if (widget.mode == 0) {
-      if (isAllEmpty || isNotChanged) {
-        return Future<bool>.value(true);
-      }
     }
     bool result = await showDialog<bool>(
         context: context,
@@ -253,7 +300,6 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   label: Text('保存'),
                   onPressed: () {
                     save(titleController.text, contentController.text, tags);
-
                     Navigator.pop(context, true);
                   },
                 ),
