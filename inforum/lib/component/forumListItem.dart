@@ -117,6 +117,7 @@ class _ForumListItem extends State<ForumListItem> {
                               isAuthor: widget.isAuthor,
                               tags: widget.tags,
                               forumID: widget.forumID,
+                              time: widget.time,
                             );
                           })),
                       child: Column(

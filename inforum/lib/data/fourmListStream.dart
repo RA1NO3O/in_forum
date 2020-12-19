@@ -23,7 +23,7 @@ class ForumListStream {
         authorName: 'レエイン',
         imgAuthor: 'images/test.jpg',
         isAuthor: true,
-        time: '2020/12/05 15:02:16',
+        time: '2020/12/19 17:16:16',
         tags: ['Test', '123', '456'],
       ),
       ForumListItem(
@@ -39,7 +39,7 @@ class ForumListStream {
         authorName: 'RA1N',
         imgAuthor: 'images/test.jpg',
         isAuthor: false,
-        time: '2020/12/03 14:21:55',
+        time: '2020/12/18 14:21:55',
         tags: ['321', '654'],
       ),
       ForumListItem(
@@ -55,7 +55,7 @@ class ForumListStream {
         authorName: 'RA1N',
         imgAuthor: 'images/test.jpg',
         isAuthor: false,
-        time: '2020/12/01 14:21:55',
+        time: '2020/12/17 14:21:55',
       ),
       ForumListItem(
         forumID: 4,
@@ -100,7 +100,7 @@ class ForumListStream {
         authorName: 'RA1N',
         imgAuthor: 'images/test.jpg',
         isAuthor: false,
-        time: '2020/11/28 14:21:55',
+        time: '2019/11/28 14:21:55',
       ),
       ForumListItem(
         forumID: 7,
@@ -115,7 +115,7 @@ class ForumListStream {
         authorName: 'RA1N',
         imgAuthor: 'images/test.jpg',
         isAuthor: false,
-        time: '2019/11/27 14:21:55',
+        time: '2018/11/27 14:21:55',
       )
     ];
     return streamList;

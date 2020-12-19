@@ -1,8 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:inforum/component/actionButton.dart';
+import 'package:inforum/component/commentListItem.dart';
+import 'package:inforum/data/forumCommentStream.dart';
 import 'package:inforum/subPage/editPost.dart';
+import 'package:inforum/subPage/profilePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ForumDetailPage extends StatefulWidget {
@@ -19,6 +21,7 @@ class ForumDetailPage extends StatefulWidget {
   final String imgAuthor;
   final bool isAuthor;
   final List<String> tags;
+  final String time;
 
   const ForumDetailPage(
       {Key key,
@@ -34,7 +37,8 @@ class ForumDetailPage extends StatefulWidget {
       this.imgAuthor,
       this.isAuthor,
       this.forumID,
-      this.tags})
+      this.tags,
+      this.time})
       : super(key: key);
 
   @override
@@ -67,7 +71,6 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   @override
   Widget build(BuildContext context) {
     _getTagWidgets();
-    getComments();
 
     return Scaffold(
       appBar: AppBar(
@@ -123,9 +126,27 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     child: Flex(
                       direction: Axis.horizontal,
                       children: [
-                        CircleAvatar(
-                          radius: 33,
-                          backgroundImage: AssetImage(widget.imgAuthor),
+                        Material(
+                          elevation: 3,
+                          shape: CircleBorder(),
+                          clipBehavior: Clip.hardEdge,
+                          color: Colors.transparent,
+                          child: Ink.image(
+                            image: AssetImage(widget.imgAuthor),
+                            fit: BoxFit.cover,
+                            width: 80,
+                            height: 80,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(
+                                    builder: (BuildContext context) {
+                                  return ProfilePage(
+                                    userId: widget.authorName,
+                                  );
+                                }));
+                              },
+                            ),
+                          ),
                         ),
                         Flex(
                           direction: Axis.vertical,
@@ -212,6 +233,13 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                           )
                         : null,
                   ),
+                  Container(
+                    margin: EdgeInsets.only(left: 20,top: 10,bottom: 10),
+                    child: Text(
+                      widget.time,
+                      style: new TextStyle(color: Colors.black45),
+                    ),
+                  ),
                   Divider(thickness: 2),
                   Container(
                     padding: EdgeInsets.only(left: 20, right: 20),
@@ -254,6 +282,9 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     ]),
                   ),
                   Divider(thickness: 2),
+                  Column(
+                    children: getComments(),
+                  )
                 ]),
               ),
             ),
@@ -422,7 +453,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     }
   }
 
-  void getComments() {
+  List<CommentListItem> getComments() {
     //TODO:获取回复List
+    return ForumCommentStream.getComment(widget.forumID);
   }
 }

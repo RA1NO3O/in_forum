@@ -18,6 +18,11 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLogin =
       prefs.getBool('isLogin') == null ? false : prefs.getBool('isLogin');
+  if(prefs.getBool('isLogin')==null){
+    prefs.setString('draft_title', '');
+    prefs.setString('draft_content', '');
+    prefs.setStringList('draft_tags', null);
+  }
   String userId = prefs.getString('userId');
   print(isLogin);
   runApp(MaterialApp(
@@ -37,12 +42,12 @@ Future<void> main() async {
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate
     ],
-    supportedLocales: [const Locale("zh", "CH"), const Locale("en", "US")],
+    supportedLocales: [const Locale("zh", "CH"), const Locale("en", "US"),const Locale("ja","JP")],
     debugShowCheckedModeBanner: false, //隐藏debug横幅
   ));
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: isLogin ? Color(0xFFFAFAFA) : Color(0x00000000),
-      statusBarIconBrightness: isLogin ? Brightness.dark : Brightness.light));
+      systemNavigationBarColor: Color(0x00000000),
+      statusBarIconBrightness: Brightness.light));
 }
 
 //主界面
@@ -103,46 +108,46 @@ class _MainPageState extends State<MainPage> {
               margin: EdgeInsets.all(30),
               alignment: Alignment.center,
               child: Scaffold(
-                appBar: AppBar(
-                  iconTheme: IconThemeData(color: Colors.black),
-                  backgroundColor: Colors.white,
-                  title: Hero(
-                      tag: 'title',
-                      child: Text(widget.title, style: titleTextStyle())),
-                  leading: state != 0
-                      ? IconButton(
-                          icon: Icon(Icons.arrow_back),
-                          onPressed: () {
-                            setState(() {
-                              state = 0;
-                            });
-                          },
-                        )
-                      : null,
-                ),
-                backgroundColor: Colors.transparent,
-                body: ListView(
-                  children: [
-                    PageTransitionSwitcher(
-                      duration: const Duration(milliseconds: 500),
-                      reverse: state == 0,
-                      transitionBuilder: (child, animation, secondaryAnimation) {
-                        return SharedAxisTransition(
-                          child: child,
-                          animation: animation,
-                          secondaryAnimation: secondaryAnimation,
-                          transitionType: SharedAxisTransitionType.horizontal,
-                        );
-                      },
-                      child: state == 0
-                          ? defaultPage()
-                          : state == 1
-                          ? LoginPage()
-                          : RegPage(),
-                    ),
-                  ],
-                )
-              ),
+                  appBar: AppBar(
+                    iconTheme: IconThemeData(color: Colors.black),
+                    backgroundColor: Colors.white,
+                    title: Hero(
+                        tag: 'title',
+                        child: Text(widget.title, style: titleTextStyle())),
+                    leading: state != 0
+                        ? IconButton(
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: () {
+                              setState(() {
+                                state = 0;
+                              });
+                            },
+                          )
+                        : null,
+                  ),
+                  backgroundColor: Colors.transparent,
+                  body: ListView(
+                    children: [
+                      PageTransitionSwitcher(
+                        duration: const Duration(milliseconds: 500),
+                        reverse: state == 0,
+                        transitionBuilder:
+                            (child, animation, secondaryAnimation) {
+                          return SharedAxisTransition(
+                            child: child,
+                            animation: animation,
+                            secondaryAnimation: secondaryAnimation,
+                            transitionType: SharedAxisTransitionType.horizontal,
+                          );
+                        },
+                        child: state == 0
+                            ? defaultPage()
+                            : state == 1
+                                ? LoginPage()
+                                : RegPage(),
+                      ),
+                    ],
+                  )),
             ),
           ),
         ],

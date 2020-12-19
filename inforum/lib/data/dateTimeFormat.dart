@@ -23,11 +23,13 @@ class DateTimeFormat {
       return '昨天'.toString();
     } else if (difference.inHours >= 1 && difference.inHours < 24) {
       return (difference.inHours).toString() + '小时前';
-    } else if (difference.inMinutes > 5 && difference.inMinutes < 60) {
+    } else if (difference.inMinutes > 1 && difference.inMinutes < 60) {
       return (difference.inMinutes).toString() + '分钟前';
-    } else if (difference.inMinutes <= 5) {
+    } else if (difference.inMinutes <= 1) {
       return '刚刚';
+    }else if(difference.inDays>=365){
+      return (difference.inDays~/365).toString()+'年前';
     }
-    return '$oldYear/$oldMonth/$oldDay';
+    return '$oldMonth月$oldDay日';
   }
 }

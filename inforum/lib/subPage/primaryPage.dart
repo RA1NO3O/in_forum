@@ -48,7 +48,6 @@ class _PrimaryPage extends State<PrimaryPage> {
   }
   @override
   void dispose() {
-
     super.dispose();
   }
 }

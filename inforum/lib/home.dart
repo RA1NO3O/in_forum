@@ -2,12 +2,15 @@ import 'package:animations/animations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:inforum/subPage/collectionPage.dart';
 import 'package:inforum/subPage/editPost.dart';
 import 'package:inforum/subPage/messagePage.dart';
 import 'package:inforum/subPage/primaryPage.dart';
+import 'package:inforum/subPage/profilePage.dart';
 import 'package:inforum/subPage/searchPage.dart';
 import 'package:inforum/subPage/settingsPage.dart';
 import 'package:inforum/subPage/userPage.dart';
+
 // import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,7 +24,7 @@ class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Color(0xAAFAFAFA),
+        statusBarColor: Color(0x00000000),
         systemNavigationBarColor: Color(0xFFFAFAFA),
         statusBarIconBrightness: Brightness.dark));
     return _HomeScreenState();
@@ -202,7 +205,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     }));
                     break;
                   case 1:
-                    print(_currentIndex);
                     break;
                 }
               },
@@ -234,7 +236,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 85,
                       height: 85,
                       child: InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (BuildContext context) {
+                            return ProfilePage(userId: widget.userId,);
+                          }));
+                        },
                       ),
                     ),
                   ),
@@ -283,7 +290,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     leading: Icon(Icons.star_rounded),
                     title: Text('收藏'),
                     shape: roundedRectangleBorder,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return CollectionPage();
+                      }));
+                    },
                   ),
                   ListTile(
                     leading: Icon(Icons.help_rounded),
@@ -294,13 +306,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ListTile(
                     leading: Icon(Icons.settings),
                     title: Text('设置'),
+                    shape: roundedRectangleBorder,
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {
                         return SettingsPage();
                       }));
                     },
-                    shape: roundedRectangleBorder,
                   ),
                   ListTile(
                     leading: Icon(Icons.login_rounded),

@@ -30,6 +30,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   @override
   void initState() {
+    print(edited);
     if (widget.mode == 0) {
       getDraft();
     }
@@ -78,7 +79,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
               ),
             ))
         .toList());
-    if (!IterableEquality().equals(tags, widget.tags)) {
+    if (!IterableEquality().equals(tags, draftTags)) {
       edited = true;
     }
   }
@@ -98,6 +99,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(edited);
     refreshTagList();
     return WillPopScope(
       child: Scaffold(
@@ -193,12 +195,14 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   void titleListener() {
     setState(() {
+      var txtTitle=titleController.text;
+      var txtContent = contentController.text;
       if (widget.mode == 0) {
-        if (titleController.text.trim().isEmpty &&
-            contentController.text.trim().isEmpty) {
-          edited = false;
-        } else {
+        if (titleController.text.trim().isNotEmpty &&
+            contentController.text.trim().isNotEmpty) {
           edited = true;
+        } else {
+          edited = false;
         }
       }
       if (widget.mode == 1) {
@@ -215,11 +219,11 @@ class _EditPostScreenState extends State<EditPostScreen> {
   void contentListener() {
     setState(() {
       if (widget.mode == 0) {
-        if (titleController.text.trim().isEmpty &&
-            contentController.text.trim().isEmpty) {
-          edited = false;
-        } else {
+        if (titleController.text.trim().isNotEmpty &&
+            contentController.text.trim().isNotEmpty) {
           edited = true;
+        } else {
+          edited = false;
         }
       }
       if (widget.mode == 1) {
@@ -270,10 +274,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   //退出前事件，返回true时即退出
   Future<bool> _onBackPressed() async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    String dt = sp.getString('draft_title');
-    String dc = sp.getString('draft_content');
-    List<String> dTags = sp.getStringList('draft_tags');
+    print(edited);
     //如果没有改动内容或内容为空或是已保存,不拦截退出
     if (saved || !edited) {
       return Future<bool>.value(true);
@@ -307,9 +308,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   textColor: Colors.redAccent,
                   icon: Icon(Icons.delete_rounded),
                   label: Text('舍弃'),
-                  onPressed: () {
+                  onPressed: () async {
                     Navigator.pop(context, true);
                     //舍弃时会清空草稿存储
+                    SharedPreferences sp = await SharedPreferences.getInstance();
                     sp.setString('draft_title', '');
                     sp.setString('draft_content', '');
                     sp.setStringList('draft_tags', null);

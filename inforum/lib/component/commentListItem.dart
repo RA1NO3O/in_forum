@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:inforum/component/actionButton.dart';
+import 'package:inforum/data/dateTimeFormat.dart';
+import 'package:inforum/subPage/profilePage.dart';
 
 class CommentListItem extends StatefulWidget {
   final int forumID;
@@ -25,50 +28,112 @@ class CommentListItem extends StatefulWidget {
 class _CommentListItem extends State<CommentListItem> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Flex(
-          direction: Axis.horizontal,
-          children: [
-            CircleAvatar(
-              radius: 33,
-              backgroundImage: AssetImage(widget.commenterAvatarURL),
-            ),
-            Flex(
-              direction: Axis.vertical,
+    return SafeArea(
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(left: 20),
+            child: Column(
               children: [
-                Expanded(
-                    flex: 1,
-                    child: Container(
-                      margin: EdgeInsets.only(top: 15, left: 10),
-                      child: Text(
-                        widget.commenterName,
-                        style: new TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                Flex(
+                  direction: Axis.horizontal,
+                  children: [
+                    Material(
+                      elevation: 3,
+                      shape: CircleBorder(),
+                      clipBehavior: Clip.hardEdge,
+                      color: Colors.transparent,
+                      child: Ink.image(
+                        image: AssetImage(widget.commenterAvatarURL),
+                        fit: BoxFit.cover,
+                        width: 50,
+                        height: 50,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (BuildContext context) {
+                              return ProfilePage(
+                                userId: widget.commenterName,
+                              );
+                            }));
+                          },
+                        ),
                       ),
+                    ),
+                    Row(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(left: 15),
+                          child: Text(
+                            widget.commenterName,
+                            style: new TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 5),
+                          child: Text(
+                            '@dec16th · ${DateTimeFormat.handleDate(widget.commentTime)}',
+                            style: new TextStyle(color: Colors.black54),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Container(),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.keyboard_arrow_down_rounded),
+                      //TODO:用户下拉菜单
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+                Container(
+                    alignment: Alignment.centerLeft,
+                    margin: EdgeInsets.only(top: 10, left: 5),
+                    child: Row(
+                      children: [
+                        Text(
+                          '回复给 ',
+                          style: new TextStyle(color: Colors.grey),
+                        ),
+                        Text(
+                          widget.commentTarget,
+                          style: new TextStyle(color: Colors.blue),
+                        )
+                      ],
                     )),
                 Container(
-                  height: 25,
-                  margin: EdgeInsets.only(left: 10),
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.only(bottom: 5, left: 5, top: 5),
                   child: Text(
-                    '@ra1n7246',
-                    style: new TextStyle(color: Colors.black54),
+                    widget.content,
+                    style: new TextStyle(fontSize: 18),
                   ),
-                )
+                ),
+                Row(
+                  children: [
+                    ActionButton(
+                        fun: () {},
+                        ico: Icon(Icons.thumb_up_outlined),
+                        txt: '0'),
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.quickreply_outlined),
+                      tooltip: '快速回复',
+                    )
+                  ],
+                ),
               ],
             ),
-            Expanded(
-              flex: 1,
-              child: Container(),
-            ),
-            IconButton(
-              icon: Icon(Icons.keyboard_arrow_down_rounded),
-              //TODO:用户下拉菜单
-              onPressed: () {},
-            )
-          ],
-        ),
-      ],
+          ),
+          Divider(
+            thickness: 1,
+          ),
+        ],
+      ),
     );
   }
 }
