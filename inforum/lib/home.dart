@@ -8,7 +8,7 @@ import 'package:inforum/subPage/messagePage.dart';
 import 'package:inforum/subPage/primaryPage.dart';
 import 'package:inforum/subPage/profilePage.dart';
 import 'package:inforum/subPage/searchPage.dart';
-import 'package:inforum/subPage/settingsPage.dart';
+import 'package:inforum/subPage/settingsPage/settingsPage.dart';
 import 'package:inforum/subPage/userPage.dart';
 
 // import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
@@ -239,7 +239,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: () {
                           Navigator.push(context, MaterialPageRoute(
                               builder: (BuildContext context) {
-                            return ProfilePage(userId: widget.userId,);
+                            return ProfilePage(
+                              userId: widget.userId,
+                            );
                           }));
                         },
                       ),

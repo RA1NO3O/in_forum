@@ -1,7 +1,18 @@
 import 'package:inforum/component/forumListItem.dart';
+import 'package:dio/dio.dart';
 
 class ForumListStream {
   //TODO:改写为HTTP请求获取
+  static void getHttp() async {
+    try {
+      Response response;
+      var data = {'name': 'jack'};
+      response = await Dio().get('http://www.baidu.com');
+      return print(response);
+    } catch (e) {
+      return print(e);
+    }
+  }
 
   static List<ForumListItem> getList() {
     List<ForumListItem> streamList = [

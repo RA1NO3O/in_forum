@@ -64,7 +64,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     dislikeCount = widget.dislikeCount;
     likeState = widget.likeState;
     commentCount = widget.commentCount;
-
+    
     super.initState();
   }
 
