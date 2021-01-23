@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:inforum/home.dart';
+import 'package:inforum/service/loginService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -11,9 +15,11 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final idController = new TextEditingController();
   final pwdController = new TextEditingController();
-  bool isNotFilled=true;
+  bool isProcessing = false;
+  bool isNotFilled = true;
   bool passwordVisible = false;
   bool isUserFound = false;
+  Map user = new Map();
 
   @override
   void initState() {
@@ -24,9 +30,9 @@ class _LoginPageState extends State<LoginPage> {
 
   void pwdListener() {
     setState(() {
-      if(pwdController.text.isNotEmpty){
+      if (pwdController.text.isNotEmpty) {
         isNotFilled = false;
-      }else{
+      } else {
         isNotFilled = true;
       }
     });
@@ -44,111 +50,193 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      width: 350,
-      height: 350,
-      child: Column(
-        children: [
-          //卡片内容
-          new Container(
-            margin: EdgeInsets.only(top: 40, bottom: 30),
-            child: Text(
-              isUserFound ? '欢迎回来,${idController.text}' : '登录',
-              style: new TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+    return Builder(builder: (BuildContext bc) {
+      return Container(
+        alignment: Alignment.center,
+        width: 350,
+        height: 350,
+        child: Column(
+          children: [
+            Container(
+              height: 5,
+              child: isProcessing ? LinearProgressIndicator() : null,
             ),
-          ),
-          //用户名表单
-          new Container(
-            padding: EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
-            child: TextField(
-              onEditingComplete: isNotFilled?(){}:btnNextClick,
-              keyboardType: TextInputType.emailAddress,
-              controller: idController,
-              enabled: !isUserFound,
-              decoration: InputDecoration(
-                  labelText: '用户名,手机或者邮箱地址',
-                  prefixIcon: Icon(Icons.person),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0))),
-            ),
-          ),
-          //密码表单
-          Container(
-            padding: isUserFound
-                ? EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10)
-                : EdgeInsets.zero,
-            child: isUserFound
-                ? TextField(
-                    controller: pwdController,
-                    obscureText: !passwordVisible,
-                    textInputAction: TextInputAction.done,
-                    onEditingComplete: isNotFilled? (){} :btnNextClick,
-                    decoration: InputDecoration(
-                        labelText: '密码',
-                        prefixIcon: Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            passwordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color:
-                                passwordVisible ? Colors.blue : Colors.black54,
-                          ),
-                          onPressed: () => setState(() {
-                            passwordVisible = !passwordVisible;
-                          }),
-                        ),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0))),
-                  )
-                : null,
-          ),
-          //登录按钮
-          new Container(
-            width: 80,
-            height: 40,
-            margin: EdgeInsets.only(top: 10),
-            child: RaisedButton(
-              color: Colors.blueAccent,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5.0))),
+            //卡片内容
+            new Container(
+              margin: EdgeInsets.only(top: 40, bottom: 30),
               child: Text(
-                isUserFound ? '登录' : '下一步',
-                style: new TextStyle(color: Colors.white),
+                isUserFound ? '欢迎回来, ${user['username']}' : '登录',
+                style: new TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
-              onPressed: isNotFilled ? null : btnNextClick,
             ),
-          )
-        ],
-      ),
-    );
+            //用户名表单
+            new Container(
+              padding:
+                  EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
+              child: TextField(
+                onEditingComplete: isNotFilled
+                    ? null
+                    : () async {
+                        String r = await btnNextClick();
+                        if (r != 'ok') {
+                          Scaffold.of(bc).showSnackBar(new SnackBar(
+                            content: Text(r),
+                            backgroundColor: Colors.redAccent,
+                          ));
+                        }
+                      },
+                keyboardType: TextInputType.emailAddress,
+                controller: idController,
+                enabled: (!isUserFound) && (!isProcessing),
+                decoration: InputDecoration(
+                    labelText: '用户名,手机或者邮箱地址',
+                    prefixIcon: Icon(Icons.person),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0))),
+              ),
+            ),
+            //密码表单
+            Container(
+              padding: isUserFound
+                  ? EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10)
+                  : EdgeInsets.zero,
+              child: isUserFound
+                  ? TextField(
+                      controller: pwdController,
+                      obscureText: !passwordVisible,
+                      textInputAction: TextInputAction.done,
+                      onEditingComplete: isNotFilled
+                          ? null
+                          : () async {
+                              String r = await btnNextClick();
+                              if (r != 'ok') {
+                                Scaffold.of(bc).showSnackBar(new SnackBar(
+                                  content: Text(r),
+                                  backgroundColor: Colors.redAccent,
+                                ));
+                              }
+                            },
+                      decoration: InputDecoration(
+                          labelText: '密码',
+                          prefixIcon: Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              passwordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: passwordVisible
+                                  ? Colors.blue
+                                  : Colors.black54,
+                            ),
+                            onPressed: () => setState(() {
+                              passwordVisible = !passwordVisible;
+                            }),
+                          ),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0))),
+                    )
+                  : null,
+            ),
+            //登录按钮
+            new Container(
+              width: 80,
+              height: 40,
+              margin: EdgeInsets.only(top: 10),
+              child: RaisedButton(
+                color: Colors.blueAccent,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                child: Text(
+                  isUserFound ? '登录' : '下一步',
+                  style: new TextStyle(color: Colors.white),
+                ),
+                onPressed: (isNotFilled && (!isProcessing))
+                    ? null
+                    : () async {
+                        String r = await btnNextClick();
+                        if (r != 'ok') {
+                          Scaffold.of(bc).showSnackBar(new SnackBar(
+                            content: Text(r),
+                            backgroundColor: Colors.redAccent,
+                          ));
+                        }
+                      },
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Future<String> btnNextClick() async {
+    setState(() {
+      isProcessing = true;
+    });
+
+    if (isUserFound) {
+      Response response = await Dio().get('http://8.129.212.186:7246/api/login?'
+          'username=${idController.text}&password=${pwdController.text}');
+      Map userMap = jsonDecode(response.toString());
+      List x1 = userMap['recordset'];
+
+      if (x1.isNotEmpty) {
+        //写入登录状态
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userId', user['id'].toString());
+        await prefs.setBool('isLogin', true);
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (BuildContext context) {
+          return HomeScreen(
+            userId: user['username'],
+          );
+        }), result: "null");
+        idController.removeListener(idListener);
+        setState(() {
+          isProcessing = false;
+        });
+        return 'ok';
+      } else {
+        setState(() {
+          isProcessing = false;
+        });
+        return '密码错误,请重试.';
+      }
+    } else {
+      try {
+        Response response =
+            await Dio().get('http://8.129.212.186:7246/api/searchUser?'
+                'username=${idController.text}');
+        Map userMap = jsonDecode(response.toString());
+        List x1 = userMap['recordset'];
+
+        if (x1.isNotEmpty) {
+          setState(() {
+            user = x1[0];
+            isUserFound = true;
+            isProcessing = false;
+          });
+          return 'ok';
+        } else {
+          setState(() {
+            isProcessing = false;
+          });
+          return '未找到该用户.';
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
+    setState(() {
+      isProcessing = false;
+    });
+    return 'unknown error';
   }
 
   @override
   void dispose() {
     idController.dispose();
+    pwdController.dispose();
     super.dispose();
-  }
-
-  Future<void> btnNextClick() async {
-    if (isUserFound) {
-      //写入登录状态
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('userId', idController.text);
-      await prefs.setBool('isLogin', true);
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (BuildContext context) {
-        return HomeScreen(
-          userId: idController.text,
-        );
-      }), result: "null");
-      idController.removeListener(idListener);
-    } else {
-      //TODO:API查找用户
-      setState(() {
-        isUserFound = true;
-      });
-    }
   }
 }

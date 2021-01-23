@@ -12,7 +12,7 @@ class ForumListItem extends StatefulWidget {
   final int dislikeCount;
   final int commentCount;
   final int collectCount;
-  final String imgThumbnail;
+  final String imgURL;
   final bool isCollect;
   final String authorName;
   final String imgAuthor;
@@ -28,7 +28,7 @@ class ForumListItem extends StatefulWidget {
     this.dislikeCount,
     this.commentCount,
     this.collectCount,
-    this.imgThumbnail,
+    this.imgURL,
     this.likeState,
     this.isCollect,
     this.imgAuthor,
@@ -70,19 +70,19 @@ class _ForumListItem extends State<ForumListItem> {
     if (tagStrings != null) {
       tagWidgets.addAll(tagStrings
           .map((s) => Container(
-                height: 32,
-                child: Chip(
-                  label: Text(
-                    '$s',
-                    style: new TextStyle(color: Colors.blue),
-                  ),
-                  avatar: Icon(
-                    Icons.tag,
-                    color: Colors.blue,
-                  ),
-                  backgroundColor: Color(0xFFF8F8F8),
-                ),
-              ))
+        height: 32,
+        child: Chip(
+          label: Text(
+            '$s',
+            style: new TextStyle(color: Colors.blue),
+          ),
+          avatar: Icon(
+            Icons.tag,
+            color: Colors.blue,
+          ),
+          backgroundColor: Color(0xFFF8F8F8),
+        ),
+      ))
           .toList());
     }
   }
@@ -102,7 +102,7 @@ class _ForumListItem extends State<ForumListItem> {
                 child: Flex(direction: Axis.vertical, children: [
                   InkWell(
                       onTap: () => Navigator.push(context, MaterialPageRoute(
-                              builder: (BuildContext context) {
+                          builder: (BuildContext context) {
                             return ForumDetailPage(
                               titleText: widget.titleText,
                               contentText: widget.contentText,
@@ -110,7 +110,7 @@ class _ForumListItem extends State<ForumListItem> {
                               dislikeCount: dislikeCount,
                               likeState: likeState,
                               commentCount: commentCount,
-                              imgThumbnail: widget.imgThumbnail,
+                              imgURL: widget.imgURL,
                               isCollect: isCollect,
                               imgAuthor: widget.imgAuthor,
                               authorName: widget.authorName,
@@ -124,7 +124,7 @@ class _ForumListItem extends State<ForumListItem> {
                         children: [
                           Container(
                             margin:
-                                EdgeInsets.only(top: 10, left: 5, bottom: 5),
+                            EdgeInsets.only(top: 10, left: 5, bottom: 5),
                             child: Flex(
                               direction: Axis.horizontal,
                               children: [
@@ -175,18 +175,18 @@ class _ForumListItem extends State<ForumListItem> {
                         ],
                       )),
                   Container(
-                    width: widget.imgThumbnail != null ? 400 : 0,
-                    height: widget.imgThumbnail != null ? 200 : 0,
-                    child: widget.imgThumbnail != null
+                    width: widget.imgURL != null ? 400 : 0,
+                    height: widget.imgURL != null ? 200 : 0,
+                    child: widget.imgURL != null
                         ? ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Hero(
-                              tag: 'img',
-                              child: Image.asset(
-                                widget.imgThumbnail,
-                                fit: BoxFit.fitWidth,
-                              ),
-                            ))
+                        borderRadius: BorderRadius.circular(5),
+                        child: Hero(
+                          tag: 'img',
+                          child: Image.asset(
+                            widget.imgURL,
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ))
                         : null,
                   ),
                   Container(
@@ -194,10 +194,10 @@ class _ForumListItem extends State<ForumListItem> {
                       alignment: Alignment.centerLeft,
                       child: tagWidgets != null
                           ? Wrap(
-                              spacing: 5,
-                              runSpacing: 1,
-                              children: tagWidgets,
-                            )
+                        spacing: 5,
+                        runSpacing: 1,
+                        children: tagWidgets,
+                      )
                           : null),
                   Flex(direction: Axis.horizontal, children: [
                     Expanded(

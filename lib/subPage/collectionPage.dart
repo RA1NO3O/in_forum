@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/data/collectionListStream.dart';
 
@@ -32,7 +33,7 @@ class _CollectionPage extends State<CollectionPage> {
           // centerTitle: true,
           actions: [
             IconButton(
-                tooltip: '搜索收藏', icon: Icon(Icons.search), onPressed: () {}),
+                tooltip: '搜索收藏', icon: Icon(Icons.search), onPressed: (){}),
           ],
         ),
         body: RefreshIndicator(
@@ -76,6 +77,7 @@ class _CollectionPage extends State<CollectionPage> {
       }
     });
   }
+
   @override
   void dispose() {
     super.dispose();

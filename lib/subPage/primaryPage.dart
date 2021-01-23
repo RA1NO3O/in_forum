@@ -20,7 +20,6 @@ class _PrimaryPage extends State<PrimaryPage> {
   List<ForumListItem> _list = ForumListStream.getList();
   @override
   void initState() {
-    ForumListStream.getHttp();
     _getStream();
     super.initState();
   }

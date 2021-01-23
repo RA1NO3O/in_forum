@@ -15,7 +15,7 @@ class ForumDetailPage extends StatefulWidget {
   final int dislikeCount;
   final int likeState;
   final int commentCount;
-  final String imgThumbnail;
+  final String imgURL;
   final bool isCollect;
   final String authorName;
   final String imgAuthor;
@@ -30,7 +30,7 @@ class ForumDetailPage extends StatefulWidget {
       this.likeCount,
       this.dislikeCount,
       this.commentCount,
-      this.imgThumbnail,
+      this.imgURL,
       this.isCollect,
       this.likeState,
       this.authorName,
@@ -219,14 +219,14 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                   ),
                   Container(
                     margin: EdgeInsets.only(left: 25, right: 25, bottom: 5),
-                    width: widget.imgThumbnail != null ? 400 : 0,
-                    child: widget.imgThumbnail != null
+                    width: widget.imgURL != null ? 400 : 0,
+                    child: widget.imgURL != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(5),
                             child: Hero(
                               tag: 'img',
                               child: Image.asset(
-                                widget.imgThumbnail,
+                                widget.imgURL,
                                 fit: BoxFit.fitWidth,
                               ),
                             ),

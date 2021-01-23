@@ -18,7 +18,7 @@ class ForumCollectionListStream {
         commentCount: 1,
         collectCount: 5,
         isCollect: false,
-        imgThumbnail: 'images/test.jpg',
+        imgURL: 'images/test.jpg',
         authorName: 'レエイン',
         imgAuthor: 'images/test.jpg',
         isAuthor: true,

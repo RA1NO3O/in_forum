@@ -46,7 +46,7 @@ Future<void> main() async {
     debugShowCheckedModeBanner: false, //隐藏debug横幅
   ));
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: Color(0x00000000),
+      systemNavigationBarDividerColor: Color(0x00000000),
       statusBarIconBrightness: Brightness.light));
 }
 
