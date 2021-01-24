@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:inforum/component/snackBarStyles.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/service/loginService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
             new Container(
               margin: EdgeInsets.only(top: 40, bottom: 30),
               child: Text(
-                isUserFound ? '欢迎回来, ${user['username']}' : '登录',
+                isUserFound ? '你好, ${user['userName']}' : '登录',
                 style: new TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
             ),
@@ -79,10 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                     : () async {
                         String r = await btnNextClick();
                         if (r != 'ok') {
-                          Scaffold.of(bc).showSnackBar(new SnackBar(
-                            content: Text(r),
-                            backgroundColor: Colors.redAccent,
-                          ));
+                          Scaffold.of(bc).showSnackBar(errorSnackBar(r));
                         }
                       },
                 keyboardType: TextInputType.emailAddress,
@@ -110,10 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                           : () async {
                               String r = await btnNextClick();
                               if (r != 'ok') {
-                                Scaffold.of(bc).showSnackBar(new SnackBar(
-                                  content: Text(r),
-                                  backgroundColor: Colors.redAccent,
-                                ));
+                                Scaffold.of(bc).showSnackBar(errorSnackBar(r));
                               }
                             },
                       decoration: InputDecoration(
@@ -155,10 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                     : () async {
                         String r = await btnNextClick();
                         if (r != 'ok') {
-                          Scaffold.of(bc).showSnackBar(new SnackBar(
-                            content: Text(r),
-                            backgroundColor: Colors.redAccent,
-                          ));
+                          Scaffold.of(bc).showSnackBar(errorSnackBar(r));
                         }
                       },
               ),
@@ -175,20 +167,25 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (isUserFound) {
-      Response response = await Dio().get('http://8.129.212.186:7246/api/login?'
-          'username=${idController.text}&password=${pwdController.text}');
-      Map userMap = jsonDecode(response.toString());
-      List x1 = userMap['recordset'];
+      // Response response = await Dio().get('http://8.129.212.186:7246/api/login?'
+      //     'username=${idController.text}&password=${pwdController.text}');
+      // Map userMap = jsonDecode(response.toString());
+      // List x1 = userMap['recordset'];
 
-      if (x1.isNotEmpty) {
+      final Recordset rs =
+          await tryLogin(idController.text, pwdController.text);
+
+      if (rs != null) {
+        user['id'] = rs.id;
         //写入登录状态
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('userId', user['id'].toString());
+        await prefs.setString('userName', user['userName']);
         await prefs.setBool('isLogin', true);
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) {
           return HomeScreen(
-            userId: user['username'],
+            userId: user['userName'],
           );
         }), result: "null");
         idController.removeListener(idListener);
@@ -204,15 +201,16 @@ class _LoginPageState extends State<LoginPage> {
       }
     } else {
       try {
-        Response response =
-            await Dio().get('http://8.129.212.186:7246/api/searchUser?'
-                'username=${idController.text}');
-        Map userMap = jsonDecode(response.toString());
-        List x1 = userMap['recordset'];
+        // Response response =
+        //     await Dio().get('http://8.129.212.186:7246/api/searchUser?'
+        //         'username=${idController.text}');
+        // Map userMap = jsonDecode(response.toString());
+        // List x1 = userMap['recordset'];
+        final Recordset rs = await searchUser(idController.text);
 
-        if (x1.isNotEmpty) {
+        if (rs != null) {
           setState(() {
-            user = x1[0];
+            user['userName'] = rs.username;
             isUserFound = true;
             isProcessing = false;
           });

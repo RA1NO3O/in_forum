@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:inforum/component/snackBarStyles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditPostScreen extends StatefulWidget {
@@ -30,7 +31,6 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   @override
   void initState() {
-    print(edited);
     if (widget.mode == 0) {
       getDraft();
     }
@@ -113,26 +113,19 @@ class _EditPostScreenState extends State<EditPostScreen> {
               style: TextStyle(color: Colors.black),
             ),
             actions: [
-              Builder(builder: (BuildContext b) {
-                Widget saveButton = edited
-                    ? IconButton(
-                        icon: Icon(Icons.save),
-                        onPressed: () {
+              Builder(builder: (BuildContext bc) {
+                return IconButton(
+                  icon: Icon(Icons.save_rounded),
+                  onPressed: edited
+                      ? () {
                           save(titleController.text, contentController.text,
                               tags);
-                          Scaffold.of(b).showSnackBar(SnackBar(
-                            content: Text('已存为草稿.'),
-                            backgroundColor: Colors.blue,
-                          ));
-                          saved = false;
-                        },
-                        tooltip: '存为草稿',
-                      )
-                    : IconButton(
-                        icon: Icon(Icons.save_rounded),
-                        onPressed: null,
-                      );
-                return saveButton;
+                          Scaffold.of(bc).showSnackBar(doneSnackBar('已存为草稿.'));
+                          saved = true;
+                        }
+                      : null,
+                  tooltip: '存为草稿',
+                );
               }),
               new IconButton(
                 icon: widget.mode == 0
@@ -152,7 +145,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 child: Column(
                   children: [
                     new TextFormField(
-                      maxLength: 128,
+                      maxLength: 32,
                       style: new TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold),
                       controller: titleController,
@@ -195,9 +188,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   void titleListener() {
     setState(() {
-      var txtTitle=titleController.text;
+      var txtTitle = titleController.text;
       var txtContent = contentController.text;
       if (widget.mode == 0) {
+        //TODO:更改代码逻辑
         if (titleController.text.trim().isNotEmpty &&
             contentController.text.trim().isNotEmpty) {
           edited = true;
@@ -274,9 +268,9 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   //退出前事件，返回true时即退出
   Future<bool> _onBackPressed() async {
-    print(edited);
+    print(saved);
     //如果没有改动内容或内容为空或是已保存,不拦截退出
-    if (saved || !edited) {
+    if (saved || (!edited)) {
       return Future<bool>.value(true);
     }
     bool result = await showDialog<bool>(
@@ -311,7 +305,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   onPressed: () async {
                     Navigator.pop(context, true);
                     //舍弃时会清空草稿存储
-                    SharedPreferences sp = await SharedPreferences.getInstance();
+                    SharedPreferences sp =
+                        await SharedPreferences.getInstance();
                     sp.setString('draft_title', '');
                     sp.setString('draft_content', '');
                     sp.setStringList('draft_tags', null);

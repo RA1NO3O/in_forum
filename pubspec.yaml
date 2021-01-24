@@ -33,6 +33,7 @@ dependencies:
   simple_animations: ^2.2.3
   shared_preferences: ^0.5.12+4
   extended_nested_scroll_view: ^2.0.0
+  toast: ^0.1.5
 
 
 dev_dependencies:

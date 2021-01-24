@@ -18,13 +18,14 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLogin =
       prefs.getBool('isLogin') == null ? false : prefs.getBool('isLogin');
-  if(prefs.getBool('isLogin')==null){
+
+  if (prefs.getBool('isLogin') == null) {
     prefs.setString('draft_title', '');
     prefs.setString('draft_content', '');
     prefs.setStringList('draft_tags', null);
   }
   String userId = prefs.getString('userId');
-  print(isLogin);
+
   runApp(MaterialApp(
     title: 'Inforum',
     theme: ThemeData(
@@ -42,7 +43,11 @@ Future<void> main() async {
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate
     ],
-    supportedLocales: [const Locale("zh", "CH"), const Locale("en", "US"),const Locale("ja","JP")],
+    supportedLocales: [
+      const Locale("zh", "CH"),
+      const Locale("en", "US"),
+      const Locale("ja", "JP"),
+    ],
     debugShowCheckedModeBanner: false, //隐藏debug横幅
   ));
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
