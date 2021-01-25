@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:inforum/component/snackBarStyles.dart';
+import 'package:inforum/component/customStyles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditPostScreen extends StatefulWidget {
@@ -39,8 +39,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
       contentController.text = widget.contentText;
       tags.addAll(widget.tags);
     }
-    titleController.addListener(titleListener);
-    contentController.addListener(contentListener);
+    titleController.addListener(textListener);
+    contentController.addListener(textListener);
 
     super.initState();
   }
@@ -79,8 +79,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
               ),
             ))
         .toList());
-    if (!IterableEquality().equals(tags, draftTags)) {
-      edited = true;
+    if (IterableEquality().equals(tags, draftTags)) {
+      edited = false;
     }
   }
 
@@ -99,7 +99,6 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(edited);
     refreshTagList();
     return WillPopScope(
       child: Scaffold(
@@ -186,36 +185,17 @@ class _EditPostScreenState extends State<EditPostScreen> {
     );
   }
 
-  void titleListener() {
-    setState(() {
-      var txtTitle = titleController.text;
-      var txtContent = contentController.text;
-      if (widget.mode == 0) {
-        //TODO:更改代码逻辑
-        if (titleController.text.trim().isNotEmpty &&
-            contentController.text.trim().isNotEmpty) {
-          edited = true;
-        } else {
-          edited = false;
-        }
-      }
-      if (widget.mode == 1) {
-        if (titleController.text == widget.titleText &&
-            contentController.text == widget.contentText) {
-          edited = false;
-        } else {
-          edited = true;
-        }
-      }
-    });
-  }
-
-  void contentListener() {
+  void textListener() {
     setState(() {
       if (widget.mode == 0) {
-        if (titleController.text.trim().isNotEmpty &&
+        if (titleController.text.trim().isNotEmpty ||
             contentController.text.trim().isNotEmpty) {
-          edited = true;
+          if ((titleController.text == draftTitle) &&
+              (contentController.text == draftContent)) {
+            edited = false;
+          }else{
+            edited = true;
+          }
         } else {
           edited = false;
         }
@@ -268,7 +248,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   //退出前事件，返回true时即退出
   Future<bool> _onBackPressed() async {
-    print(saved);
+    print(edited);
     //如果没有改动内容或内容为空或是已保存,不拦截退出
     if (saved || (!edited)) {
       return Future<bool>.value(true);

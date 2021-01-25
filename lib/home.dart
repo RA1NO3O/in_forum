@@ -14,6 +14,7 @@ import 'package:inforum/subPage/userPage.dart';
 // import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'component/customStyles.dart';
 import 'main.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -338,9 +339,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  RoundedRectangleBorder roundedRectangleBorder =
-      RoundedRectangleBorder(borderRadius: BorderRadius.circular(5));
 
   TextStyle titleTextStyle() => Theme.of(context)
       .primaryTextTheme

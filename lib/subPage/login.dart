@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:inforum/component/snackBarStyles.dart';
+import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/service/loginService.dart';
 import 'package:shared_preferences/shared_preferences.dart';

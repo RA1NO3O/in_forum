@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+RoundedRectangleBorder roundedRectangleBorder =
+RoundedRectangleBorder(borderRadius: BorderRadius.circular(5));
+
 SnackBar errorSnackBar(String r) {
   return SnackBar(
     content: Row(
@@ -19,7 +22,7 @@ SnackBar welcomeSnackBar(String r) {
         Text('👏欢迎, ' + r),
       ],
     ),
-    backgroundColor: Colors.blueAccent,
+    backgroundColor: Colors.greenAccent,
   );
 }
 
