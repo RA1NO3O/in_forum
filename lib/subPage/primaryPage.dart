@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:inforum/component/forumListItem.dart';
-import 'package:inforum/data/fourmListStream.dart';
+import 'package:inforum/data/forumListStream.dart';
 
 class PrimaryPage extends StatefulWidget {
   final String userId;
@@ -17,7 +16,8 @@ class PrimaryPage extends StatefulWidget {
 }
 
 class _PrimaryPage extends State<PrimaryPage> {
-  List<ForumListItem> _list = ForumListStream.getList();
+  List<ForumListItem> _list = [];
+
   @override
   void initState() {
     _getStream();
@@ -29,10 +29,32 @@ class _PrimaryPage extends State<PrimaryPage> {
     return RefreshIndicator(
       strokeWidth: 2.5,
       onRefresh: _refresh,
-      child: ListView(
-        controller: widget.scrollController,
-        children: _list,
-      ),
+      child: _list.isNotEmpty
+          ? ListView(
+              controller: widget.scrollController,
+              children: _list,
+            )
+          : ListView(
+              controller: widget.scrollController,
+              children: [
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.signal_wifi_off_rounded,
+                        color: Colors.black26,
+                        size: 100,
+                      ),
+                      Text(
+                        '未连接到网络',
+                        style: TextStyle(color: Colors.black26),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
     );
   }
 
@@ -40,12 +62,16 @@ class _PrimaryPage extends State<PrimaryPage> {
     await _getStream();
   }
 
-  _getStream() {
+  _getStream() async {
+    List<ForumListItem> fli = await getList() ?? null;
     setState(() {
       _list.clear();
-      _list.addAll(ForumListStream.getList());
+      if (fli != null) {
+        _list.addAll(fli);
+      }
     });
   }
+
   @override
   void dispose() {
     super.dispose();

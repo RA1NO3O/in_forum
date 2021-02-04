@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:inforum/component/customStyles.dart';
@@ -167,11 +164,6 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (isUserFound) {
-      // Response response = await Dio().get('http://8.129.212.186:7246/api/login?'
-      //     'username=${idController.text}&password=${pwdController.text}');
-      // Map userMap = jsonDecode(response.toString());
-      // List x1 = userMap['recordset'];
-
       final Recordset rs =
           await tryLogin(idController.text, pwdController.text);
 
@@ -180,12 +172,13 @@ class _LoginPageState extends State<LoginPage> {
         //写入登录状态
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('userId', user['id'].toString());
-        await prefs.setString('userName', user['userName']);
+        await prefs.setString('userName', user['userName'].toString());
         await prefs.setBool('isLogin', true);
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) {
           return HomeScreen(
-            userId: user['userName'],
+            userId: user['userId'],
+            userName: user['userName'],
           );
         }), result: "null");
         idController.removeListener(idListener);
@@ -201,11 +194,6 @@ class _LoginPageState extends State<LoginPage> {
       }
     } else {
       try {
-        // Response response =
-        //     await Dio().get('http://8.129.212.186:7246/api/searchUser?'
-        //         'username=${idController.text}');
-        // Map userMap = jsonDecode(response.toString());
-        // List x1 = userMap['recordset'];
         final Recordset rs = await searchUser(idController.text);
 
         if (rs != null) {

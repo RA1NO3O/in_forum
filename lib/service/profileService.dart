@@ -4,20 +4,17 @@
 
 import 'dart:convert';
 import 'package:dio/dio.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:inforum/data/webConfig.dart';
 
 ProfileService profileServiceFromJson(String str) =>
     ProfileService.fromJson(json.decode(str));
 
 String profileServiceToJson(ProfileService data) => json.encode(data.toJson());
 
-Future<Recordset> getProfile(String userID) async {
-  Response res =
-      await Dio().get('http://8.129.212.186:7246/api/getProfile/$userID');
-  final profileService = profileServiceFromJson(res.toString());
-  final rs =
-      profileService.recordset.isEmpty ? null : profileService.recordset[0];
+Future<Recordset> getProfile(String id) async {
+  Response res = await Dio().get('$apiServerAddress/getProfile/$id');
+  final ProfileService ps = profileServiceFromJson(res.toString());
+  final Recordset rs = ps.recordset.isEmpty ? null : ps.recordset[0];
   return rs;
 }
 

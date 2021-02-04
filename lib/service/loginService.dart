@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:inforum/data/webConfig.dart';
 
 LoginService loginServiceFromJson(String str) =>
     LoginService.fromJson(json.decode(str));
@@ -11,18 +12,20 @@ LoginService loginServiceFromJson(String str) =>
 String loginServiceToJson(LoginService data) => json.encode(data.toJson());
 
 Future<Recordset> tryLogin(String userName, String password) async {
-  Response res = await Dio().get('http://8.129.212.186:7246/api/login'
+  Response res = await Dio().get('$apiServerAddress/login'
       '?username=$userName&password=$password');
-  final loginService = loginServiceFromJson(res.toString());
-  final rs = loginService.recordset.isEmpty ? null : loginService.recordset[0];
+  final LoginService loginService = loginServiceFromJson(res.toString());
+  final Recordset rs =
+      loginService.recordset.isEmpty ? null : loginService.recordset[0];
   return rs;
 }
 
 Future<Recordset> searchUser(String userName) async {
-  Response res = await Dio().get('http://8.129.212.186:7246/api/searchUser'
+  Response res = await Dio().get('$apiServerAddress/searchUser'
       '?username=$userName');
-  final loginService = loginServiceFromJson(res.toString());
-  final rs = loginService.recordset.isEmpty ? null : loginService.recordset[0];
+  final LoginService loginService = loginServiceFromJson(res.toString());
+  final Recordset rs =
+      loginService.recordset.isEmpty ? null : loginService.recordset[0];
   return rs;
 }
 

@@ -8,6 +8,7 @@ class DateTimeFormat {
     int nowHour = int.parse(nowTime.split(" ")[1].split(':')[0]);
     int nowMinute = int.parse(nowTime.split(" ")[1].split(':')[1]);
 
+    oldTime=oldTime.split('.')[0].replaceAll("-", "/");
     int oldYear = int.parse(oldTime.split(" ")[0].split('/')[0]);
     int oldMonth = int.parse(oldTime.split(" ")[0].split('/')[1]);
     int oldDay = int.parse(oldTime.split(" ")[0].split('/')[2]);

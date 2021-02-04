@@ -70,19 +70,19 @@ class _ForumListItem extends State<ForumListItem> {
     if (tagStrings != null) {
       tagWidgets.addAll(tagStrings
           .map((s) => Container(
-        height: 32,
-        child: Chip(
-          label: Text(
-            '$s',
-            style: new TextStyle(color: Colors.blue),
-          ),
-          avatar: Icon(
-            Icons.tag,
-            color: Colors.blue,
-          ),
-          backgroundColor: Color(0xFFF8F8F8),
-        ),
-      ))
+                height: 32,
+                child: Chip(
+                  label: Text(
+                    '$s',
+                    style: new TextStyle(color: Colors.blue),
+                  ),
+                  avatar: Icon(
+                    Icons.tag,
+                    color: Colors.blue,
+                  ),
+                  backgroundColor: Color(0xFFF8F8F8),
+                ),
+              ))
           .toList());
     }
   }
@@ -102,7 +102,7 @@ class _ForumListItem extends State<ForumListItem> {
                 child: Flex(direction: Axis.vertical, children: [
                   InkWell(
                       onTap: () => Navigator.push(context, MaterialPageRoute(
-                          builder: (BuildContext context) {
+                              builder: (BuildContext context) {
                             return ForumDetailPage(
                               titleText: widget.titleText,
                               contentText: widget.contentText,
@@ -124,7 +124,7 @@ class _ForumListItem extends State<ForumListItem> {
                         children: [
                           Container(
                             margin:
-                            EdgeInsets.only(top: 10, left: 5, bottom: 5),
+                                EdgeInsets.only(top: 10, left: 5, bottom: 5),
                             child: Flex(
                               direction: Axis.horizontal,
                               children: [
@@ -135,8 +135,12 @@ class _ForumListItem extends State<ForumListItem> {
                                           margin: EdgeInsets.only(right: 5),
                                           child: CircleAvatar(
                                               radius: 15,
-                                              backgroundImage: AssetImage(
-                                                  widget.imgAuthor))),
+                                              backgroundImage:
+                                                  widget.imgAuthor != null
+                                                      ? NetworkImage(
+                                                          widget.imgAuthor)
+                                                      : AssetImage(
+                                                          'images/test.jpg'))),
                                       Text(widget.authorName),
                                     ],
                                   ),
@@ -179,14 +183,14 @@ class _ForumListItem extends State<ForumListItem> {
                     height: widget.imgURL != null ? 200 : 0,
                     child: widget.imgURL != null
                         ? ClipRRect(
-                        borderRadius: BorderRadius.circular(5),
-                        child: Hero(
-                          tag: 'img',
-                          child: Image.asset(
-                            widget.imgURL,
-                            fit: BoxFit.fitWidth,
-                          ),
-                        ))
+                            borderRadius: BorderRadius.circular(5),
+                            child: Hero(
+                              tag: 'img',
+                              child: Image.asset(
+                                widget.imgURL,
+                                fit: BoxFit.fitWidth,
+                              ),
+                            ))
                         : null,
                   ),
                   Container(
@@ -194,10 +198,10 @@ class _ForumListItem extends State<ForumListItem> {
                       alignment: Alignment.centerLeft,
                       child: tagWidgets != null
                           ? Wrap(
-                        spacing: 5,
-                        runSpacing: 1,
-                        children: tagWidgets,
-                      )
+                              spacing: 5,
+                              runSpacing: 1,
+                              children: tagWidgets,
+                            )
                           : null),
                   Flex(direction: Axis.horizontal, children: [
                     Expanded(
@@ -347,6 +351,7 @@ class _ForumListItem extends State<ForumListItem> {
           ],
         ));
   }
+
   @override
   void dispose() {
     super.dispose();

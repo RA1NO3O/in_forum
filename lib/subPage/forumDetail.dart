@@ -132,7 +132,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                           clipBehavior: Clip.hardEdge,
                           color: Colors.transparent,
                           child: Ink.image(
-                            image: AssetImage(widget.imgAuthor),
+                            image: NetworkImage(widget.imgAuthor),
                             fit: BoxFit.cover,
                             width: 80,
                             height: 80,
@@ -225,7 +225,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                             borderRadius: BorderRadius.circular(5),
                             child: Hero(
                               tag: 'img',
-                              child: Image.asset(
+                              child: Image.network(
                                 widget.imgURL,
                                 fit: BoxFit.fitWidth,
                               ),

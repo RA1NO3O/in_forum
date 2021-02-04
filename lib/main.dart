@@ -24,7 +24,6 @@ Future<void> main() async {
     prefs.setString('draft_content', '');
     prefs.setStringList('draft_tags', null);
   }
-  String userId = prefs.getString('userId');
 
   runApp(MaterialApp(
     title: 'Inforum',
@@ -34,7 +33,8 @@ Future<void> main() async {
     ),
     home: isLogin
         ? HomeScreen(
-            userId: userId.isEmpty ? 'User' : userId,
+            userId: prefs.getString('userId'),
+            userName: prefs.getString('userName'),
           )
         : MainPage(
             title: 'Inforum',

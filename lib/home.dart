@@ -19,8 +19,9 @@ import 'main.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userId;
+  final String userName;
 
-  const HomeScreen({Key key, this.userId}) : super(key: key);
+  const  HomeScreen({Key key, this.userId, this.userName}) : super(key: key);
 
   @override
   _HomeScreenState createState() {
@@ -252,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     alignment: Alignment.centerLeft,
                     margin: EdgeInsets.only(top: 5),
                     child: Text(
-                      widget.userId.isEmpty ? 'User' : widget.userId,
+                      widget.userId==null ? 'Unknown' : widget.userId,
                       style: new TextStyle(fontSize: 32),
                     ),
                   ),
