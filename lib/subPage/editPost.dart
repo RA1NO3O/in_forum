@@ -130,7 +130,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 icon: widget.mode == 0
                     ? Icon(Icons.send_rounded)
                     : Icon(Icons.done),
-                //TODO:发布新帖
+                //TODO:api接入发布新帖
                 onPressed: () => print('posted.'),
                 tooltip: widget.mode == 0 ? '发帖' : '提交更改',
               )
@@ -248,7 +248,6 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   //退出前事件，返回true时即退出
   Future<bool> _onBackPressed() async {
-    print(edited);
     //如果没有改动内容或内容为空或是已保存,不拦截退出
     if (saved || (!edited)) {
       return Future<bool>.value(true);

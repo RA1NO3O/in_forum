@@ -17,6 +17,7 @@ class PrimaryPage extends StatefulWidget {
 
 class _PrimaryPage extends State<PrimaryPage> {
   List<ForumListItem> _list = [];
+  bool loadState = false;
 
   @override
   void initState() {
@@ -29,46 +30,24 @@ class _PrimaryPage extends State<PrimaryPage> {
     return RefreshIndicator(
       strokeWidth: 2.5,
       onRefresh: _refresh,
-      child: _list.isNotEmpty
-          ? ListView(
-              controller: widget.scrollController,
-              children: _list,
-            )
-          : ListView(
-              controller: widget.scrollController,
-              children: [
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.signal_wifi_off_rounded,
-                        color: Colors.black26,
-                        size: 100,
-                      ),
-                      Text(
-                        '未连接到网络',
-                        style: TextStyle(color: Colors.black26),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+      child: ListView(
+        controller: widget.scrollController,
+        children: loadState?_list:[],
+      ),
     );
   }
 
   Future<void> _refresh() async {
-    await _getStream();
+    _getStream();
   }
 
   _getStream() async {
-    List<ForumListItem> fli = await getList() ?? null;
+
+    _list.clear();
+    List<ForumListItem> fli = await getList();
+    _list.addAll(fli);
     setState(() {
-      _list.clear();
-      if (fli != null) {
-        _list.addAll(fli);
-      }
+      loadState=true;
     });
   }
 

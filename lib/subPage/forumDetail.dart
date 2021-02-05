@@ -55,7 +55,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   bool isAuthor;
   List<String> tagStrings;
   List<Widget> tagWidgets;
-
+  List<CommentListItem> commentList = [];
+  bool loadState = false;
   @override
   void initState() {
     isAuthor = widget.isAuthor;
@@ -64,7 +65,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     dislikeCount = widget.dislikeCount;
     likeState = widget.likeState;
     commentCount = widget.commentCount;
-    
+    _refresh();
     super.initState();
   }
 
@@ -112,211 +113,221 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
         ],
       ),
       body: Builder(builder: (BuildContext c) {
-        return Flex(
-          direction: Axis.vertical,
-          children: [
-            Expanded(
-              flex: 1,
-              child: Scrollbar(
-                radius: Radius.circular(5),
-                child: ListView(children: [
-                  Container(
-                    height: 70,
-                    margin: EdgeInsets.only(top: 10, left: 22, right: 10),
-                    child: Flex(
-                      direction: Axis.horizontal,
-                      children: [
-                        Material(
-                          elevation: 3,
-                          shape: CircleBorder(),
-                          clipBehavior: Clip.hardEdge,
-                          color: Colors.transparent,
-                          child: Ink.image(
-                            image: NetworkImage(widget.imgAuthor),
-                            fit: BoxFit.cover,
-                            width: 80,
-                            height: 80,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(context, MaterialPageRoute(
-                                    builder: (BuildContext context) {
-                                  return ProfilePage(
-                                    userId: widget.authorName,
-                                  );
-                                }));
-                              },
+        return RefreshIndicator(
+          strokeWidth: 2.5,
+          onRefresh: _refresh,
+          child: Flex(
+            direction: Axis.vertical,
+            children: [
+              Expanded(
+                flex: 1,
+                child: Scrollbar(
+                  radius: Radius.circular(5),
+                  child: ListView(children: [
+                    Container(
+                      height: 70,
+                      margin: EdgeInsets.only(top: 10, left: 22, right: 10),
+                      child: Flex(
+                        direction: Axis.horizontal,
+                        children: [
+                          Material(
+                            elevation: 3,
+                            shape: CircleBorder(),
+                            clipBehavior: Clip.hardEdge,
+                            color: Colors.transparent,
+                            child: Ink.image(
+                              image: widget.imgAuthor != null
+                                  ? NetworkImage(widget.imgAuthor)
+                                  : AssetImage('images/test.jpg'),
+                              fit: BoxFit.cover,
+                              width: 80,
+                              height: 80,
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(
+                                      builder: (BuildContext context) {
+                                    return ProfilePage(
+                                      userId: widget.authorName,
+                                    );
+                                  }));
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                        Flex(
-                          direction: Axis.vertical,
-                          children: [
-                            Expanded(
+                          Flex(
+                            direction: Axis.vertical,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
                                 flex: 1,
                                 child: Container(
-                                  margin: EdgeInsets.only(top: 15, left: 10),
+                                  margin: EdgeInsets.only(top: 10,left: 10),
+                                  alignment: Alignment.bottomLeft,
                                   child: Text(
                                     widget.authorName,
                                     style: new TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold),
                                   ),
-                                )),
-                            Container(
-                              height: 25,
-                              margin: EdgeInsets.only(left: 10),
-                              child: Text(
-                                '@ra1n7246',
-                                style: new TextStyle(color: Colors.black54),
+                                ),
                               ),
-                            )
-                          ],
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Container(),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.keyboard_arrow_down_rounded),
-                          //TODO:用户下拉菜单
-                          onPressed: () {},
-                        )
-                      ],
-                    ),
-                  ),
-                  new Container(
-                    margin: EdgeInsets.only(
-                      top: 10,
-                      left: 25,
-                    ),
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      widget.titleText,
-                      style: new TextStyle(
-                          color: Color(0xFF000000),
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  new Container(
-                      margin: EdgeInsets.only(top: 10, left: 25, right: 25),
-                      child: Text(
-                        widget.contentText,
-                        style: new TextStyle(fontSize: 18),
-                      )),
-                  new Container(
-                    margin:
-                        EdgeInsets.only(left: 25, right: 25, top: 5, bottom: 5),
-                    alignment: Alignment.centerLeft,
-                    child: tagWidgets != null
-                        ? Wrap(
-                            spacing: 5,
-                            runSpacing: 1,
-                            children: tagWidgets,
+                              Expanded(
+                                flex: 0,
+                                child: Container(
+                                  alignment: Alignment.centerLeft,
+                                  height: 25,
+                                  margin: EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    '@ra1n7246',
+                                    style: new TextStyle(color: Colors.black54),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Container(),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.keyboard_arrow_down_rounded),
+                            //TODO:用户下拉菜单
+                            onPressed: () {},
                           )
-                        : null,
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 25, right: 25, bottom: 5),
-                    width: widget.imgURL != null ? 400 : 0,
-                    child: widget.imgURL != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Hero(
-                              tag: 'img',
+                        ],
+                      ),
+                    ),
+                    new Container(
+                      margin: EdgeInsets.only(
+                        top: 10,
+                        left: 25,
+                      ),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        widget.titleText,
+                        style: new TextStyle(
+                            color: Color(0xFF000000),
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                    new Container(
+                        margin: EdgeInsets.only(top: 10, left: 25, right: 25),
+                        child: Text(
+                          widget.contentText,
+                          style: new TextStyle(fontSize: 18),
+                        )),
+                    new Container(
+                      margin: EdgeInsets.only(
+                          left: 25, right: 25, top: 5, bottom: 5),
+                      alignment: Alignment.centerLeft,
+                      child: tagWidgets != null
+                          ? Wrap(
+                              spacing: 5,
+                              runSpacing: 1,
+                              children: tagWidgets,
+                            )
+                          : null,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: 25, right: 25, bottom: 5),
+                      width: widget.imgURL != null ? 400 : 0,
+                      child: widget.imgURL != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
                               child: Image.network(
                                 widget.imgURL,
                                 fit: BoxFit.fitWidth,
                               ),
-                            ),
-                          )
-                        : null,
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 20,top: 10,bottom: 10),
-                    child: Text(
-                      widget.time,
-                      style: new TextStyle(color: Colors.black45),
+                            )
+                          : null,
                     ),
-                  ),
-                  Divider(thickness: 2),
-                  Container(
-                    padding: EdgeInsets.only(left: 20, right: 20),
-                    height: 40,
-                    child: Flex(direction: Axis.horizontal, children: [
-                      Expanded(
-                        flex: 1,
-                        child: ActionButton(
-                            fun: () => _likeButtonClick(),
-                            ico: likeState == 0 || likeState == 2
-                                ? Icon(Icons.thumb_up_outlined)
-                                : Icon(Icons.thumb_up),
-                            txt: likeCount.toString()),
+                    Container(
+                      margin: EdgeInsets.only(left: 20, top: 10, bottom: 10),
+                      child: Text(
+                        widget.time,
+                        style: new TextStyle(color: Colors.black45),
                       ),
-                      Expanded(
-                        flex: 1,
-                        child: ActionButton(
-                            fun: () => _dislikeButtonClick(),
-                            ico: likeState == 0 || likeState == 1
-                                ? Icon(Icons.thumb_down_outlined)
-                                : Icon(Icons.thumb_down),
-                            txt: dislikeCount.toString()),
-                      ),
-                      Expanded(
+                    ),
+                    Divider(thickness: 2),
+                    Container(
+                      padding: EdgeInsets.only(left: 20, right: 20),
+                      height: 40,
+                      child: Flex(direction: Axis.horizontal, children: [
+                        Expanded(
                           flex: 1,
                           child: ActionButton(
-                              //TODO:实现评论按钮
-                              fun: () => Scaffold.of(c)
-                                  .showBottomSheet((c) => commentContainer()),
-                              ico: Icon(Icons.mode_comment_outlined),
-                              txt: commentCount.toString())),
-                      Expanded(
-                        flex: 0,
-                        child: ActionButton(
-                          //TODO:实现分享按钮
-                          fun: () => print('clicked Share button'),
-                          ico: Icon(Icons.share_outlined),
+                              fun: () => _likeButtonClick(),
+                              ico: likeState == 0 || likeState == 2
+                                  ? Icon(Icons.thumb_up_outlined)
+                                  : Icon(Icons.thumb_up),
+                              txt: likeCount.toString()),
                         ),
-                      ),
-                    ]),
-                  ),
-                  Divider(thickness: 2),
-                  Column(
-                    children: getComments(),
-                  )
-                ]),
+                        Expanded(
+                          flex: 1,
+                          child: ActionButton(
+                              fun: () => _dislikeButtonClick(),
+                              ico: likeState == 0 || likeState == 1
+                                  ? Icon(Icons.thumb_down_outlined)
+                                  : Icon(Icons.thumb_down),
+                              txt: dislikeCount.toString()),
+                        ),
+                        Expanded(
+                            flex: 1,
+                            child: ActionButton(
+                                //TODO:实现评论按钮
+                                fun: () => Scaffold.of(c)
+                                    .showBottomSheet((c) => commentContainer()),
+                                ico: Icon(Icons.mode_comment_outlined),
+                                txt: commentCount.toString())),
+                        Expanded(
+                          flex: 0,
+                          child: ActionButton(
+                            //TODO:实现分享按钮
+                            fun: () => print('clicked Share button'),
+                            ico: Icon(Icons.share_outlined),
+                          ),
+                        ),
+                      ]),
+                    ),
+                    Divider(thickness: 2),
+                    Column(
+                      children: loadState?commentList:[],
+                    )
+                  ]),
+                ),
               ),
-            ),
-            Expanded(
-              flex: 0,
-              child: Container(
-                  padding: EdgeInsets.only(left: 10, right: 10),
-                  child: InkWell(
-                      onTap: () => Scaffold.of(c)
-                          .showBottomSheet((c) => commentContainer()),
-                      child: Flex(
-                        direction: Axis.horizontal,
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              textInputAction: TextInputAction.send,
-                              decoration: InputDecoration(
-                                enabled: false,
-                                hintText: '发布回复',
+              Expanded(
+                flex: 0,
+                child: Container(
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                    child: InkWell(
+                        onTap: () => Scaffold.of(c)
+                            .showBottomSheet((c) => commentContainer()),
+                        child: Flex(
+                          direction: Axis.horizontal,
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                textInputAction: TextInputAction.send,
+                                decoration: InputDecoration(
+                                  enabled: false,
+                                  hintText: '发布回复',
+                                ),
                               ),
                             ),
-                          ),
-                          IconButton(
-                              icon: Icon(
-                                Icons.photo_outlined,
-                                color: Colors.blue,
-                              ),
-                              onPressed: () {})
-                        ],
-                      ))),
-            ),
-          ],
+                            IconButton(
+                                icon: Icon(
+                                  Icons.photo_outlined,
+                                  color: Colors.blue,
+                                ),
+                                onPressed: () {})
+                          ],
+                        ))),
+              ),
+            ],
+          ),
         );
       }),
     );
@@ -453,8 +464,12 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     }
   }
 
-  List<CommentListItem> getComments() {
-    //TODO:获取回复List
-    return ForumCommentStream.getComment(widget.forumID);
+  Future<void> _refresh() async {
+    commentList.clear();
+    var _list = await getComment(widget.forumID) ?? [];
+    commentList.addAll(_list);
+    setState(() {
+      loadState = true;
+    });
   }
 }

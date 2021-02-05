@@ -44,7 +44,7 @@ class _CommentListItem extends State<CommentListItem> {
                       clipBehavior: Clip.hardEdge,
                       color: Colors.transparent,
                       child: Ink.image(
-                        image: AssetImage(widget.commenterAvatarURL),
+                        image: NetworkImage(widget.commenterAvatarURL),
                         fit: BoxFit.cover,
                         width: 50,
                         height: 50,
@@ -73,7 +73,7 @@ class _CommentListItem extends State<CommentListItem> {
                         Container(
                           margin: EdgeInsets.only(left: 5),
                           child: Text(
-                            '@dec16th · ${DateTimeFormat.handleDate(widget.commentTime)}',
+                            '@${widget.commentTarget} · ${DateTimeFormat.handleDate(widget.commentTime)}',
                             style: new TextStyle(color: Colors.black54),
                           ),
                         ),

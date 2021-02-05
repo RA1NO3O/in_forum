@@ -179,18 +179,17 @@ class _ForumListItem extends State<ForumListItem> {
                         ],
                       )),
                   Container(
+                    padding: EdgeInsets.all(5),
                     width: widget.imgURL != null ? 400 : 0,
                     height: widget.imgURL != null ? 200 : 0,
                     child: widget.imgURL != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(5),
-                            child: Hero(
-                              tag: 'img',
-                              child: Image.asset(
-                                widget.imgURL,
-                                fit: BoxFit.fitWidth,
-                              ),
-                            ))
+                            child: Image.network(
+                              widget.imgURL,
+                              fit: BoxFit.fitWidth,
+                            ),
+                          )
                         : null,
                   ),
                   Container(

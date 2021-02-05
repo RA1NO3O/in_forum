@@ -40,6 +40,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                     icon: Icon(Icons.more_vert_rounded), onPressed: () {})
               ],
               flexibleSpace: new FlexibleSpaceBar(
+                //TODO:接入banner
                 background: Image.asset(
                   "images/test.jpg",
                   fit: BoxFit.fitWidth,

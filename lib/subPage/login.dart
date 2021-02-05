@@ -180,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
             userId: user['userId'],
             userName: user['userName'],
           );
-        }), result: "null");
+        }));
         idController.removeListener(idListener);
         setState(() {
           isProcessing = false;

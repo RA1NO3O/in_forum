@@ -157,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
               children: <Widget>[
-                PrimaryPage(userId: widget.userId.isEmpty ? '' : widget.userId),
+                PrimaryPage(userId: widget.userName==null ? 'Unknown ' : widget.userName),
                 MessagePage(),
                 SearchPage(),
                 NotificationPage(),
