@@ -253,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     alignment: Alignment.centerLeft,
                     margin: EdgeInsets.only(top: 5),
                     child: Text(
-                      widget.userId==null ? 'Unknown' : widget.userId,
+                      widget.userId==null ? 'Unknown' : widget.userName ,
                       style: new TextStyle(fontSize: 32),
                     ),
                   ),
