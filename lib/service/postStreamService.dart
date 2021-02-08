@@ -15,7 +15,6 @@ Future<List<Recordset>> getPostStream(String userID) async {
   Response res = await Dio().get('$apiServerAddress/getPosts/?userID=$userID');
   final PostStreamService pss = postStreamServiceFromJson(res.toString());
   final List<Recordset> rs = pss.recordset.isEmpty ? [] : pss.recordset;
-  print(userID);
   return rs;
 }
 

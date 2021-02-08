@@ -22,7 +22,6 @@ class _MessagePage extends State<MessagePage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xFFFAFAFA),
       child: Center(
         child: isEmpty
             ? Column(
@@ -30,13 +29,9 @@ class _MessagePage extends State<MessagePage> {
                 children: [
                   Icon(
                     Icons.mail_outline_rounded,
-                    color: Colors.black26,
                     size: 100,
                   ),
-                  Text(
-                    '尝试发起一个聊天',
-                    style: TextStyle(color: Colors.black26),
-                  )
+                  Text('尝试发起一个聊天')
                 ],
               )
             : ListView(

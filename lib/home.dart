@@ -1,7 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:inforum/subPage/collectionPage.dart';
 import 'package:inforum/subPage/editPost.dart';
 import 'package:inforum/subPage/messagePage.dart';
@@ -9,7 +8,7 @@ import 'package:inforum/subPage/primaryPage.dart';
 import 'package:inforum/subPage/profilePage.dart';
 import 'package:inforum/subPage/searchPage.dart';
 import 'package:inforum/subPage/settingsPage/settingsPage.dart';
-import 'package:inforum/subPage/userPage.dart';
+import 'package:inforum/subPage/notificationPage.dart';
 
 // import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,16 +20,10 @@ class HomeScreen extends StatefulWidget {
   final String userId;
   final String userName;
 
-  const  HomeScreen({Key key, this.userId, this.userName}) : super(key: key);
+  const HomeScreen({Key key, this.userId, this.userName}) : super(key: key);
 
   @override
-  _HomeScreenState createState() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Color(0x00000000),
-        systemNavigationBarColor: Color(0xFFFAFAFA),
-        statusBarIconBrightness: Brightness.dark));
-    return _HomeScreenState();
-  }
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -110,68 +103,64 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       drawer: mainDrawer(),
-      body: SafeArea(
-        child: PageTransitionSwitcher(
-          child: NestedScrollView(
-            controller: _scrollController,
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-              return <Widget>[
-                SliverAppBar(
-                  backgroundColor: Color(0xFFFAFAFA),
-                  brightness: Brightness.light,
-                  iconTheme: IconThemeData(color: Colors.black),
-                  elevation: 5,
-                  title: InkWell(
-                    onDoubleTap: () {
-                      setState(() {
-                        _scrollController.animateTo(.0,
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.ease);
-                      });
-                    },
-                    child: Tooltip(
-                      message: '双击标题回到顶部',
-                      child: Hero(
-                        tag: 'title',
-                        child: Text(
-                          'Inforum',
-                          style: titleTextStyle(),
-                        ),
+      body: PageTransitionSwitcher(
+        child: NestedScrollView(
+          controller: _scrollController,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                elevation: 5,
+                title: InkWell(
+                  onDoubleTap: () {
+                    setState(() {
+                      _scrollController.animateTo(.0,
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.ease);
+                    });
+                  },
+                  child: Tooltip(
+                    message: '双击标题回到顶部',
+                    child: Hero(
+                      tag: 'title',
+                      child: Text(
+                        'Inforum',
+                        style: titleTextStyle(),
                       ),
                     ),
                   ),
-                  snap: true,
-                  centerTitle: true,
-                  floating: true,
-                  forceElevated: innerBoxIsScrolled,
                 ),
-              ];
-            },
-            body: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentIndex = index;
-                  pageChanged();
-                });
-              },
-              children: <Widget>[
-                PrimaryPage(userId: widget.userName==null ? 'Unknown ' : widget.userName),
-                MessagePage(),
-                SearchPage(),
-                NotificationPage(),
-              ],
-            ),
-          ),
-          transitionBuilder: (child, animation, secondaryAnimation) {
-            return FadeThroughTransition(
-              child: child,
-              animation: animation,
-              secondaryAnimation: secondaryAnimation,
-            );
+                snap: true,
+                centerTitle: true,
+                floating: true,
+                forceElevated: innerBoxIsScrolled,
+              ),
+            ];
           },
+          body: PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+                pageChanged();
+              });
+            },
+            children: <Widget>[
+              PrimaryPage(
+                  userId:
+                      widget.userName == null ? 'Unknown ' : widget.userName),
+              MessagePage(),
+              SearchPage(),
+              NotificationPage(),
+            ],
+          ),
         ),
+        transitionBuilder: (child, animation, secondaryAnimation) {
+          return FadeThroughTransition(
+            child: child,
+            animation: animation,
+            secondaryAnimation: secondaryAnimation,
+          );
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         fixedColor: _currentColor,
@@ -253,8 +242,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     alignment: Alignment.centerLeft,
                     margin: EdgeInsets.only(top: 5),
                     child: Text(
-                      widget.userId==null ? 'Unknown' : widget.userName ,
-                      style: new TextStyle(fontSize: 32),
+                      widget.userId == null ? 'Unknown' : widget.userName,
+                      style: new TextStyle(fontSize: 30),
                     ),
                   ),
                   Container(
@@ -344,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
   TextStyle titleTextStyle() => Theme.of(context)
       .primaryTextTheme
       .caption
-      .copyWith(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black);
+      .copyWith(fontSize: 20, fontWeight: FontWeight.bold);
 
   Future<bool> logOutDialog() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
@@ -357,7 +346,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 Icon(
                   Icons.warning_rounded,
                   size: 40,
-                  color: Colors.grey,
                 ),
                 Text('确定要退出账号吗?')
               ],

@@ -16,10 +16,7 @@ class _SettingsPage extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        brightness: Brightness.light,
-        title: Text('设置', style: new TextStyle(color: Colors.black)),
-        backgroundColor: Color(0xFFFAFAFA),
-        iconTheme: IconThemeData(color: Colors.black),
+        title: Text('设置'),
       ),
       body: ListView(
         children: [

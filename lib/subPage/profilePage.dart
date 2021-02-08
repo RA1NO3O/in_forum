@@ -11,12 +11,13 @@ class ProfilePage extends StatefulWidget {
   }
 }
 
-class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixin {
+class _ProfilePage extends State<ProfilePage>
+    with SingleTickerProviderStateMixin {
   TabController _tabController;
 
   @override
   void initState() {
-    _tabController = TabController(length: 3,vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
 
@@ -27,10 +28,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
         headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
           return <Widget>[
             SliverAppBar(
-              backgroundColor: Color(0xFFFAFAFA),
-              brightness: Brightness.light,
-              iconTheme: IconThemeData(color: Colors.black),
-              title: Text(widget.userId,style: new TextStyle(color: Colors.black),),
+              title: Text(widget.userId),
               pinned: true,
               floating: false,
               snap: false,
@@ -48,19 +46,13 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
               ),
             ),
             SliverList(
-
               delegate: SliverChildListDelegate(
                 [
                   Container(
                     height: 50,
-                    color: Colors.white,
                     child: TabBar(
                       controller: _tabController,
-                      tabs: <Widget>[
-                        Text("帖子和回复",style: black87),
-                        Text("媒体",style: black87,),
-                        Text("赞",style: black87,)
-                      ],
+                      tabs: <Widget>[Text("帖子和回复"), Text("媒体"), Text("赞")],
                     ),
                   )
                 ],
@@ -88,6 +80,4 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
       ),
     );
   }
-
-  TextStyle black87 = TextStyle(color: Colors.black87);
 }

@@ -4,6 +4,7 @@ import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/service/loginService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -67,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: new TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
             ),
-            //用户名表单
+            //用户名字段
             new Container(
               padding:
                   EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
@@ -90,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(5.0))),
               ),
             ),
-            //密码表单
+            //密码字段
             Container(
               padding: isUserFound
                   ? EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10)
@@ -112,14 +113,9 @@ class _LoginPageState extends State<LoginPage> {
                           labelText: '密码',
                           prefixIcon: Icon(Icons.lock),
                           suffixIcon: IconButton(
-                            icon: Icon(
-                              passwordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: passwordVisible
-                                  ? Colors.blue
-                                  : Colors.black54,
-                            ),
+                            icon: Icon(passwordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off),
                             onPressed: () => setState(() {
                               passwordVisible = !passwordVisible;
                             }),
@@ -135,7 +131,6 @@ class _LoginPageState extends State<LoginPage> {
               height: 40,
               margin: EdgeInsets.only(top: 10),
               child: RaisedButton(
-                color: Colors.blueAccent,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(5.0))),
                 child: Text(
@@ -174,6 +169,7 @@ class _LoginPageState extends State<LoginPage> {
         await prefs.setString('userId', user['id'].toString());
         await prefs.setString('userName', user['userName'].toString());
         await prefs.setBool('isLogin', true);
+        Toast.show("欢迎回来,${user['userName']}", context);
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) {
           return HomeScreen(

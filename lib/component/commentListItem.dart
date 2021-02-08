@@ -73,8 +73,8 @@ class _CommentListItem extends State<CommentListItem> {
                         Container(
                           margin: EdgeInsets.only(left: 5),
                           child: Text(
-                            '@${widget.commentTarget} · ${DateTimeFormat.handleDate(widget.commentTime)}',
-                            style: new TextStyle(color: Colors.black54),
+                            '@${widget.commentTarget} · '
+                            '${DateTimeFormat.handleDate(widget.commentTime)}',
                           ),
                         ),
                       ],

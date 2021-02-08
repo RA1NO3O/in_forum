@@ -23,17 +23,11 @@ class _CollectionPage extends State<CollectionPage> {
     getList();
     return Scaffold(
         appBar: AppBar(
-          brightness: Brightness.light,
-          backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.black),
-          title: Text(
-            '收藏',
-            style: new TextStyle(color: Colors.black),
-          ),
+          title: Text('收藏'),
           // centerTitle: true,
           actions: [
             IconButton(
-                tooltip: '搜索收藏', icon: Icon(Icons.search), onPressed: (){}),
+                tooltip: '搜索收藏', icon: Icon(Icons.search), onPressed: () {}),
           ],
         ),
         body: RefreshIndicator(
@@ -49,13 +43,9 @@ class _CollectionPage extends State<CollectionPage> {
                     children: [
                       Icon(
                         Icons.star_outline_rounded,
-                        color: Colors.black26,
                         size: 100,
                       ),
-                      Text(
-                        '您收藏的所有帖子都将位于此处',
-                        style: TextStyle(color: Colors.black26),
-                      )
+                      Text('您收藏的所有帖子都将位于此处')
                     ],
                   ),
                 ),

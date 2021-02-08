@@ -3,6 +3,8 @@ import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/data/dateTimeFormat.dart';
 import 'package:inforum/subPage/forumDetail.dart';
 
+import 'customStyles.dart';
+
 class ForumListItem extends StatefulWidget {
   final int forumID;
   final String titleText;
@@ -80,7 +82,6 @@ class _ForumListItem extends State<ForumListItem> {
                     Icons.tag,
                     color: Colors.blue,
                   ),
-                  backgroundColor: Color(0xFFF8F8F8),
                 ),
               ))
           .toList());
@@ -92,7 +93,7 @@ class _ForumListItem extends State<ForumListItem> {
     _getTagWidgets();
     return Builder(builder: (BuildContext bc) {
       return Card(
-        margin: EdgeInsets.only(left: 10, right: 10, bottom: 5, top: 5),
+        margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
         elevation: 1,
         child: Column(
           children: [
@@ -161,10 +162,7 @@ class _ForumListItem extends State<ForumListItem> {
                             padding: EdgeInsets.all(5),
                             child: Text(
                               widget.titleText,
-                              style: new TextStyle(
-                                  color: Color(0xFF000000),
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold),
+                              style: titleFontStyle,
                               textAlign: TextAlign.left,
                             ),
                           ),

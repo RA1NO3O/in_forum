@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 RoundedRectangleBorder roundedRectangleBorder =
-RoundedRectangleBorder(borderRadius: BorderRadius.circular(5));
+    RoundedRectangleBorder(borderRadius: BorderRadius.circular(5));
 
 SnackBar errorSnackBar(String r) {
   return SnackBar(
@@ -37,3 +37,19 @@ SnackBar doneSnackBar(String r) {
     backgroundColor: Colors.blue,
   );
 }
+
+ThemeData lightTheme = ThemeData(
+  brightness: Brightness.light,
+  primaryColor: Colors.white,
+  accentColor: Colors.blue,
+  visualDensity: VisualDensity.adaptivePlatformDensity,
+);
+ThemeData darkTheme = ThemeData(
+  brightness: Brightness.dark,
+  primaryColor: Colors.black,
+  accentColor: Colors.blue,
+  visualDensity: VisualDensity.adaptivePlatformDensity,
+);
+
+TextStyle titleFontStyle =
+    new TextStyle(fontSize: 25, fontWeight: FontWeight.bold);

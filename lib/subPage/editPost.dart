@@ -104,13 +104,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
       child: Scaffold(
           appBar: AppBar(
             elevation: 1,
-            backgroundColor: Color(0xFFFAFAFA),
-            brightness: Brightness.light,
-            iconTheme: IconThemeData(color: Colors.black),
-            title: Text(
-              widget.mode == 0 ? '新帖子' : '编辑帖子',
-              style: TextStyle(color: Colors.black),
-            ),
+            title: Text(widget.mode == 0 ? '新帖子' : '编辑帖子'),
             actions: [
               Builder(builder: (BuildContext bc) {
                 return IconButton(
@@ -193,7 +187,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
           if ((titleController.text == draftTitle) &&
               (contentController.text == draftContent)) {
             edited = false;
-          }else{
+          } else {
             edited = true;
           }
         } else {
@@ -260,7 +254,6 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   Icon(
                     Icons.help_rounded,
                     size: 40,
-                    color: Colors.grey,
                   ),
                   Container(
                     margin: EdgeInsets.only(top: 10),
@@ -270,6 +263,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
               ),
               actions: <Widget>[
                 FlatButton.icon(
+                  textColor: Colors.blue,
                   icon: Icon(Icons.save),
                   label: Text('保存'),
                   onPressed: () {
@@ -301,8 +295,6 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   @override
   void dispose() {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarIconBrightness: Brightness.dark));
     titleController.dispose();
     contentController.dispose();
     super.dispose();

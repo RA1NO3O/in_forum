@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/component/commentListItem.dart';
+import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/data/forumCommentStream.dart';
+import 'package:inforum/service/uploadPictureService.dart';
 import 'package:inforum/subPage/editPost.dart';
 import 'package:inforum/subPage/profilePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -57,6 +62,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   List<Widget> tagWidgets;
   List<CommentListItem> commentList = [];
   bool loadState = false;
+  String _imagePath;
+
   @override
   void initState() {
     isAuthor = widget.isAuthor;
@@ -76,10 +83,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     return Scaffold(
       appBar: AppBar(
         elevation: 1,
-        backgroundColor: Color(0xFFFAFAFA),
-        brightness: Brightness.light,
-        iconTheme: IconThemeData(color: Colors.black),
-        title: const Text('帖子', style: TextStyle(color: Colors.black)),
+        title: const Text('帖子'),
         actions: [
           isAuthor
               ? new Row(
@@ -161,7 +165,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                               Expanded(
                                 flex: 1,
                                 child: Container(
-                                  margin: EdgeInsets.only(top: 10,left: 10),
+                                  margin: EdgeInsets.only(top: 10, left: 10),
                                   alignment: Alignment.bottomLeft,
                                   child: Text(
                                     widget.authorName,
@@ -179,7 +183,6 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                                   margin: EdgeInsets.only(left: 10),
                                   child: Text(
                                     '@ra1n7246',
-                                    style: new TextStyle(color: Colors.black54),
                                   ),
                                 ),
                               ),
@@ -205,10 +208,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         widget.titleText,
-                        style: new TextStyle(
-                            color: Color(0xFF000000),
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold),
+                        style: titleFontStyle,
                         textAlign: TextAlign.left,
                       ),
                     ),
@@ -220,7 +220,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                         )),
                     new Container(
                       margin: EdgeInsets.only(
-                          left: 25, right: 25, top: 5, bottom: 5),
+                          left: 25, right: 25, top: 5, bottom: 10),
                       alignment: Alignment.centerLeft,
                       child: tagWidgets != null
                           ? Wrap(
@@ -245,10 +245,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                      child: Text(
-                        widget.time,
-                        style: new TextStyle(color: Colors.black45),
-                      ),
+                      child: Text(widget.time),
                     ),
                     Divider(thickness: 2),
                     Container(
@@ -293,7 +290,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     ),
                     Divider(thickness: 2),
                     Column(
-                      children: loadState?commentList:[],
+                      children: loadState ? commentList : [],
                     )
                   ]),
                 ),
@@ -322,7 +319,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                                   Icons.photo_outlined,
                                   color: Colors.blue,
                                 ),
-                                onPressed: () {})
+                                onPressed: getImage)
                           ],
                         ))),
               ),
@@ -358,10 +355,19 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     flex: 0,
                     child: IconButton(
                         icon: Icon(
-                          Icons.photo_outlined,
+                          Icons.add_a_photo_rounded,
                           color: Colors.blue,
                         ),
-                        onPressed: () {})),
+                        onPressed: getImage)),
+                Expanded(
+                    flex: 0,
+                    child: Container(
+                      height: 45,
+                      width: 45,
+                      child: _imagePath != null
+                          ? Image.file(File(_imagePath), fit: BoxFit.fitWidth)
+                          : null,
+                    )),
                 Expanded(flex: 1, child: Container()),
                 Expanded(
                     flex: 0,
@@ -457,7 +463,6 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     '$e',
                     style: new TextStyle(color: Colors.blue),
                   ),
-                  backgroundColor: Color(0xffF8F8F8),
                 ),
               ))
           .toList());
@@ -470,6 +475,20 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     commentList.addAll(_list);
     setState(() {
       loadState = true;
+    });
+  }
+
+  Future getImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        setState(() {
+          _imagePath = pickedFile.path;
+        });
+      } else {
+        print('No image selected.');
+      }
     });
   }
 }

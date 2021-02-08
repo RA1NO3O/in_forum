@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/subPage/reg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,10 +28,8 @@ Future<void> main() async {
 
   runApp(MaterialApp(
     title: 'Inforum',
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-      visualDensity: VisualDensity.adaptivePlatformDensity,
-    ),
+    theme: lightTheme,
+    darkTheme: darkTheme,
     home: isLogin
         ? HomeScreen(
             userId: prefs.getString('userId'),
@@ -50,9 +49,6 @@ Future<void> main() async {
     ],
     debugShowCheckedModeBanner: false, //隐藏debug横幅
   ));
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarDividerColor: Color(0x00000000),
-      statusBarIconBrightness: Brightness.light));
 }
 
 //主界面
@@ -62,15 +58,7 @@ class MainPage extends StatefulWidget {
   MainPage({Key key, this.title}) : super(key: key);
 
   @override
-  _MainPageState createState() {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          systemNavigationBarColor: Color(0x00000000),
-          statusBarIconBrightness: Brightness.light),
-    );
-    return _MainPageState();
-  }
+  _MainPageState createState()=>_MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
@@ -114,8 +102,6 @@ class _MainPageState extends State<MainPage> {
               alignment: Alignment.center,
               child: Scaffold(
                   appBar: AppBar(
-                    iconTheme: IconThemeData(color: Colors.black),
-                    backgroundColor: Colors.white,
                     title: Hero(
                         tag: 'title',
                         child: Text(widget.title, style: titleTextStyle())),
@@ -171,7 +157,7 @@ class _MainPageState extends State<MainPage> {
   TextStyle titleTextStyle() => Theme.of(context)
       .primaryTextTheme
       .caption
-      .copyWith(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black);
+      .copyWith(fontSize: 20, fontWeight: FontWeight.bold);
 
   Widget defaultPage() {
     return Container(
