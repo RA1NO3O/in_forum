@@ -4,10 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 List<ForumListItem> psis = [];
 
-Future<List<ForumListItem>> getList() async {
+Future<List<ForumListItem>> getList(String userID) async {
   psis.clear();
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  var userID = prefs.getString('userId');
   List<Recordset> psl = await getPostStream(userID);
 
   psl.forEach((rs) {

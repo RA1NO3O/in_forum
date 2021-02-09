@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/customStyles.dart';
@@ -5,6 +7,7 @@ import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/service/loginService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 class RegPage extends StatefulWidget {
   @override
@@ -12,49 +15,78 @@ class RegPage extends StatefulWidget {
 }
 
 class _RegPage extends State<RegPage> {
-  String errorCode = '0';
-  bool passwordVisible = false;
-  final idController = new TextEditingController();
-  final phoneNumberController = new TextEditingController();
-  final emailController = new TextEditingController();
-  final pwdController = new TextEditingController();
+  bool passwordVisible = false, processing = false;
+  final idController = new TextEditingController(),
+      phoneController = new TextEditingController(),
+      emailController = new TextEditingController(),
+      pwdController = new TextEditingController();
   String nickname, bio, gender, location;
   DateTime birthday;
 
   Future<void> btnRegClick() async {
-    bool state;
-    if (searchUser(idController.text) != null) {
-      errorCode = '1';
-      if (searchUser(phoneNumberController.text) != null) {
-        errorCode += '2';
-        if (searchUser(emailController.text) != null) {
+    bool regPassed = false;
+    String errorCode = '0';
+    if (idController.text.isNotEmpty && pwdController.text.isNotEmpty) {
+      Recordset rs = await searchUser(idController.text);
+      if (rs == null) {
+        rs = await searchUser(emailController.text);
+        if (rs == null) {
+          rs = await searchUser(phoneController.text);
+          if (rs == null && errorCode == '0') {
+            regPassed = true;
+          } else {
+            errorCode += '4';
+          }
+        } else {
           errorCode += '3';
-          state = false;
         }
+      } else {
+        errorCode += '2';
       }
     } else {
-      state = true;
+      errorCode = '1';
+    }
+    if (errorCode != '0') {
+      var msg = '注册失败,';
+      if (errorCode == '1') {
+        msg = '未填写所有必填字段.';
+      }
+      if (errorCode.contains('2')) {
+        msg += '\n该用户名已存在.';
+      }
+      if (errorCode.contains('3')) {
+        msg += '\n该邮箱地址已被注册.';
+      }
+      if (errorCode.contains('4')) {
+        msg += '\n该电话号码已被注册.';
+      }
+      print(msg);
+      Scaffold.of(context).showSnackBar(errorSnackBar(msg));
     }
 
-    if (state) {
+    if (regPassed) {
       //写入登录状态
-      Response res = await Dio().post('$apiServerAddress/createAccount/',
-          data: FormData.fromMap(
-            {
-              "username": idController.text,
-              "password": pwdController.text,
-              "email": emailController.text,
-              "phone": phoneNumberController.text,
-              "nickname": nickname,
-              "birthday": birthday,
-              "bio": bio,
-              "gender": gender,
-              "location": location
-            },
-          ));
+      Response res = await Dio().post(
+        '$apiServerAddress/createAccount/',
+        data: {
+          "username": idController.text,
+          "password": pwdController.text,
+          "email": emailController.text.isEmpty?'null':emailController.text,
+          "phone": phoneController.text.isEmpty?'null':phoneController.text,
+          // "nickname": nickname,
+          // "birthday": birthday,
+          // "bio": bio,
+          // "gender": gender,
+          // "location": location
+        },
+        options: new Options(contentType: Headers.formUrlEncodedContentType),
+      );
       if (res.statusCode == 200) {
+        Toast.show('欢迎,${idController.text}', context);
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userId', idController.text);
+        Recordset recordset = await searchUser(idController.text);
+        await prefs.setString('userID', recordset.id.toString());
+        await prefs.setString('userName', idController.text);
         await prefs.setBool('isLogin', true);
         Recordset rs = await searchUser(idController.text);
         Navigator.pushReplacement(context,
@@ -116,7 +148,7 @@ class _RegPage extends State<RegPage> {
             margin: EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
             child: TextField(
               keyboardType: TextInputType.phone,
-              controller: phoneNumberController,
+              controller: phoneController,
               decoration: InputDecoration(
                   labelText: '电话号码(可选)',
                   prefixIcon: Icon(Icons.person),

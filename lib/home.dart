@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: <Widget>[
               PrimaryPage(
                   userId:
-                      widget.userName == null ? 'Unknown ' : widget.userName),
+                      widget.userId == null ? 'Unknown ' : widget.userId),
               MessagePage(),
               SearchPage(),
               NotificationPage(),
