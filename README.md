@@ -4,6 +4,9 @@ A forum application.
 
 ## Getting Started
 
+If you want to build this app, you should make a webConfig.dart file at lib/data/ .
+Then, create every variable element in need.
+
 This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
