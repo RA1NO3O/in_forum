@@ -135,7 +135,6 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.all(Radius.circular(5.0))),
                 child: Text(
                   isUserFound ? '登录' : '下一步',
-                  style: new TextStyle(color: Colors.white),
                 ),
                 onPressed: (isNotFilled && (!isProcessing))
                     ? null
@@ -169,11 +168,11 @@ class _LoginPageState extends State<LoginPage> {
         await prefs.setString('userId', user['id'].toString());
         await prefs.setString('userName', user['userName'].toString());
         await prefs.setBool('isLogin', true);
-        Toast.show("欢迎回来,${user['userName']}", context);
+        Toast.show("欢迎回来,${user['userName']}", context,duration: 3);
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) {
           return HomeScreen(
-            userId: user['userId'],
+            userId: user['id'].toString(),
             userName: user['userName'],
           );
         }));

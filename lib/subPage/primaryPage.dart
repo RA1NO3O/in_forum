@@ -32,22 +32,22 @@ class _PrimaryPage extends State<PrimaryPage> {
       onRefresh: _refresh,
       child: ListView(
         controller: widget.scrollController,
-        children: loadState?_list:[],
+        children: loadState ? _list : [],
       ),
     );
   }
 
   Future<void> _refresh() async {
-    _getStream();
+    await _getStream();
+    return;
   }
 
   _getStream() async {
-
     _list.clear();
-    List<ForumListItem> fli = await getList();
+    List<ForumListItem> fli = await getList(widget.userId);
     _list.addAll(fli);
     setState(() {
-      loadState=true;
+      loadState = true;
     });
   }
 

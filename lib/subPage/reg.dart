@@ -151,7 +151,7 @@ class _RegPage extends State<RegPage> {
               controller: phoneController,
               decoration: InputDecoration(
                   labelText: '电话号码(可选)',
-                  prefixIcon: Icon(Icons.person),
+                  prefixIcon: Icon(Icons.phone),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0))),
             ),

@@ -40,16 +40,14 @@ SnackBar doneSnackBar(String r) {
 
 ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
-  primaryColor: Colors.white,
-  accentColor: Colors.blue,
-  visualDensity: VisualDensity.adaptivePlatformDensity,
+  focusColor: Colors.blue,
+  buttonColor: Colors.blueAccent,
 );
 ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
-  primaryColor: Colors.black,
   accentColor: Colors.blue,
-  visualDensity: VisualDensity.adaptivePlatformDensity,
+  primaryColor: Colors.black,
+  buttonColor: Colors.blue,
 );
-
 TextStyle titleFontStyle =
     new TextStyle(fontSize: 25, fontWeight: FontWeight.bold);

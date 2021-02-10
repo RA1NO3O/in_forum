@@ -97,7 +97,6 @@ class _CommentListItem extends State<CommentListItem> {
                       children: [
                         Text(
                           '回复给 ',
-                          style: new TextStyle(color: Colors.grey),
                         ),
                         Text(
                           widget.commentTarget,

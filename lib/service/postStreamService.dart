@@ -12,7 +12,7 @@ PostStreamService postStreamServiceFromJson(String str) => PostStreamService.fro
 String postStreamServiceToJson(PostStreamService data) => json.encode(data.toJson());
 
 Future<List<Recordset>> getPostStream(String userID) async {
-  Response res = await Dio().get('$apiServerAddress/getPosts/?userID=$userID');
+  Response res = await Dio().get('$apiServerAddress/getPosts/$userID');
   final PostStreamService pss = postStreamServiceFromJson(res.toString());
   final List<Recordset> rs = pss.recordset.isEmpty ? [] : pss.recordset;
   return rs;
