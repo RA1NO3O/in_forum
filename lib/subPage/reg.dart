@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/customStyles.dart';
@@ -71,8 +69,8 @@ class _RegPage extends State<RegPage> {
         data: {
           "username": idController.text,
           "password": pwdController.text,
-          "email": emailController.text.isEmpty?'null':emailController.text,
-          "phone": phoneController.text.isEmpty?'null':phoneController.text,
+          "email": emailController.text.isEmpty ? 'null' : emailController.text,
+          "phone": phoneController.text.isEmpty ? 'null' : phoneController.text,
           // "nickname": nickname,
           // "birthday": birthday,
           // "bio": bio,

@@ -146,8 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             children: <Widget>[
               PrimaryPage(
-                  userId:
-                      widget.userId == null ? 'Unknown ' : widget.userId),
+                  userId: widget.userId == null ? 'Unknown ' : widget.userId),
               MessagePage(),
               SearchPage(),
               NotificationPage(),
@@ -190,10 +189,11 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 switch (_currentIndex) {
                   case 0:
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return EditPostScreen(mode: 0);
-                    }));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                EditPostScreen(mode: 0)));
                     break;
                   case 1:
                     break;
@@ -217,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 children: [
                   Material(
-                    elevation: 3,
+                    elevation: 2,
                     shape: CircleBorder(),
                     clipBehavior: Clip.hardEdge,
                     color: Colors.transparent,

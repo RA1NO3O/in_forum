@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/subPage/reg.dart';

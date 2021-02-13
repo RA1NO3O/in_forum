@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inforum/component/actionButton.dart';
+import 'package:inforum/component/imageViewer.dart';
 import 'package:inforum/data/dateTimeFormat.dart';
 import 'package:inforum/subPage/forumDetail.dart';
 
@@ -177,16 +178,34 @@ class _ForumListItem extends State<ForumListItem> {
                         ],
                       )),
                   Container(
-                    padding: EdgeInsets.all(5),
-                    width: widget.imgURL != null ? 400 : 0,
-                    height: widget.imgURL != null ? 200 : 0,
+                    padding: widget.imgURL != null
+                        ? EdgeInsets.all(5)
+                        : EdgeInsets.all(0),
                     child: widget.imgURL != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Image.network(
-                              widget.imgURL,
-                              fit: BoxFit.fitWidth,
+                        ? Hero(
+                            child: Material(
+                              elevation: 2,
+                              clipBehavior: Clip.antiAlias,
+                              borderRadius: BorderRadius.circular(5),
+                              child: Ink.image(
+                                width: widget.imgURL != null ? 400 : 0,
+                                height: widget.imgURL != null ? 200 : 0,
+                                fit: BoxFit.cover,
+                                image: NetworkImage(widget.imgURL),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                        new MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                ImageViewer(
+                                                    imageProvider: NetworkImage(
+                                                        widget.imgURL),
+                                                    heroTag: 'img')));
+                                  },
+                                ),
+                              ),
                             ),
+                            tag: 'img',
                           )
                         : null,
                   ),

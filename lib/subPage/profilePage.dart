@@ -41,7 +41,7 @@ class _ProfilePage extends State<ProfilePage>
                 //TODO:接入banner
                 background: Image.asset(
                   "images/test.jpg",
-                  fit: BoxFit.fitWidth,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),

@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/component/commentListItem.dart';
 import 'package:inforum/component/customStyles.dart';
+import 'package:inforum/component/imageViewer.dart';
 import 'package:inforum/data/forumCommentStream.dart';
 import 'package:inforum/service/uploadPictureService.dart';
 import 'package:inforum/subPage/editPost.dart';
@@ -231,15 +233,35 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                           : null,
                     ),
                     Container(
-                      margin: EdgeInsets.only(left: 25, right: 25, bottom: 5),
-                      width: widget.imgURL != null ? 400 : 0,
+                      margin: widget.imgURL != null
+                          ? EdgeInsets.only(left: 25, right: 25, bottom: 5)
+                          : EdgeInsets.all(0),
                       child: widget.imgURL != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: Image.network(
-                                widget.imgURL,
-                                fit: BoxFit.fitWidth,
+                          ? Hero(
+                              child: Material(
+                                elevation: 1,
+                                clipBehavior: Clip.antiAlias,
+                                borderRadius: BorderRadius.circular(5),
+                                child: Ink.image(
+                                  width: widget.imgURL != null ? 400 : 0,
+                                  height: widget.imgURL != null ? 200 : 0,
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(widget.imgURL),
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                          new MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  ImageViewer(
+                                                      imageProvider:
+                                                          NetworkImage(
+                                                              widget.imgURL),
+                                                      heroTag: 'img')));
+                                    },
+                                  ),
+                                ),
                               ),
+                              tag: 'img',
                             )
                           : null,
                     ),
@@ -365,7 +387,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                       height: 45,
                       width: 45,
                       child: _imagePath != null
-                          ? Image.file(File(_imagePath), fit: BoxFit.fitWidth)
+                          ? Image.file(File(_imagePath), fit: BoxFit.cover)
                           : null,
                     )),
                 Expanded(flex: 1, child: Container()),
