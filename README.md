@@ -4,9 +4,19 @@ A forum application.
 
 ## Getting Started
 
-If you want to build this app, you should make a webConfig.dart file at lib/data/ .
-
-Then, create every variable element in need.
+If you want to build this app, you should make a webConfig.dart file at lib/data/ by your own.
+- Insert code:
+```
+String apiServerAddress = '';
+String ossAccessKeyID = '';
+String ossAccessKeySecret = '';
+String ossServer = '';
+String bucket = '';
+// 发送请求的url,根据你自己设置的是哪个城市的
+String url = 'https://$bucket.oss-cn-hangzhou.aliyuncs.com';
+// 过期时间
+String expiration = '2025-01-01T12:00:00.000Z';
+```
 
 This project is a starting point for a Flutter application.
 A few resources to get you started if this is your first Flutter project:
