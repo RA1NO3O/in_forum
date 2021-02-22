@@ -17,10 +17,10 @@ import 'component/customStyles.dart';
 import 'main.dart';
 
 class HomeScreen extends StatefulWidget {
-  final String userId;
+  final String userID;
   final String userName;
 
-  const HomeScreen({Key key, this.userId, this.userName}) : super(key: key);
+  const HomeScreen({Key key, this.userID, this.userName}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             children: <Widget>[
               PrimaryPage(
-                  userId: widget.userId == null ? 'Unknown ' : widget.userId),
+                  userID: widget.userID == null ? 'Unknown ' : widget.userID),
               MessagePage(),
               SearchPage(),
               NotificationPage(),
@@ -231,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Navigator.push(context, MaterialPageRoute(
                               builder: (BuildContext context) {
                             return ProfilePage(
-                              userId: widget.userId,
+                              userID: widget.userID,
                             );
                           }));
                         },
@@ -242,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     alignment: Alignment.centerLeft,
                     margin: EdgeInsets.only(top: 5),
                     child: Text(
-                      widget.userId == null ? 'Unknown' : widget.userName,
+                      widget.userID == null ? 'Unknown' : widget.userName,
                       style: new TextStyle(fontSize: 30),
                     ),
                   ),

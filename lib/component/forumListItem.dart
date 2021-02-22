@@ -1,13 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/component/imageViewer.dart';
 import 'package:inforum/data/dateTimeFormat.dart';
-import 'package:inforum/subPage/forumDetail.dart';
+import 'package:inforum/subPage/postDetail.dart';
 
 import 'customStyles.dart';
 
 class ForumListItem extends StatefulWidget {
-  final int forumID;
+  final int postID;
   final String titleText;
   final String contentText;
   final int likeState;
@@ -37,7 +39,7 @@ class ForumListItem extends StatefulWidget {
     this.imgAuthor,
     this.authorName,
     this.isAuthor,
-    this.forumID,
+    this.postID,
     this.time,
     this.tags,
   }) : super(key: key);
@@ -55,7 +57,7 @@ class _ForumListItem extends State<ForumListItem> {
   int commentCount;
   List<String> tagStrings;
   List<Widget> tagWidgets;
-
+  String imgTag = getRandom(6);
   @override
   void initState() {
     likeState = widget.likeState;
@@ -118,7 +120,7 @@ class _ForumListItem extends State<ForumListItem> {
                               authorName: widget.authorName,
                               isAuthor: widget.isAuthor,
                               tags: widget.tags,
-                              forumID: widget.forumID,
+                              postID: widget.postID,
                               time: widget.time,
                             );
                           })),
@@ -200,12 +202,12 @@ class _ForumListItem extends State<ForumListItem> {
                                                 ImageViewer(
                                                     imageProvider: NetworkImage(
                                                         widget.imgURL),
-                                                    heroTag: 'img')));
+                                                    heroTag: imgTag)));
                                   },
                                 ),
                               ),
                             ),
-                            tag: 'img',
+                            tag: imgTag,
                           )
                         : null,
                   ),
@@ -262,6 +264,16 @@ class _ForumListItem extends State<ForumListItem> {
         ),
       );
     });
+  }
+
+  static String getRandom(int num) {
+    String alphabet = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
+    String left = '';
+    for (var i = 0; i < num; i++) {
+//    right = right + (min + (Random().nextInt(max - min))).toString();
+      left = left + alphabet[Random().nextInt(alphabet.length)];
+    }
+    return left;
   }
 
   void _starButtonClick() {

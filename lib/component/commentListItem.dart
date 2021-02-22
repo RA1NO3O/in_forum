@@ -4,7 +4,7 @@ import 'package:inforum/data/dateTimeFormat.dart';
 import 'package:inforum/subPage/profilePage.dart';
 
 class CommentListItem extends StatefulWidget {
-  final int forumID;
+  final int postID;
   final String commenterAvatarURL;
   final String commenterName;
   final String commentTime;
@@ -13,7 +13,7 @@ class CommentListItem extends StatefulWidget {
 
   const CommentListItem(
       {Key key,
-      this.forumID,
+      this.postID,
       this.commenterAvatarURL,
       this.commenterName,
       this.commentTime,
@@ -53,7 +53,7 @@ class _CommentListItem extends State<CommentListItem> {
                             Navigator.push(context, MaterialPageRoute(
                                 builder: (BuildContext context) {
                               return ProfilePage(
-                                userId: widget.commenterName,
+                                userID: widget.commenterName,
                               );
                             }));
                           },

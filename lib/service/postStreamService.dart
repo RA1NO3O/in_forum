@@ -71,7 +71,7 @@ class Recordset {
     this.commentCount,
     this.collectCount,
     this.editorId,
-    this.userId,
+    this.userID,
     this.isCollected,
     this.likeState,
     this.collectTime,
@@ -90,7 +90,7 @@ class Recordset {
   int commentCount;
   int collectCount;
   int editorId;
-  int userId;
+  int userID;
   bool isCollected;
   int likeState;
   DateTime collectTime;
@@ -109,7 +109,7 @@ class Recordset {
     commentCount: json["commentCount"] == null ? null : json["commentCount"],
     collectCount: json["collectCount"] == null ? null : json["collectCount"],
     editorId: json["editorID"] == null ? null : json["editorID"],
-    userId: json["user_ID"] == null ? null : json["user_ID"],
+    userID: json["user_ID"] == null ? null : json["user_ID"],
     isCollected: json["isCollected"] == null ? null : json["isCollected"],
     likeState: json["like_State"] == null ? null : json["like_State"],
     collectTime: json["collectTime"] == null ? null : DateTime.parse(json["collectTime"]),
@@ -129,7 +129,7 @@ class Recordset {
     "commentCount": commentCount == null ? null : commentCount,
     "collectCount": collectCount == null ? null : collectCount,
     "editorID": editorId == null ? null : editorId,
-    "user_ID": userId == null ? null : userId,
+    "user_ID": userID == null ? null : userID,
     "isCollected": isCollected == null ? null : isCollected,
     "like_State": likeState == null ? null : likeState,
     "collectTime": collectTime == null ? null : collectTime.toIso8601String(),

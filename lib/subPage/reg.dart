@@ -66,6 +66,7 @@ class _RegPage extends State<RegPage> {
       //写入登录状态
       Response res = await Dio().post(
         '$apiServerAddress/createAccount/',
+        options: new Options(contentType: Headers.formUrlEncodedContentType),
         data: {
           "username": idController.text,
           "password": pwdController.text,
@@ -77,7 +78,6 @@ class _RegPage extends State<RegPage> {
           // "gender": gender,
           // "location": location
         },
-        options: new Options(contentType: Headers.formUrlEncodedContentType),
       );
       if (res.statusCode == 200) {
         Toast.show('欢迎,${idController.text}', context);
@@ -87,13 +87,14 @@ class _RegPage extends State<RegPage> {
         await prefs.setString('userName', idController.text);
         await prefs.setBool('isLogin', true);
         Recordset rs = await searchUser(idController.text);
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (BuildContext context) {
-          return HomeScreen(
-            userId: rs.id.toString(),
-            userName: idController.text,
-          );
-        }), result: "null");
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => HomeScreen(
+                      userID: rs.id.toString(),
+                      userName: idController.text,
+                    )),
+            result: "null");
       }
     } else {}
   }

@@ -31,7 +31,7 @@ Future<void> main() async {
     darkTheme: darkTheme,
     home: isLogin
         ? HomeScreen(
-            userId: prefs.getString('userId'),
+            userID: prefs.getString('userID'),
             userName: prefs.getString('userName'),
           )
         : MainPage(

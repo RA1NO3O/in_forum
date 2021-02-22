@@ -1,17 +1,27 @@
 import 'package:collection/collection.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:inforum/component/customStyles.dart';
+import 'package:inforum/data/webConfig.dart';
+import 'package:inforum/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 class EditPostScreen extends StatefulWidget {
   final String titleText;
   final String contentText;
   final List<String> tags;
   final int mode; //0为新建,1为编辑
+  final int postID;
 
   const EditPostScreen(
-      {Key key, this.titleText, this.contentText, this.mode, this.tags})
+      {Key key,
+      this.titleText,
+      this.contentText,
+      this.mode,
+      this.tags,
+      this.postID})
       : super(key: key);
 
   @override
@@ -124,8 +134,56 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 icon: widget.mode == 0
                     ? Icon(Icons.send_rounded)
                     : Icon(Icons.done),
-                //TODO:api接入发布新帖
-                onPressed: () => print('posted.'),
+                onPressed: edited && contentController.text.isNotEmpty
+                    ? () async {
+                        if (widget.mode == 0) {
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          String editorID = prefs.getString('userID');
+                          Response res = await Dio().post(
+                              '$apiServerAddress/newPost/',
+                              options: new Options(
+                                  contentType:
+                                      Headers.formUrlEncodedContentType),
+                              data: {
+                                "title": titleController.text,
+                                "content": contentController.text,
+                                "tags": tags.toString(),
+                                "imgURL": 'null',
+                                "editorID": editorID,
+                              });
+                          if (res.statusCode == 200) {
+                            Toast.show('帖子已发布.', context);
+                            Navigator.pop(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        HomeScreen()));
+                          }
+                        } else {
+                          Response res = await Dio().post(
+                              '$apiServerAddress/editPost/',
+                              options: new Options(
+                                  contentType:
+                                      Headers.formUrlEncodedContentType),
+                              data: {
+                                "postID": widget.postID,
+                                "title": titleController.text,
+                                "content": contentController.text,
+                                "tags": tags.toString(),
+                                "imgURL": 'null',
+                              });
+                          if (res.statusCode == 200) {
+                            Toast.show('帖子已修改.', context);
+                            Navigator.pop(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        HomeScreen()));
+                          }
+                        }
+                      }
+                    : null,
                 tooltip: widget.mode == 0 ? '发帖' : '提交更改',
               )
             ],

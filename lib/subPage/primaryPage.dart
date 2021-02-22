@@ -3,10 +3,10 @@ import 'package:inforum/component/forumListItem.dart';
 import 'package:inforum/data/forumListStream.dart';
 
 class PrimaryPage extends StatefulWidget {
-  final String userId;
+  final String userID;
   final ScrollController scrollController;
 
-  const PrimaryPage({Key key, this.userId, this.scrollController})
+  const PrimaryPage({Key key, this.userID, this.scrollController})
       : super(key: key);
 
   @override
@@ -44,7 +44,7 @@ class _PrimaryPage extends State<PrimaryPage> {
 
   _getStream() async {
     _list.clear();
-    List<ForumListItem> fli = await getList(widget.userId);
+    List<ForumListItem> fli = await getList(widget.userID);
     _list.addAll(fli);
     setState(() {
       loadState = true;

@@ -15,7 +15,7 @@ import 'package:inforum/subPage/profilePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ForumDetailPage extends StatefulWidget {
-  final int forumID;
+  final int postID;
   final String titleText;
   final String contentText;
   final int likeCount;
@@ -43,7 +43,7 @@ class ForumDetailPage extends StatefulWidget {
       this.authorName,
       this.imgAuthor,
       this.isAuthor,
-      this.forumID,
+      this.postID,
       this.tags,
       this.time})
       : super(key: key);
@@ -100,6 +100,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                           contentText: widget.contentText,
                           tags: widget.tags,
                           mode: 1,
+                          postID: widget.postID,
                         );
                       })),
                     ),
@@ -153,7 +154,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                                   Navigator.push(context, MaterialPageRoute(
                                       builder: (BuildContext context) {
                                     return ProfilePage(
-                                      userId: widget.authorName,
+                                      userID: widget.authorName,
                                     );
                                   }));
                                 },
@@ -493,7 +494,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
 
   Future<void> _refresh() async {
     commentList.clear();
-    var _list = await getComment(widget.forumID) ?? [];
+    var _list = await getComment(widget.postID) ?? [];
     commentList.addAll(_list);
     setState(() {
       loadState = true;

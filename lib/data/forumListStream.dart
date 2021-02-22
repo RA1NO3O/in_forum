@@ -10,7 +10,7 @@ Future<List<ForumListItem>> getList(String userID) async {
   psl.forEach((rs) {
     String t = rs.tags;
     psis.add(ForumListItem(
-      forumID: rs.postId,
+      postID: rs.postId,
       titleText: rs.title,
       contentText: rs.bodyS,
       likeCount: rs.likeCount,
@@ -27,6 +27,6 @@ Future<List<ForumListItem>> getList(String userID) async {
       tags: t != null ? t.split(',') : null,
     ));
   });
-  psis.sort((a, b) => b.forumID.compareTo(a.forumID)); //按ID排序,ID数字越大越新
+  psis.sort((a, b) => b.postID.compareTo(a.postID)); //按ID排序,ID数字越大越新
   return psis;
 }

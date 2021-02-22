@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
-  final String userId;
+  final String userID;
 
-  const ProfilePage({Key key, this.userId}) : super(key: key);
+  const ProfilePage({Key key, this.userID}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -28,7 +28,7 @@ class _ProfilePage extends State<ProfilePage>
         headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
           return <Widget>[
             SliverAppBar(
-              title: Text(widget.userId),
+              title: Text(widget.userID),
               pinned: true,
               floating: false,
               snap: false,

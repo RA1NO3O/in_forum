@@ -5,7 +5,7 @@ class ForumCollectionListStream {
   static List<ForumListItem> getList() {
     return [
       ForumListItem(
-        forumID: 1,
+        postID: 1,
         titleText: '以下的内容仅供测试.',
         contentText:
             'This is a Test. All of the text below is used to test widget.'
