@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           Container(
-            height: 230,
+            height: 250,
             child: DrawerHeader(
               child: Column(
                 children: [
@@ -239,16 +239,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   Container(
-                    alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.only(top: 5),
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.only(top: 15),
                     child: Text(
                       widget.userID == null ? 'Unknown' : widget.userName,
-                      style: new TextStyle(fontSize: 30),
+                      style: new TextStyle(fontSize: 25),
                     ),
                   ),
                   Container(
+                    alignment: Alignment.center,
                     margin: EdgeInsets.only(top: 5),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
                           margin: EdgeInsets.only(right: 10),

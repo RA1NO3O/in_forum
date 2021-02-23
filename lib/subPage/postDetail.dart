@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -9,10 +11,13 @@ import 'package:inforum/component/commentListItem.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/component/imageViewer.dart';
 import 'package:inforum/data/forumCommentStream.dart';
+import 'package:inforum/data/webConfig.dart';
+import 'package:inforum/home.dart';
 import 'package:inforum/service/uploadPictureService.dart';
 import 'package:inforum/subPage/editPost.dart';
 import 'package:inforum/subPage/profilePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 class ForumDetailPage extends StatefulWidget {
   final int postID;
@@ -29,6 +34,7 @@ class ForumDetailPage extends StatefulWidget {
   final bool isAuthor;
   final List<String> tags;
   final String time;
+  final String heroTag;
 
   const ForumDetailPage(
       {Key key,
@@ -45,7 +51,8 @@ class ForumDetailPage extends StatefulWidget {
       this.isAuthor,
       this.postID,
       this.tags,
-      this.time})
+      this.time,
+      this.heroTag})
       : super(key: key);
 
   @override
@@ -99,15 +106,17 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                           titleText: widget.titleText,
                           contentText: widget.contentText,
                           tags: widget.tags,
+                          imgURL: widget.imgURL,
                           mode: 1,
                           postID: widget.postID,
+                          heroTag: widget.heroTag,
                         );
                       })),
                     ),
                     IconButton(
                       icon: Icon(Icons.delete_rounded),
                       tooltip: '删除',
-                      onPressed: () {},
+                      onPressed: () => deleteConfirmDialog(),
                     )
                   ],
                 )
@@ -144,7 +153,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                             color: Colors.transparent,
                             child: Ink.image(
                               image: widget.imgAuthor != null
-                                  ? NetworkImage(widget.imgAuthor)
+                                  ? CachedNetworkImageProvider(widget.imgAuthor)
                                   : AssetImage('images/test.jpg'),
                               fit: BoxFit.cover,
                               width: 80,
@@ -247,22 +256,25 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                                   width: widget.imgURL != null ? 400 : 0,
                                   height: widget.imgURL != null ? 200 : 0,
                                   fit: BoxFit.cover,
-                                  image: NetworkImage(widget.imgURL),
+                                  image:
+                                      CachedNetworkImageProvider(widget.imgURL),
                                   child: InkWell(
                                     onTap: () {
                                       Navigator.of(context).push(
-                                          new MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  ImageViewer(
-                                                      imageProvider:
-                                                          NetworkImage(
-                                                              widget.imgURL),
-                                                      heroTag: 'img')));
+                                        new MaterialPageRoute(
+                                          builder: (BuildContext bc) =>
+                                              ImageViewer(
+                                                  imageProvider:
+                                                      CachedNetworkImageProvider(
+                                                          widget.imgURL),
+                                                  heroTag: widget.heroTag),
+                                        ),
+                                      );
                                     },
                                   ),
                                 ),
                               ),
-                              tag: 'img',
+                              tag: widget.heroTag,
                             )
                           : null,
                     ),
@@ -513,5 +525,51 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
         print('No image selected.');
       }
     });
+  }
+
+  deleteConfirmDialog() async {
+    bool result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Column(
+          children: [
+            Icon(
+              Icons.help_rounded,
+              size: 40,
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 10),
+              child: Text('删除帖子?'),
+            )
+          ],
+        ),
+        actions: <Widget>[
+          FlatButton.icon(
+            textColor: Colors.blue,
+            icon: Icon(Icons.arrow_back_rounded),
+            label: Text('取消'),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+          FlatButton.icon(
+            textColor: Colors.redAccent,
+            icon: Icon(Icons.delete_forever_rounded),
+            label: Text('确认'),
+            onPressed: () => Navigator.pop(context, true),
+          ),
+        ],
+      ),
+    );
+    if (result) {
+      Response res = await Dio().delete(
+        '$apiServerAddress/deletePost/',
+        options: new Options(contentType: Headers.formUrlEncodedContentType),
+        data: {"postID": widget.postID},
+      );
+      if (res.data == 'success.') {
+        Toast.show('帖子已删除.', context, duration: 2);
+        Navigator.pop(context,
+            MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
+      }
+    }
   }
 }

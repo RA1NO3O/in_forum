@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/data/dateTimeFormat.dart';
@@ -44,7 +45,7 @@ class _CommentListItem extends State<CommentListItem> {
                       clipBehavior: Clip.hardEdge,
                       color: Colors.transparent,
                       child: Ink.image(
-                        image: NetworkImage(widget.commenterAvatarURL),
+                        image: CachedNetworkImageProvider(widget.commenterAvatarURL),
                         fit: BoxFit.cover,
                         width: 50,
                         height: 50,

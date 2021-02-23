@@ -80,7 +80,7 @@ class _RegPage extends State<RegPage> {
         },
       );
       if (res.statusCode == 200) {
-        Toast.show('欢迎,${idController.text}', context);
+        Toast.show('欢迎,${idController.text}', context, duration: 2);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         Recordset recordset = await searchUser(idController.text);
         await prefs.setString('userID', recordset.id.toString());

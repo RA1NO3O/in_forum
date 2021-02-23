@@ -37,6 +37,7 @@ dependencies:
   image_picker: ^0.6.7+22
   crypto: ^2.1.5
   photo_view: ^0.10.3
+  cached_network_image: ^2.5.0
 
 
 dev_dependencies:

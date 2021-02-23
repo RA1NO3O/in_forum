@@ -45,9 +45,9 @@ class _PrimaryPage extends State<PrimaryPage> {
   _getStream() async {
     _list.clear();
     List<ForumListItem> fli = await getList(widget.userID);
-    _list.addAll(fli);
     setState(() {
       loadState = true;
+      _list.addAll(fli);
     });
   }
 

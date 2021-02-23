@@ -1,10 +1,13 @@
-import 'package:collection/collection.dart';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/home.dart';
+import 'package:inforum/service/uploadPictureService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
@@ -14,6 +17,8 @@ class EditPostScreen extends StatefulWidget {
   final List<String> tags;
   final int mode; //0为新建,1为编辑
   final int postID;
+  final String imgURL;
+  final String heroTag;
 
   const EditPostScreen(
       {Key key,
@@ -21,9 +26,10 @@ class EditPostScreen extends StatefulWidget {
       this.contentText,
       this.mode,
       this.tags,
-      this.postID})
+      this.postID,
+      this.imgURL,
+      this.heroTag})
       : super(key: key);
-
   @override
   _EditPostScreenState createState() => _EditPostScreenState();
 }
@@ -38,6 +44,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
   String draftTitle;
   String draftContent;
   List<String> draftTags;
+  String _localImagePath;
+  String _networkImageLink;
 
   @override
   void initState() {
@@ -47,7 +55,12 @@ class _EditPostScreenState extends State<EditPostScreen> {
     if (widget.mode == 1) {
       titleController.text = widget.titleText;
       contentController.text = widget.contentText;
-      tags.addAll(widget.tags);
+      if (widget.tags != null) {
+        tags.addAll(widget.tags);
+      }
+      if (widget.imgURL != null) {
+        _networkImageLink = widget.imgURL;
+      }
     }
     titleController.addListener(textListener);
     contentController.addListener(textListener);
@@ -74,23 +87,24 @@ class _EditPostScreenState extends State<EditPostScreen> {
         },
       ),
     ];
-    tagChips.addAll(tags
-        .map((s) => Container(
-              height: 32,
-              child: InputChip(
-                label: Text('$s'),
-                avatar: Icon(Icons.tag),
-                onDeleted: () {
-                  setState(() {
-                    tags.remove('$s');
-                    refreshTagList();
-                  });
-                },
-              ),
-            ))
-        .toList());
-    if (IterableEquality().equals(tags, draftTags)) {
-      edited = false;
+    if (tags != null) {
+      tagChips.addAll(tags
+          .map((s) => Container(
+                height: 32,
+                child: InputChip(
+                  label: Text('$s'),
+                  avatar: Icon(Icons.tag),
+                  onDeleted: () {
+                    setState(
+                      () {
+                        tags.remove('$s');
+                        refreshTagList();
+                      },
+                    );
+                  },
+                ),
+              ))
+          .toList());
     }
   }
 
@@ -101,9 +115,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
     draftTags = sp.getStringList('draft_tags');
     titleController.text = draftTitle;
     contentController.text = draftContent;
-    if (draftTags != null) {
-      tags = draftTags;
-    }
+    tags = draftTags ?? List<String>();
     refreshTagList();
   }
 
@@ -116,26 +128,34 @@ class _EditPostScreenState extends State<EditPostScreen> {
             elevation: 1,
             title: Text(widget.mode == 0 ? '新帖子' : '编辑帖子'),
             actions: [
-              Builder(builder: (BuildContext bc) {
-                return IconButton(
-                  icon: Icon(Icons.save_rounded),
-                  onPressed: edited
-                      ? () {
+              widget.mode == 0
+                  ? Builder(builder: (BuildContext bc) {
+                      return IconButton(
+                        icon: Icon(Icons.save_rounded),
+                        onPressed: () {
                           save(titleController.text, contentController.text,
                               tags);
                           Scaffold.of(bc).showSnackBar(doneSnackBar('已存为草稿.'));
                           saved = true;
-                        }
-                      : null,
-                  tooltip: '存为草稿',
-                );
-              }),
+                        },
+                        tooltip: '存为草稿',
+                      );
+                    })
+                  : Container(),
               new IconButton(
                 icon: widget.mode == 0
                     ? Icon(Icons.send_rounded)
                     : Icon(Icons.done),
-                onPressed: edited && contentController.text.isNotEmpty
+                onPressed: titleController.text.trim().isNotEmpty &&
+                        contentController.text.trim().isNotEmpty
                     ? () async {
+                        String uploadedImage;
+                        if (_localImagePath != null) {
+                          uploadedImage =
+                              await uploadFile(File(_localImagePath));
+                        } else if (_networkImageLink != null) {
+                          uploadedImage = _networkImageLink;
+                        }
                         if (widget.mode == 0) {
                           SharedPreferences prefs =
                               await SharedPreferences.getInstance();
@@ -148,12 +168,12 @@ class _EditPostScreenState extends State<EditPostScreen> {
                               data: {
                                 "title": titleController.text,
                                 "content": contentController.text,
-                                "tags": tags.toString(),
-                                "imgURL": 'null',
+                                "tags": tags,
+                                "imgURL": uploadedImage ?? 'null',
                                 "editorID": editorID,
                               });
                           if (res.statusCode == 200) {
-                            Toast.show('帖子已发布.', context);
+                            Toast.show('帖子已发布.', context, duration: 2);
                             Navigator.pop(
                                 context,
                                 MaterialPageRoute(
@@ -161,6 +181,11 @@ class _EditPostScreenState extends State<EditPostScreen> {
                                         HomeScreen()));
                           }
                         } else {
+                          print('${widget.postID}\n'
+                              '${titleController.text}\n'
+                              '${contentController.text}\n'
+                              '$tags\n'
+                              '$uploadedImage');
                           Response res = await Dio().post(
                               '$apiServerAddress/editPost/',
                               options: new Options(
@@ -170,11 +195,11 @@ class _EditPostScreenState extends State<EditPostScreen> {
                                 "postID": widget.postID,
                                 "title": titleController.text,
                                 "content": contentController.text,
-                                "tags": tags.toString(),
-                                "imgURL": 'null',
+                                "tags": tags,
+                                "imgURL": uploadedImage ?? 'null',
                               });
                           if (res.statusCode == 200) {
-                            Toast.show('帖子已修改.', context);
+                            Toast.show('帖子已修改.', context, duration: 2);
                             Navigator.pop(
                                 context,
                                 MaterialPageRoute(
@@ -228,12 +253,94 @@ class _EditPostScreenState extends State<EditPostScreen> {
                         children: tagChips,
                       ),
                     ),
+                    Container(
+                        margin: EdgeInsets.all(10),
+                        alignment: Alignment.center,
+                        child: (_localImagePath == null) &&
+                                (_networkImageLink == null)
+                            ? Row(
+                                children: [
+                                  TextButton.icon(
+                                    icon: Icon(Icons.photo_library_rounded),
+                                    label: Text('添加图片'),
+                                    onPressed: getImage,
+                                  ),
+                                  Text('或者'),
+                                  Builder(
+                                    builder: (BuildContext bc) =>
+                                        TextButton.icon(
+                                      icon: Icon(Icons.insert_link_rounded),
+                                      label: Text('网络图片'),
+                                      onPressed: () => addNetworkImage(bc),
+                                    ),
+                                  )
+                                ],
+                              )
+                            : Dismissible(
+                                key: new Key(''),
+                                // ignore: non_constant_identifier_names
+                                onDismissed: (DismissDirection) {
+                                  setState(() {
+                                    _localImagePath = null;
+                                    _networkImageLink = null;
+                                  });
+                                },
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                      maxHeight: 400, maxWidth: 400),
+                                  child: _localImagePath != null
+                                      ? Image.file(
+                                          File(_localImagePath),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Hero(
+                                          child: Image.network(
+                                            _networkImageLink,
+                                            fit: BoxFit.cover,
+                                          ),
+                                          tag: widget.heroTag,
+                                        ),
+                                ),
+                              ))
                   ],
                 ),
-              )
+              ),
             ],
           )),
       onWillPop: _onBackPressed,
+    );
+  }
+
+  void addNetworkImage(BuildContext bc) {
+    var imgLinkEditor = new TextEditingController();
+    Scaffold.of(bc).showBottomSheet(
+      (bc) => Container(
+        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+        child: TextField(
+          autofocus: true,
+          controller: imgLinkEditor,
+          textInputAction: TextInputAction.done,
+          onEditingComplete: () {
+            setState(() {
+              _networkImageLink = imgLinkEditor.text;
+              Navigator.pop(bc);
+            });
+          },
+          decoration: InputDecoration(
+            hintText: '输入图片URL',
+            suffixIcon: IconButton(
+              icon: Icon(
+                Icons.done_rounded,
+                color: Colors.blue,
+              ),
+              onPressed: () {
+                _networkImageLink = imgLinkEditor.text;
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -242,19 +349,14 @@ class _EditPostScreenState extends State<EditPostScreen> {
       if (widget.mode == 0) {
         if (titleController.text.trim().isNotEmpty ||
             contentController.text.trim().isNotEmpty) {
-          if ((titleController.text == draftTitle) &&
-              (contentController.text == draftContent)) {
-            edited = false;
-          } else {
-            edited = true;
-          }
+          edited = true;
         } else {
           edited = false;
         }
       }
       if (widget.mode == 1) {
-        if (titleController.text == widget.titleText &&
-            contentController.text == widget.contentText) {
+        if (titleController.text.trim() == widget.titleText &&
+            contentController.text.trim() == widget.contentText) {
           edited = false;
         } else {
           edited = true;
@@ -264,7 +366,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   }
 
   void addTag(BuildContext bc) {
-    TextEditingController _tagEditor = new TextEditingController();
+    var _tagEditor = new TextEditingController();
     Scaffold.of(bc).showBottomSheet(
       (bc) => Container(
         padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
@@ -315,15 +417,18 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   ),
                   Container(
                     margin: EdgeInsets.only(top: 10),
-                    child: Text('要保存为草稿吗?'),
+                    child:
+                        widget.mode == 0 ? Text('要保存为草稿吗?') : Text('舍弃更改并退出吗?'),
                   )
                 ],
               ),
               actions: <Widget>[
                 FlatButton.icon(
                   textColor: Colors.blue,
-                  icon: Icon(Icons.save),
-                  label: Text('保存'),
+                  icon: widget.mode == 0
+                      ? Icon(Icons.save)
+                      : Icon(Icons.arrow_back_rounded),
+                  label: widget.mode == 0 ? Text('保存') : Text('返回'),
                   onPressed: () {
                     save(titleController.text, contentController.text, tags);
                     Navigator.pop(context, true);
@@ -349,6 +454,20 @@ class _EditPostScreenState extends State<EditPostScreen> {
       return false;
     }
     return result;
+  }
+
+  Future getImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        setState(() {
+          _localImagePath = pickedFile.path;
+        });
+      } else {
+        print('No image selected.');
+      }
+    });
   }
 
   @override

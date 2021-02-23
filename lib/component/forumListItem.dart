@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/component/imageViewer.dart';
@@ -58,6 +59,7 @@ class _ForumListItem extends State<ForumListItem> {
   List<String> tagStrings;
   List<Widget> tagWidgets;
   String imgTag = getRandom(6);
+
   @override
   void initState() {
     likeState = widget.likeState;
@@ -122,6 +124,7 @@ class _ForumListItem extends State<ForumListItem> {
                               tags: widget.tags,
                               postID: widget.postID,
                               time: widget.time,
+                              heroTag: imgTag,
                             );
                           })),
                       child: Column(
@@ -139,12 +142,13 @@ class _ForumListItem extends State<ForumListItem> {
                                           margin: EdgeInsets.only(right: 5),
                                           child: CircleAvatar(
                                               radius: 15,
-                                              backgroundImage:
-                                                  widget.imgAuthor != null
-                                                      ? NetworkImage(
-                                                          widget.imgAuthor)
-                                                      : AssetImage(
-                                                          'images/test.jpg'))),
+                                              backgroundImage: widget
+                                                          .imgAuthor !=
+                                                      null
+                                                  ? CachedNetworkImageProvider(
+                                                      widget.imgAuthor)
+                                                  : AssetImage(
+                                                      'images/test.jpg'))),
                                       Text(widget.authorName),
                                     ],
                                   ),
@@ -193,15 +197,17 @@ class _ForumListItem extends State<ForumListItem> {
                                 width: widget.imgURL != null ? 400 : 0,
                                 height: widget.imgURL != null ? 200 : 0,
                                 fit: BoxFit.cover,
-                                image: NetworkImage(widget.imgURL),
+                                image:
+                                    CachedNetworkImageProvider(widget.imgURL),
                                 child: InkWell(
                                   onTap: () {
                                     Navigator.of(context).push(
                                         new MaterialPageRoute(
                                             builder: (BuildContext context) =>
                                                 ImageViewer(
-                                                    imageProvider: NetworkImage(
-                                                        widget.imgURL),
+                                                    imageProvider:
+                                                        CachedNetworkImageProvider(
+                                                            widget.imgURL),
                                                     heroTag: imgTag)));
                                   },
                                 ),
