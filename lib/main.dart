@@ -31,7 +31,7 @@ Future<void> main() async {
     darkTheme: darkTheme,
     home: isLogin
         ? HomeScreen(
-            userID: prefs.getString('userID'),
+            userID: prefs.getInt('userID').toString(),
             userName: prefs.getString('userName'),
           )
         : MainPage(
@@ -57,7 +57,7 @@ class MainPage extends StatefulWidget {
   MainPage({Key key, this.title}) : super(key: key);
 
   @override
-  _MainPageState createState()=>_MainPageState();
+  _MainPageState createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {

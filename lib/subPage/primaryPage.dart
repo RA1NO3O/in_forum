@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:inforum/component/forumListItem.dart';
-import 'package:inforum/data/forumListStream.dart';
+import 'package:inforum/component/postListItem.dart';
+import 'package:inforum/data/postListStream.dart';
 
 class PrimaryPage extends StatefulWidget {
   final String userID;

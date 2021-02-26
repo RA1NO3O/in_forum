@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:inforum/subPage/settingsPage/accountSettingsPage.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -10,7 +11,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPage extends State<SettingsPage> {
   RoundedRectangleBorder roundedRectangleBorder =
-      RoundedRectangleBorder(borderRadius: BorderRadius.circular(5));
+  RoundedRectangleBorder(borderRadius: BorderRadius.circular(5));
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,10 @@ class _SettingsPage extends State<SettingsPage> {
                     leading: Icon(Icons.person_rounded),
                     shape: roundedRectangleBorder,
                     title: Text('账号'),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (bc) => AccountSettingsPage()));
+                    },
                   ),
                   ListTile(
                     shape: roundedRectangleBorder,
@@ -47,20 +51,21 @@ class _SettingsPage extends State<SettingsPage> {
                     shape: roundedRectangleBorder,
                     leading: Icon(Icons.info_rounded),
                     title: Text('关于 Inforum'),
-                    onTap: () => showAboutDialog(
-                      context: context,
-                      applicationVersion: '1.0.0',
-                      applicationLegalese: '最后编译日期:2020/12/8 15:46\n'
-                          '开发者网站:\n'
-                          'https://github.com/RA1NO3O/\n'
-                          '项目网站:\n'
-                          'https://github.com/RA1NO3O/Inforum',
-                      //TODO:放置app图标
-                      applicationIcon: Icon(
-                        Icons.info_rounded,
-                        size: 30,
-                      ),
-                    ),
+                    onTap: () =>
+                        showAboutDialog(
+                          context: context,
+                          applicationVersion: '1.0.0',
+                          applicationLegalese: '最后编译日期:2020/12/8 15:46\n'
+                              '开发者网站:\n'
+                              'https://github.com/RA1NO3O/\n'
+                              '项目网站:\n'
+                              'https://github.com/RA1NO3O/Inforum',
+                          //TODO:放置app图标
+                          applicationIcon: Icon(
+                            Icons.info_rounded,
+                            size: 30,
+                          ),
+                        ),
                   ),
                   Divider(thickness: 1),
                 ],

@@ -14,7 +14,7 @@ String postStreamServiceToJson(PostStreamService data) =>
     json.encode(data.toJson());
 
 Future<List<Recordset>> getPostStream(String userID) async {
-  Response res = await Dio().get('$apiServerAddress/getPosts/0/?id=$userID');
+  Response res = await Dio().get('$apiServerAddress/getPosts/$userID');
   final PostStreamService pss = postStreamServiceFromJson(res.toString());
   final List<Recordset> rs = pss.recordset.isEmpty ? [] : pss.recordset;
   return rs;
@@ -86,11 +86,9 @@ class Recordset {
     this.dislikeCount,
     this.commentCount,
     this.collectCount,
-    this.editorId,
-    this.userID,
+    this.isEditor,
     this.isCollected,
     this.likeState,
-    this.collectTime,
   });
 
   int postId;
@@ -105,11 +103,9 @@ class Recordset {
   int dislikeCount;
   int commentCount;
   int collectCount;
-  int editorId;
-  int userID;
+  int isEditor;
   bool isCollected;
   int likeState;
-  DateTime collectTime;
 
   factory Recordset.fromJson(Map<String, dynamic> json) => Recordset(
         postId: json["postID"] == null ? null : json["postID"],
@@ -129,13 +125,9 @@ class Recordset {
             json["commentCount"] == null ? null : json["commentCount"],
         collectCount:
             json["collectCount"] == null ? null : json["collectCount"],
-        editorId: json["editorID"] == null ? null : json["editorID"],
-        userID: json["user_ID"] == null ? null : json["user_ID"],
+        isEditor: json["isEditor"] == null ? null : json["isEditor"],
         isCollected: json["isCollected"] == null ? null : json["isCollected"],
         likeState: json["like_State"] == null ? null : json["like_State"],
-        collectTime: json["collectTime"] == null
-            ? null
-            : DateTime.parse(json["collectTime"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -152,11 +144,8 @@ class Recordset {
         "dislikeCount": dislikeCount == null ? null : dislikeCount,
         "commentCount": commentCount == null ? null : commentCount,
         "collectCount": collectCount == null ? null : collectCount,
-        "editorID": editorId == null ? null : editorId,
-        "user_ID": userID == null ? null : userID,
+        "isEditor": isEditor == null ? null : isEditor,
         "isCollected": isCollected == null ? null : isCollected,
         "like_State": likeState == null ? null : likeState,
-        "collectTime":
-            collectTime == null ? null : collectTime.toIso8601String(),
       };
 }

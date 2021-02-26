@@ -30,6 +30,7 @@ class EditPostScreen extends StatefulWidget {
       this.imgURL,
       this.heroTag})
       : super(key: key);
+
   @override
   _EditPostScreenState createState() => _EditPostScreenState();
 }
@@ -159,7 +160,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                         if (widget.mode == 0) {
                           SharedPreferences prefs =
                               await SharedPreferences.getInstance();
-                          String editorID = prefs.getString('userID');
+                          int editorID = prefs.getInt('userID');
                           Response res = await Dio().post(
                               '$apiServerAddress/newPost/',
                               options: new Options(
@@ -267,8 +268,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                                   ),
                                   Text('或者'),
                                   Builder(
-                                    builder: (BuildContext bc) =>
-                                        TextButton.icon(
+                                    builder: (bc) => TextButton.icon(
                                       icon: Icon(Icons.insert_link_rounded),
                                       label: Text('网络图片'),
                                       onPressed: () => addNetworkImage(bc),
@@ -313,30 +313,37 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   void addNetworkImage(BuildContext bc) {
     var imgLinkEditor = new TextEditingController();
-    Scaffold.of(bc).showBottomSheet(
-      (bc) => Container(
-        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-        child: TextField(
-          autofocus: true,
-          controller: imgLinkEditor,
-          textInputAction: TextInputAction.done,
-          onEditingComplete: () {
-            setState(() {
-              _networkImageLink = imgLinkEditor.text;
-              Navigator.pop(bc);
-            });
-          },
-          decoration: InputDecoration(
-            hintText: '输入图片URL',
-            suffixIcon: IconButton(
-              icon: Icon(
-                Icons.done_rounded,
-                color: Colors.blue,
-              ),
-              onPressed: () {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: bc,
+      builder: (bc) => SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.only(
+              left: 10,
+              right: 10,
+              bottom: MediaQuery.of(bc).viewInsets.bottom + 5),
+          child: TextField(
+            autofocus: true,
+            controller: imgLinkEditor,
+            textInputAction: TextInputAction.done,
+            onEditingComplete: () {
+              setState(() {
                 _networkImageLink = imgLinkEditor.text;
-                Navigator.pop(context);
-              },
+                Navigator.pop(bc);
+              });
+            },
+            decoration: InputDecoration(
+              hintText: '输入图片URL',
+              suffixIcon: IconButton(
+                icon: Icon(
+                  Icons.done_rounded,
+                  color: Colors.blue,
+                ),
+                onPressed: () {
+                  _networkImageLink = imgLinkEditor.text;
+                  Navigator.pop(context);
+                },
+              ),
             ),
           ),
         ),
@@ -367,32 +374,39 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   void addTag(BuildContext bc) {
     var _tagEditor = new TextEditingController();
-    Scaffold.of(bc).showBottomSheet(
-      (bc) => Container(
-        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-        child: TextField(
-          autofocus: true,
-          controller: _tagEditor,
-          textInputAction: TextInputAction.done,
-          onEditingComplete: () {
-            setState(() {
-              tags.add(_tagEditor.text);
-              refreshTagList();
-              Navigator.pop(context);
-            });
-          },
-          decoration: InputDecoration(
-            hintText: '输入标签名称',
-            suffixIcon: IconButton(
-              icon: Icon(
-                Icons.done_rounded,
-                color: Colors.blue,
-              ),
-              onPressed: () {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (bc) => SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.only(
+              left: 10,
+              right: 10,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 5),
+          child: TextField(
+            autofocus: true,
+            controller: _tagEditor,
+            textInputAction: TextInputAction.done,
+            onEditingComplete: () {
+              setState(() {
                 tags.add(_tagEditor.text);
                 refreshTagList();
                 Navigator.pop(context);
-              },
+              });
+            },
+            decoration: InputDecoration(
+              hintText: '输入标签名称',
+              suffixIcon: IconButton(
+                icon: Icon(
+                  Icons.done_rounded,
+                  color: Colors.blue,
+                ),
+                onPressed: () {
+                  tags.add(_tagEditor.text);
+                  refreshTagList();
+                  Navigator.pop(context);
+                },
+              ),
             ),
           ),
         ),
@@ -461,9 +475,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
     setState(() {
       if (pickedFile != null) {
-        setState(() {
-          _localImagePath = pickedFile.path;
-        });
+        _localImagePath = pickedFile.path;
       } else {
         print('No image selected.');
       }

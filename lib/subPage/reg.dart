@@ -83,7 +83,7 @@ class _RegPage extends State<RegPage> {
         Toast.show('欢迎,${idController.text}', context, duration: 2);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         Recordset recordset = await searchUser(idController.text);
-        await prefs.setString('userID', recordset.id.toString());
+        await prefs.setInt('userID', recordset.id);
         await prefs.setString('userName', idController.text);
         await prefs.setBool('isLogin', true);
         Recordset rs = await searchUser(idController.text);

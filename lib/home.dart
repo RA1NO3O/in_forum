@@ -286,10 +286,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: Text('收藏'),
                     shape: roundedRectangleBorder,
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return CollectionPage();
-                      }));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  CollectionPage()));
                     },
                   ),
                   ListTile(

@@ -1,8 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/data/dateTimeFormat.dart';
+import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/subPage/profilePage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CommentListItem extends StatefulWidget {
   final int postID;
@@ -11,6 +14,8 @@ class CommentListItem extends StatefulWidget {
   final String commentTime;
   final String content;
   final String commentTarget; //留空为直接回复在帖子下,否则为回复给指定ID的对话
+  final int likeState;
+  final int likeCount;
 
   const CommentListItem(
       {Key key,
@@ -19,7 +24,9 @@ class CommentListItem extends StatefulWidget {
       this.commenterName,
       this.commentTime,
       this.content,
-      this.commentTarget})
+      this.commentTarget,
+      this.likeState,
+      this.likeCount})
       : super(key: key);
 
   @override
@@ -27,6 +34,15 @@ class CommentListItem extends StatefulWidget {
 }
 
 class _CommentListItem extends State<CommentListItem> {
+  int likeState; //0缺省,1为点赞,2为踩
+  int likeCount;
+  @override
+  void initState() {
+    likeState = widget.likeState;
+    likeCount = widget.likeCount;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -45,7 +61,8 @@ class _CommentListItem extends State<CommentListItem> {
                       clipBehavior: Clip.hardEdge,
                       color: Colors.transparent,
                       child: Ink.image(
-                        image: CachedNetworkImageProvider(widget.commenterAvatarURL),
+                        image: CachedNetworkImageProvider(
+                            widget.commenterAvatarURL),
                         fit: BoxFit.cover,
                         width: 50,
                         height: 50,
@@ -116,13 +133,13 @@ class _CommentListItem extends State<CommentListItem> {
                 Row(
                   children: [
                     ActionButton(
-                        fun: () {},
+                        fun: _likeButtonClick,
                         ico: Icon(Icons.thumb_up_outlined),
-                        txt: '0'),
+                        txt: likeCount.toString()),
                     IconButton(
                       onPressed: () {},
-                      icon: Icon(Icons.quickreply_outlined),
-                      tooltip: '快速回复',
+                      icon: Icon(Icons.quickreply_rounded),
+                      tooltip: '回复',
                     )
                   ],
                 ),
@@ -135,5 +152,36 @@ class _CommentListItem extends State<CommentListItem> {
         ],
       ),
     );
+  }
+
+  Future<void> _likeButtonClick() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    Response res = await Dio().post('$apiServerAddress/thumbUp/',
+        options: new Options(contentType: Headers.formUrlEncodedContentType),
+        data: {
+          "userID": sp.getInt('userID'),
+          "postID": widget.postID,
+        });
+
+    if (res.statusCode == 200) {
+      setState(() {
+        switch (likeState) {
+          case 0:
+            likeState = 1;
+            likeCount++;
+            break;
+          case 1:
+            likeState = 0;
+            if (likeCount != 0) {
+              likeCount--;
+            }
+            break;
+          case 2:
+            likeState = 1;
+            likeCount++;
+            break;
+        }
+      });
+    }
   }
 }

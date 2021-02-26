@@ -13,8 +13,8 @@ PostCommentService postCommentServiceFromJson(String str) =>
 String postCommentServiceToJson(PostCommentService data) =>
     json.encode(data.toJson());
 
-Future<List<Recordset>> getPostComment(int postID) async {
-  Response res = await Dio().get('$apiServerAddress/getComment/$postID');
+Future<List<Recordset>> getPostComment(int postID,int userID) async {
+  Response res = await Dio().get('$apiServerAddress/getComment/$postID?userID=$userID');
   final PostCommentService pcs = postCommentServiceFromJson(res.toString());
   final List<Recordset> rs = pcs.recordset.isEmpty ? [] : pcs.recordset;
   return rs;
@@ -81,6 +81,9 @@ class Recordset {
     this.username,
     this.avatarUrl,
     this.nickname,
+    this.likeCount,
+    this.likeState,
+    this.userId,
   });
 
   int postId;
@@ -90,6 +93,9 @@ class Recordset {
   String username;
   String avatarUrl;
   String nickname;
+  int likeCount;
+  int likeState;
+  int userId;
 
   factory Recordset.fromJson(Map<String, dynamic> json) => Recordset(
         postId: json["postID"] == null ? null : json["postID"],
@@ -101,6 +107,9 @@ class Recordset {
         username: json["username"] == null ? null : json["username"],
         avatarUrl: json["avatarURL"] == null ? null : json["avatarURL"],
         nickname: json["nickname"] == null ? null : json["nickname"],
+        likeCount: json["likeCount"] == null ? null : json["likeCount"],
+        likeState: json["like_State"] == null ? null : json["like_State"],
+        userId: json["user_ID"] == null ? null : json["user_ID"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -112,5 +121,8 @@ class Recordset {
         "username": username == null ? null : username,
         "avatarURL": avatarUrl == null ? null : avatarUrl,
         "nickname": nickname == null ? null : nickname,
+        "likeCount": likeCount == null ? null : likeCount,
+        "like_State": likeState == null ? null : likeState,
+        "user_ID": userId == null ? null : userId,
       };
 }

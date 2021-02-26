@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 RoundedRectangleBorder roundedRectangleBorder =
     RoundedRectangleBorder(borderRadius: BorderRadius.circular(5));
+Color themeColor = Colors.blue;
+
+void getStyleSettings() async {
+  SharedPreferences sp = await SharedPreferences.getInstance();
+  themeColor = Color(sp.getInt("ThemeColor"));
+}
 
 SnackBar errorSnackBar(String r) {
   return SnackBar(
@@ -40,14 +47,14 @@ SnackBar doneSnackBar(String r) {
 
 ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
-  focusColor: Colors.blue,
-  buttonColor: Colors.blueAccent,
+  focusColor: themeColor,
+  buttonColor: themeColor,
 );
 ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
-  accentColor: Colors.blue,
+  accentColor: themeColor,
   primaryColor: Colors.black,
-  buttonColor: Colors.blue,
+  buttonColor: themeColor,
 );
 TextStyle titleFontStyle =
     new TextStyle(fontSize: 25, fontWeight: FontWeight.bold);

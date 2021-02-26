@@ -1,11 +1,16 @@
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/component/imageViewer.dart';
 import 'package:inforum/data/dateTimeFormat.dart';
+import 'package:inforum/data/webConfig.dart';
+import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/postDetail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'customStyles.dart';
 
@@ -59,6 +64,7 @@ class _ForumListItem extends State<ForumListItem> {
   List<String> tagStrings;
   List<Widget> tagWidgets;
   String imgTag = getRandom(6);
+  String _imagePath;
 
   @override
   void initState() {
@@ -249,8 +255,16 @@ class _ForumListItem extends State<ForumListItem> {
                     Expanded(
                         flex: 1,
                         child: ActionButton(
-                            fun: () => Scaffold.of(bc)
-                                .showBottomSheet((bc) => commentContainer()),
+                            fun: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        NewCommentScreen(
+                                      targetPostID: widget.postID,
+                                      imgURL: null,
+                                    ),
+                                  ),
+                                ),
                             ico: Icon(Icons.mode_comment_outlined),
                             txt: commentCount.toString())),
                     Expanded(
@@ -282,108 +296,101 @@ class _ForumListItem extends State<ForumListItem> {
     return left;
   }
 
-  void _starButtonClick() {
-    //TODO:异步收藏
-    setState(() {
-      isCollect = !isCollect;
-      isCollect ? collectCount++ : collectCount--;
-    });
+  Future<void> _starButtonClick() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    Response res = await Dio().post('$apiServerAddress/starPost/',
+        options: new Options(contentType: Headers.formUrlEncodedContentType),
+        data: {
+          "userID": sp.getInt('userID'),
+          "postID": widget.postID,
+        });
+    if (res.statusCode == 200) {
+      setState(() {
+        isCollect = !isCollect;
+        isCollect ? collectCount++ : collectCount--;
+      });
+    }
   }
 
-  void _likeButtonClick() {
-    print('clicked like button');
-    //TODO:异步点赞
+  Future<void> _likeButtonClick() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    Response res = await Dio().post('$apiServerAddress/thumbUp/',
+        options: new Options(contentType: Headers.formUrlEncodedContentType),
+        data: {
+          "userID": sp.getInt('userID'),
+          "postID": widget.postID,
+        });
+
+    if (res.statusCode == 200) {
+      setState(() {
+        switch (likeState) {
+          case 0:
+            likeState = 1;
+            likeCount++;
+            break;
+          case 1:
+            likeState = 0;
+            if (likeCount != 0) {
+              likeCount--;
+            }
+            break;
+          case 2:
+            likeState = 1;
+            if (dislikeCount != 0) {
+              dislikeCount--;
+            }
+            likeCount++;
+            break;
+        }
+      });
+    }
+  }
+
+  Future<void> _dislikeButtonClick() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    Response res = await Dio().post('$apiServerAddress/thumbDown/',
+        options: new Options(contentType: Headers.formUrlEncodedContentType),
+        data: {
+          "userID": sp.getInt('userID'),
+          "postID": widget.postID,
+        });
+    if (res.statusCode == 200) {
+      setState(() {
+        switch (likeState) {
+          case 0:
+            likeState = 2;
+            dislikeCount++;
+            break;
+          case 1:
+            likeState = 2;
+            if (likeCount != 0) {
+              likeCount--;
+            }
+            dislikeCount++;
+            break;
+          case 2:
+            likeState = 0;
+            if (dislikeCount != 0) {
+              dislikeCount--;
+            }
+            break;
+        }
+      });
+    }
+  }
+
+  Future getImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
     setState(() {
-      switch (likeState) {
-        case 0:
-          likeState = 1;
-          likeCount++;
-          break;
-        case 1:
-          likeState = 0;
-          if (likeCount != 0) {
-            likeCount--;
-          }
-          break;
-        case 2:
-          likeState = 1;
-          if (dislikeCount != 0) {
-            dislikeCount--;
-          }
-          likeCount++;
-          break;
+      if (pickedFile != null) {
+        setState(() {
+          _imagePath = pickedFile.path;
+        });
+      } else {
+        print('No image selected.');
       }
     });
-  }
-
-  void _dislikeButtonClick() {
-    //TODO:异步踩
-    print('clicked dislike button');
-    setState(() {
-      switch (likeState) {
-        case 0:
-          likeState = 2;
-          dislikeCount++;
-          break;
-        case 1:
-          likeState = 2;
-          if (likeCount != 0) {
-            likeCount--;
-          }
-          dislikeCount++;
-          break;
-        case 2:
-          likeState = 0;
-          if (dislikeCount != 0) {
-            dislikeCount--;
-          }
-          break;
-      }
-    });
-  }
-
-  Container commentContainer() {
-    TextEditingController _commentController = new TextEditingController();
-    return Container(
-        height: 102,
-        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-        child: Column(
-          children: [
-            TextField(
-              autofocus: true,
-              controller: _commentController,
-              keyboardType: TextInputType.text,
-              textInputAction: TextInputAction.send,
-              decoration: InputDecoration(
-                  hintText: '发布回复',
-                  suffixIcon: IconButton(
-                      icon: Icon(Icons.open_in_full_rounded),
-                      onPressed: () {})),
-            ),
-            Flex(
-              direction: Axis.horizontal,
-              children: [
-                Expanded(
-                    flex: 0,
-                    child: IconButton(
-                        icon: Icon(
-                          Icons.photo_outlined,
-                          color: Colors.blue,
-                        ),
-                        onPressed: () {})),
-                Expanded(flex: 1, child: Container()),
-                Expanded(
-                    flex: 0,
-                    child: FlatButton(
-                      child: Text('发送'),
-                      colorBrightness: Brightness.dark,
-                      color: Colors.blue,
-                      onPressed: () {},
-                    ))
-              ],
-            )
-          ],
-        ));
   }
 
   @override

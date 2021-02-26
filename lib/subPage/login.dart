@@ -165,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
         user['id'] = rs.id;
         //写入登录状态
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userID', user['id'].toString());
+        await prefs.setInt('userID', user['id']);
         await prefs.setString('userName', user['userName'].toString());
         await prefs.setBool('isLogin', true);
         Toast.show("欢迎回来,${user['userName']}", context,duration: 3);

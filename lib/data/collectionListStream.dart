@@ -1,4 +1,4 @@
-import 'package:inforum/component/forumListItem.dart';
+import 'package:inforum/component/postListItem.dart';
 
 class CollectionListStream{
   static List<ForumListItem> getCollections(){

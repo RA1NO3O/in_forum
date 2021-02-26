@@ -1,4 +1,4 @@
-import 'package:inforum/component/forumListItem.dart';
+import 'package:inforum/component/postListItem.dart';
 import 'package:inforum/service/postStreamService.dart';
 
 List<ForumListItem> psis = [];
@@ -22,7 +22,7 @@ Future<List<ForumListItem>> getList(String userID) async {
       imgURL: rs.imageUrl ?? null,
       authorName: rs.nickname,
       imgAuthor: rs.avatarUrl ?? null,
-      isAuthor: rs.editorId.toString() == userID,
+      isAuthor: rs.isEditor == 1 ? true : false,
       time: rs.lastEditTime.toString(),
       tags: t != null ? t.split(',') : null,
     ));

@@ -10,12 +10,14 @@ import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/component/commentListItem.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/component/imageViewer.dart';
-import 'package:inforum/data/forumCommentStream.dart';
+import 'package:inforum/data/postCommentStream.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/service/uploadPictureService.dart';
 import 'package:inforum/subPage/editPost.dart';
+import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/profilePage.dart';
+import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
@@ -308,16 +310,14 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                         Expanded(
                             flex: 1,
                             child: ActionButton(
-                                //TODO:实现评论按钮
-                                fun: () => Scaffold.of(c)
-                                    .showBottomSheet((c) => commentContainer()),
+                                fun: () => commentBottomSheet(context),
                                 ico: Icon(Icons.mode_comment_outlined),
                                 txt: commentCount.toString())),
                         Expanded(
                           flex: 0,
                           child: ActionButton(
                             //TODO:实现分享按钮
-                            fun: () => print('clicked Share button'),
+                            fun: () => Share.share(widget.imgURL),
                             ico: Icon(Icons.share_outlined),
                           ),
                         ),
@@ -335,8 +335,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                 child: Container(
                     padding: EdgeInsets.only(left: 10, right: 10),
                     child: InkWell(
-                        onTap: () => Scaffold.of(c)
-                            .showBottomSheet((c) => commentContainer()),
+                        onTap: () => commentBottomSheet(context),
                         child: Flex(
                           direction: Axis.horizontal,
                           children: [
@@ -365,57 +364,79 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     );
   }
 
-  Container commentContainer() {
+  void commentBottomSheet(BuildContext bc) {
     TextEditingController _commentController = new TextEditingController();
-    return Container(
-        height: 102,
-        padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-        child: Column(
-          children: [
-            TextField(
-              autofocus: true,
-              keyboardType: TextInputType.text,
-              textInputAction: TextInputAction.send,
-              controller: _commentController,
-              decoration: InputDecoration(
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: bc,
+      builder: (bc) => SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.only(
+              left: 10,
+              right: 10,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 5),
+          child: Column(
+            children: [
+              TextField(
+                autofocus: true,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.send,
+                controller: _commentController,
+                decoration: InputDecoration(
                   hintText: '发布回复',
                   suffixIcon: IconButton(
-                      icon: Icon(Icons.open_in_full_rounded),
-                      onPressed: () {})),
-            ),
-            Flex(
-              direction: Axis.horizontal,
-              children: [
-                Expanded(
-                    flex: 0,
-                    child: IconButton(
-                        icon: Icon(
-                          Icons.add_a_photo_rounded,
-                          color: Colors.blue,
+                    icon: Icon(Icons.open_in_full_rounded),
+                    tooltip: '全屏撰写',
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => NewCommentScreen(
+                          targetPostID: widget.postID,
+                          contentText: _commentController.text,
+                          imgURL: null,
                         ),
-                        onPressed: getImage)),
-                Expanded(
-                    flex: 0,
-                    child: Container(
-                      height: 45,
-                      width: 45,
-                      child: _imagePath != null
-                          ? Image.file(File(_imagePath), fit: BoxFit.cover)
-                          : null,
-                    )),
-                Expanded(flex: 1, child: Container()),
-                Expanded(
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Flex(
+                direction: Axis.horizontal,
+                children: [
+                  Expanded(
+                      flex: 0,
+                      child: IconButton(
+                          icon: Icon(
+                            Icons.add_a_photo_rounded,
+                            color: Colors.blue,
+                          ),
+                          onPressed: getImage)),
+                  Expanded(
+                      flex: 0,
+                      child: Container(
+                        height: 45,
+                        width: 45,
+                        child: _imagePath != null
+                            ? Image.file(File(_imagePath), fit: BoxFit.cover)
+                            : null,
+                      )),
+                  Expanded(flex: 1, child: Container()),
+                  Expanded(
                     flex: 0,
                     child: FlatButton(
                       child: Text('发送'),
                       colorBrightness: Brightness.dark,
                       color: Colors.blue,
                       onPressed: () {},
-                    ))
-              ],
-            )
-          ],
-        ));
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -423,63 +444,85 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     super.dispose();
   }
 
-  void _starButtonClick() {
-    //TODO:异步收藏
-    setState(() {
-      isCollect = !isCollect;
-    });
+  Future<void> _starButtonClick() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    Response res = await Dio().post('$apiServerAddress/starPost/',
+        options: new Options(contentType: Headers.formUrlEncodedContentType),
+        data: {
+          "userID": sp.getInt('userID'),
+          "postID": widget.postID,
+        });
+    if (res.statusCode == 200) {
+      setState(() {
+        isCollect = !isCollect;
+      });
+    }
   }
 
-  void _likeButtonClick() {
-    print('clicked like button');
-    //TODO:异步点赞
-    setState(() {
-      switch (likeState) {
-        case 0:
-          likeState = 1;
-          likeCount++;
-          break;
-        case 1:
-          likeState = 0;
-          if (likeCount != 0) {
-            likeCount--;
-          }
-          break;
-        case 2:
-          likeState = 1;
-          if (dislikeCount != 0) {
-            dislikeCount--;
-          }
-          likeCount++;
-          break;
-      }
-    });
+  Future<void> _likeButtonClick() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    Response res = await Dio().post('$apiServerAddress/thumbUp/',
+        options: new Options(contentType: Headers.formUrlEncodedContentType),
+        data: {
+          "userID": sp.getInt('userID'),
+          "postID": widget.postID,
+        });
+    if (res.statusCode == 200) {
+      setState(() {
+        switch (likeState) {
+          case 0:
+            likeState = 1;
+            likeCount++;
+            break;
+          case 1:
+            likeState = 0;
+            if (likeCount != 0) {
+              likeCount--;
+            }
+            break;
+          case 2:
+            likeState = 1;
+            if (dislikeCount != 0) {
+              dislikeCount--;
+            }
+            likeCount++;
+            break;
+        }
+      });
+    }
   }
 
-  void _dislikeButtonClick() {
-    //TODO:异步踩
-    print('clicked dislike button');
-    setState(() {
-      switch (likeState) {
-        case 0:
-          likeState = 2;
-          dislikeCount++;
-          break;
-        case 1:
-          likeState = 2;
-          if (likeCount != 0) {
-            likeCount--;
-          }
-          dislikeCount++;
-          break;
-        case 2:
-          likeState = 0;
-          if (dislikeCount != 0) {
-            dislikeCount--;
-          }
-          break;
-      }
-    });
+  Future<void> _dislikeButtonClick() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    Response res = await Dio().post('$apiServerAddress/thumbDown/',
+        options: new Options(contentType: Headers.formUrlEncodedContentType),
+        data: {
+          "userID": sp.getInt('userID'),
+          "postID": widget.postID,
+        });
+    if (res.statusCode == 200) {
+      setState(() {
+        switch (likeState) {
+          case 0:
+            likeState = 2;
+            dislikeCount++;
+            break;
+          case 1:
+            likeState = 2;
+            if (likeCount != 0) {
+              likeCount--;
+            }
+            dislikeCount++;
+            break;
+          case 2:
+            likeState = 0;
+            if (dislikeCount != 0) {
+              dislikeCount--;
+            }
+            break;
+        }
+      });
+    }
   }
 
   void _getTagWidgets() {
@@ -506,7 +549,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
 
   Future<void> _refresh() async {
     commentList.clear();
-    var _list = await getComment(widget.postID) ?? [];
+    var _list = await getComment(widget.postID, sp.getInt('userID')) ?? [];
     commentList.addAll(_list);
     setState(() {
       loadState = true;
