@@ -2,10 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/actionButton.dart';
-import 'package:inforum/data/dateTimeFormat.dart';
+import 'file:///E:/DEV/SYNC_BY_GitHub/Inforum/lib/service/dateTimeFormat.dart';
 import 'package:inforum/data/webConfig.dart';
+import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/profilePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'imageViewer.dart';
 
 class CommentListItem extends StatefulWidget {
   final int postID;
@@ -16,6 +19,7 @@ class CommentListItem extends StatefulWidget {
   final String commentTarget; //留空为直接回复在帖子下,否则为回复给指定ID的对话
   final int likeState;
   final int likeCount;
+  final String imgURL;
 
   const CommentListItem(
       {Key key,
@@ -26,7 +30,8 @@ class CommentListItem extends StatefulWidget {
       this.content,
       this.commentTarget,
       this.likeState,
-      this.likeCount})
+      this.likeCount,
+      this.imgURL})
       : super(key: key);
 
   @override
@@ -36,6 +41,7 @@ class CommentListItem extends StatefulWidget {
 class _CommentListItem extends State<CommentListItem> {
   int likeState; //0缺省,1为点赞,2为踩
   int likeCount;
+
   @override
   void initState() {
     likeState = widget.likeState;
@@ -130,14 +136,48 @@ class _CommentListItem extends State<CommentListItem> {
                     style: new TextStyle(fontSize: 18),
                   ),
                 ),
+                widget.imgURL != null
+                    ? Material(
+                        elevation: 2,
+                        clipBehavior: Clip.antiAlias,
+                        borderRadius: BorderRadius.circular(5),
+                        child: Ink.image(
+                          width: widget.imgURL != null ? 400 : 0,
+                          height: widget.imgURL != null ? 200 : 0,
+                          fit: BoxFit.cover,
+                          image: CachedNetworkImageProvider(widget.imgURL),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(new MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      ImageViewer(
+                                        imageProvider:
+                                            CachedNetworkImageProvider(
+                                                widget.imgURL),
+                                      )));
+                            },
+                          ),
+                        ),
+                      )
+                    : Container(),
                 Row(
                   children: [
                     ActionButton(
                         fun: _likeButtonClick,
-                        ico: Icon(Icons.thumb_up_outlined),
+                        ico: likeState == 0
+                            ? Icon(Icons.thumb_up_outlined)
+                            : Icon(Icons.thumb_up),
                         txt: likeCount.toString()),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) => NewCommentScreen(
+                            targetPostID: widget.postID,
+                            imgURL: null,
+                          ),
+                        ),
+                      ),
                       icon: Icon(Icons.quickreply_rounded),
                       tooltip: '回复',
                     )

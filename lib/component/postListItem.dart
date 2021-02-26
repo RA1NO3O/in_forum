@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/component/imageViewer.dart';
-import 'package:inforum/data/dateTimeFormat.dart';
+import 'file:///E:/DEV/SYNC_BY_GitHub/Inforum/lib/service/dateTimeFormat.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/postDetail.dart';
@@ -64,6 +64,7 @@ class _ForumListItem extends State<ForumListItem> {
   List<String> tagStrings;
   List<Widget> tagWidgets;
   String imgTag = getRandom(6);
+  // ignore: unused_field
   String _imagePath;
 
   @override
@@ -117,7 +118,7 @@ class _ForumListItem extends State<ForumListItem> {
                               builder: (BuildContext context) {
                             return ForumDetailPage(
                               titleText: widget.titleText,
-                              contentText: widget.contentText,
+                              contentShortText: widget.contentText,
                               likeCount: likeCount,
                               dislikeCount: dislikeCount,
                               likeState: likeState,

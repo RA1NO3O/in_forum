@@ -50,121 +50,121 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          elevation: 1,
-          title: Text('撰写回复'),
-          actions: [
-            new IconButton(
-              icon: Icon(Icons.send_rounded),
-              onPressed: !isNull
-                  ? () async {
-                      String uploadedImage;
-                      if (_localImagePath != null) {
-                        uploadedImage = await uploadFile(File(_localImagePath));
-                      } else if (_networkImageLink != null) {
-                        uploadedImage = _networkImageLink;
-                      }
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      int editorID = prefs.getInt('userID');
-                      Response res = await Dio().post(
-                          '$apiServerAddress/newComment/',
-                          options: new Options(
-                              contentType: Headers.formUrlEncodedContentType),
-                          data: {
-                            "targetPostID": widget.targetPostID,
-                            "content": commentController.text,
-                            "imgURL": uploadedImage ?? 'null',
-                            "editorID": editorID
-                          });
-                      if (res.statusCode == 200) {
-                        Toast.show('回复已送出.', context, duration: 2);
-                        Navigator.pop(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    HomeScreen()));
-                      }
+      appBar: AppBar(
+        elevation: 1,
+        title: Text('撰写回复'),
+        actions: [
+          new IconButton(
+            icon: Icon(Icons.send_rounded),
+            onPressed: !isNull
+                ? () async {
+                    String uploadedImage;
+                    if (_localImagePath != null) {
+                      uploadedImage = await uploadFile(File(_localImagePath));
+                    } else if (_networkImageLink != null) {
+                      uploadedImage = _networkImageLink;
                     }
-                  : null,
-              tooltip: '发送回复',
-            )
-          ],
-        ),
-        body: ListView(
-          children: [
-            Container(
-              margin: EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 10),
-              child: Column(
-                children: [
-                  Container(
-                    constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height),
-                    margin: EdgeInsets.only(top: 10, bottom: 10),
-                    child: new TextFormField(
-                      autofocus: true,
-                      controller: commentController,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: 8,
-                      maxLength: 200,
-                      style: new TextStyle(fontSize: 20),
-                      decoration: InputDecoration(
-                          hintText: '在此处撰写回复.',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0))),
-                    ),
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    int editorID = prefs.getInt('userID');
+                    Response res = await Dio().post(
+                        '$apiServerAddress/newComment/',
+                        options: new Options(
+                            contentType: Headers.formUrlEncodedContentType),
+                        data: {
+                          "targetPostID": widget.targetPostID,
+                          "content": commentController.text,
+                          "imgURL": uploadedImage ?? 'null',
+                          "editorID": editorID
+                        });
+                    if (res.statusCode == 200) {
+                      Toast.show('回复已送出.', context, duration: 2);
+                      Navigator.pop(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => HomeScreen()));
+                    }
+                  }
+                : null,
+            tooltip: '发送回复',
+          )
+        ],
+      ),
+      body: ListView(
+        children: [
+          Container(
+            margin: EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 10),
+            child: Column(
+              children: [
+                Container(
+                  constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height),
+                  margin: EdgeInsets.only(top: 10, bottom: 10),
+                  child: new TextFormField(
+                    autofocus: true,
+                    controller: commentController,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 8,
+                    maxLength: 200,
+                    style: new TextStyle(fontSize: 20),
+                    decoration: InputDecoration(
+                        hintText: '在此处撰写回复.',
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0))),
                   ),
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    alignment: Alignment.center,
-                    child: (_localImagePath == null) &&
-                            (_networkImageLink == null)
-                        ? Row(
-                            children: [
-                              TextButton.icon(
-                                icon: Icon(Icons.photo_library_rounded),
-                                label: Text('添加图片'),
-                                onPressed: getImage,
-                              ),
-                              Text('或者'),
-                              Builder(
-                                builder: (bc) => TextButton.icon(
-                                  icon: Icon(Icons.insert_link_rounded),
-                                  label: Text('网络图片'),
-                                  onPressed: () => addNetworkImage(bc),
-                                ),
-                              )
-                            ],
-                          )
-                        : Dismissible(
-                            key: new Key(''),
-                            // ignore: non_constant_identifier_names
-                            onDismissed: (DismissDirection) {
-                              setState(() {
-                                _localImagePath = null;
-                                _networkImageLink = null;
-                              });
-                            },
-                            child: ConstrainedBox(
-                              constraints:
-                                  BoxConstraints(maxHeight: 400, maxWidth: 400),
-                              child: _localImagePath != null
-                                  ? Image.file(
-                                      File(_localImagePath),
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Image.network(
-                                      _networkImageLink,
-                                      fit: BoxFit.cover,
-                                    ),
+                ),
+                Container(
+                  margin: EdgeInsets.all(10),
+                  alignment: Alignment.center,
+                  child: (_localImagePath == null) &&
+                          (_networkImageLink == null)
+                      ? Row(
+                          children: [
+                            TextButton.icon(
+                              icon: Icon(Icons.photo_library_rounded),
+                              label: Text('添加图片'),
+                              onPressed: getImage,
                             ),
+                            Text('或者'),
+                            Builder(
+                              builder: (bc) => TextButton.icon(
+                                icon: Icon(Icons.insert_link_rounded),
+                                label: Text('网络图片'),
+                                onPressed: () => addNetworkImage(bc),
+                              ),
+                            )
+                          ],
+                        )
+                      : Dismissible(
+                          key: new Key(''),
+                          // ignore: non_constant_identifier_names
+                          onDismissed: (DismissDirection) {
+                            setState(() {
+                              _localImagePath = null;
+                              _networkImageLink = null;
+                            });
+                          },
+                          child: ConstrainedBox(
+                            constraints:
+                                BoxConstraints(maxHeight: 400, maxWidth: 400),
+                            child: _localImagePath != null
+                                ? Image.file(
+                                    File(_localImagePath),
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.network(
+                                    _networkImageLink,
+                                    fit: BoxFit.cover,
+                                  ),
                           ),
-                  ),
-                ],
-              ),
+                        ),
+                ),
+              ],
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 
   void addNetworkImage(BuildContext bc) {

@@ -7,7 +7,7 @@ Color themeColor = Colors.blue;
 
 void getStyleSettings() async {
   SharedPreferences sp = await SharedPreferences.getInstance();
-  themeColor = Color(sp.getInt("ThemeColor"));
+  themeColor = Color(sp.getInt("ThemeColor")) ?? Colors.blue;
 }
 
 SnackBar errorSnackBar(String r) {

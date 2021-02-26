@@ -22,7 +22,7 @@ Future<Recordset> tryLogin(String userName, String password) async {
 
 Future<Recordset> searchUser(String userName) async {
   Response res = await Dio().get('$apiServerAddress/searchUser'
-      '?username=$userName');
+      '?userName=$userName');
   final LoginService loginService = loginServiceFromJson(res.toString());
   final Recordset rs =
       loginService.recordset.isEmpty ? null : loginService.recordset[0];

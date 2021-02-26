@@ -165,9 +165,10 @@ class _LoginPageState extends State<LoginPage> {
         user['id'] = rs.id;
         //写入登录状态
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setInt('userID', user['id']);
-        await prefs.setString('userName', user['userName'].toString());
-        await prefs.setBool('isLogin', true);
+        print(prefs.getInt('userID'));
+        prefs.setInt('userID', user['id']);
+        prefs.setString('userName', user['userName'].toString());
+        prefs.setBool('isLogin', true);
         Toast.show("欢迎回来,${user['userName']}", context,duration: 3);
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) {

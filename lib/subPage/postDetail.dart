@@ -1,19 +1,16 @@
-import 'dart:io';
-
+import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:inforum/component/actionButton.dart';
-import 'package:inforum/component/commentListItem.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/component/imageViewer.dart';
 import 'package:inforum/data/postCommentStream.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/home.dart';
-import 'package:inforum/service/uploadPictureService.dart';
+import 'package:inforum/service/postDetailService.dart';
 import 'package:inforum/subPage/editPost.dart';
 import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/profilePage.dart';
@@ -24,7 +21,7 @@ import 'package:toast/toast.dart';
 class ForumDetailPage extends StatefulWidget {
   final int postID;
   final String titleText;
-  final String contentText;
+  final String contentShortText;
   final int likeCount;
   final int dislikeCount;
   final int likeState;
@@ -38,42 +35,45 @@ class ForumDetailPage extends StatefulWidget {
   final String time;
   final String heroTag;
 
-  const ForumDetailPage(
-      {Key key,
-      this.titleText,
-      this.contentText,
-      this.likeCount,
-      this.dislikeCount,
-      this.commentCount,
-      this.imgURL,
-      this.isCollect,
-      this.likeState,
-      this.authorName,
-      this.imgAuthor,
-      this.isAuthor,
-      this.postID,
-      this.tags,
-      this.time,
-      this.heroTag})
-      : super(key: key);
+  const ForumDetailPage({
+    Key key,
+    this.titleText,
+    this.likeCount,
+    this.dislikeCount,
+    this.commentCount,
+    this.imgURL,
+    this.isCollect,
+    this.likeState,
+    this.authorName,
+    this.imgAuthor,
+    this.isAuthor,
+    this.postID,
+    this.tags,
+    this.time,
+    this.heroTag,
+    this.contentShortText,
+  }) : super(key: key);
 
   @override
   _ForumDetailPageState createState() => _ForumDetailPageState();
 }
 
 class _ForumDetailPageState extends State<ForumDetailPage> {
+  String fullText = '';
   bool isCollect;
   int likeState = 0; //0缺省,1为点赞,2为踩
   int likeCount;
   int dislikeCount;
   int commentCount;
   SharedPreferences sp;
+  String authorUserName = '';
   bool isAuthor;
   List<String> tagStrings;
   List<Widget> tagWidgets;
-  List<CommentListItem> commentList = [];
+  List<Widget> commentList = [];
   bool loadState = false;
-  String _imagePath;
+  TextEditingController _commentController;
+  DateTime dt;
 
   @override
   void initState() {
@@ -83,6 +83,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     dislikeCount = widget.dislikeCount;
     likeState = widget.likeState;
     commentCount = widget.commentCount;
+    _commentController = new TextEditingController();
+    dt = DateTime.parse(widget.time);
     _refresh();
     super.initState();
   }
@@ -106,7 +108,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                           MaterialPageRoute(builder: (BuildContext context) {
                         return EditPostScreen(
                           titleText: widget.titleText,
-                          contentText: widget.contentText,
+                          contentText: fullText,
                           tags: widget.tags,
                           imgURL: widget.imgURL,
                           mode: 1,
@@ -195,9 +197,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                                   alignment: Alignment.centerLeft,
                                   height: 25,
                                   margin: EdgeInsets.only(left: 10),
-                                  child: Text(
-                                    '@ra1n7246',
-                                  ),
+                                  child: Text(authorUserName),
                                 ),
                               ),
                             ],
@@ -229,12 +229,16 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     new Container(
                         margin: EdgeInsets.only(top: 10, left: 25, right: 25),
                         child: Text(
-                          widget.contentText,
+                          fullText,
                           style: new TextStyle(fontSize: 18),
                         )),
                     new Container(
                       margin: EdgeInsets.only(
-                          left: 25, right: 25, top: 5, bottom: 10),
+                        left: 25,
+                        right: 25,
+                        top: 10,
+                        bottom: 10,
+                      ),
                       alignment: Alignment.centerLeft,
                       child: tagWidgets != null
                           ? Wrap(
@@ -282,7 +286,10 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                      child: Text(widget.time),
+                      child: Text(new DateFormat.yMMMd("zh_CN")
+                          .add_Hms()
+                          .add_EEEE()
+                          .format(dt)),
                     ),
                     Divider(thickness: 2),
                     Container(
@@ -325,7 +332,9 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     ),
                     Divider(thickness: 2),
                     Column(
-                      children: loadState ? commentList : [],
+                      children: loadState
+                          ? commentList
+                          : [Center(child: Icon(Icons.hourglass_top_rounded))],
                     )
                   ]),
                 ),
@@ -333,29 +342,42 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
               Expanded(
                 flex: 0,
                 child: Container(
-                    padding: EdgeInsets.only(left: 10, right: 10),
-                    child: InkWell(
-                        onTap: () => commentBottomSheet(context),
-                        child: Flex(
-                          direction: Axis.horizontal,
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                textInputAction: TextInputAction.send,
-                                decoration: InputDecoration(
-                                  enabled: false,
-                                  hintText: '发布回复',
-                                ),
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  child: InkWell(
+                    onTap: () => commentBottomSheet(context),
+                    child: Flex(
+                      direction: Axis.horizontal,
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            textInputAction: TextInputAction.send,
+                            decoration: InputDecoration(
+                              enabled: false,
+                              hintText: '发布回复',
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.photo_outlined,
+                            color: Colors.blue,
+                          ),
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  NewCommentScreen(
+                                targetPostID: widget.postID,
+                                contentText: _commentController.text,
+                                imgURL: null,
                               ),
                             ),
-                            IconButton(
-                                icon: Icon(
-                                  Icons.photo_outlined,
-                                  color: Colors.blue,
-                                ),
-                                onPressed: getImage)
-                          ],
-                        ))),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -406,19 +428,20 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                   Expanded(
                       flex: 0,
                       child: IconButton(
-                          icon: Icon(
-                            Icons.add_a_photo_rounded,
-                            color: Colors.blue,
+                        icon: Icon(
+                          Icons.add_a_photo_rounded,
+                          color: Colors.blue,
+                        ),
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => NewCommentScreen(
+                              targetPostID: widget.postID,
+                              contentText: _commentController.text,
+                              imgURL: null,
+                            ),
                           ),
-                          onPressed: getImage)),
-                  Expanded(
-                      flex: 0,
-                      child: Container(
-                        height: 45,
-                        width: 45,
-                        child: _imagePath != null
-                            ? Image.file(File(_imagePath), fit: BoxFit.cover)
-                            : null,
+                        ),
                       )),
                   Expanded(flex: 1, child: Container()),
                   Expanded(
@@ -548,25 +571,17 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   }
 
   Future<void> _refresh() async {
+    sp = await SharedPreferences.getInstance();
     commentList.clear();
+    Recordset rs = await getPostDetail(widget.postID);
+    if (rs != null) {
+      fullText = rs.body;
+      authorUserName = rs.username;
+    }
     var _list = await getComment(widget.postID, sp.getInt('userID')) ?? [];
-    commentList.addAll(_list);
     setState(() {
+      commentList.addAll(_list);
       loadState = true;
-    });
-  }
-
-  Future getImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
-    setState(() {
-      if (pickedFile != null) {
-        setState(() {
-          _imagePath = pickedFile.path;
-        });
-      } else {
-        print('No image selected.');
-      }
     });
   }
 

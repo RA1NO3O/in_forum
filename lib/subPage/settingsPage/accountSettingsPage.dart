@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/data/webConfig.dart';
+import 'package:inforum/service/loginService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountSettingsPage extends StatefulWidget {
@@ -59,16 +60,16 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                         ),
                         actions: [
                           FlatButton.icon(
-                              onPressed: () {
-                                //TODO:修改用户名
-                                // Response res = await Dio()
-                                //     .post('$apiServerAddress/setUserName/');
-                                if (true) {
-                                  setState(() {
-                                    userName = textFieldController.text;
-                                  });
-                                  Navigator.pop(context);
+                              onPressed: () async {
+                                bool r = await tryEditUserName();
+                                if (r) {
+                                  Scaffold.of(context)
+                                      .showSnackBar(doneSnackBar('用户名修改成功'));
+                                } else {
+                                  Scaffold.of(context).showSnackBar(
+                                      errorSnackBar('修改失败,该用户名已存在.'));
                                 }
+                                Navigator.pop(context);
                               },
                               icon: Icon(Icons.done),
                               label: Text('完成'))
@@ -85,13 +86,30 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
     );
   }
 
-  void getUserInfo() async{
-    sp=await SharedPreferences.getInstance();
+  void getUserInfo() async {
+    sp = await SharedPreferences.getInstance();
   }
+
   @override
   void dispose() {
     super.dispose();
   }
 
-
+  Future<bool> tryEditUserName() async {
+    if (await searchUser(userName) == null) {
+      Response res = await Dio().post('$apiServerAddress/editUserName/',
+          options: new Options(contentType: Headers.formUrlEncodedContentType),
+          data: {
+            "userID": sp.getInt('userID'),
+            "userName": textFieldController.text,
+          });
+      if (res.statusCode == 200) {
+        setState(() {
+          userName = textFieldController.text;
+        });
+        return true;
+      }
+    }
+    return false;
+  }
 }

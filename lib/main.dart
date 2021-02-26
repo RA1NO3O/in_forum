@@ -231,14 +231,19 @@ class _MainPageState extends State<MainPage> {
 class AnimatedBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // ignore: deprecated_member_use
     final tween = MultiTrackTween([
+      // ignore: deprecated_member_use
       Track("color1").add(Duration(seconds: 5),
           ColorTween(begin: Colors.red, end: Colors.green.shade600)),
+      // ignore: deprecated_member_use
       Track("color2").add(Duration(seconds: 5),
           ColorTween(begin: Colors.purple, end: Colors.blue.shade600))
     ]);
 
+    // ignore: deprecated_member_use
     return ControlledAnimation(
+      // ignore: deprecated_member_use
       playback: Playback.MIRROR,
       tween: tween,
       duration: tween.duration,
@@ -269,7 +274,9 @@ class AnimatedWave extends StatelessWidget {
       return Container(
         height: height,
         width: constraints.biggest.width,
+        // ignore: deprecated_member_use
         child: ControlledAnimation(
+            // ignore: deprecated_member_use
             playback: Playback.LOOP,
             duration: Duration(milliseconds: (5000 / speed).round()),
             tween: Tween(begin: 0.0, end: 2 * pi),

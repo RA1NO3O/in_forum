@@ -38,6 +38,8 @@ dependencies:
   photo_view: ^0.10.3
   cached_network_image: ^2.5.0
   share: ^0.6.5+4
+  dependencies:
+  skeleton_text: ^2.0.2
 
 
 dev_dependencies:
