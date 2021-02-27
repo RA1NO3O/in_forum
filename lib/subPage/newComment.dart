@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/service/uploadPictureService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toast/toast.dart';
 
 class NewCommentScreen extends StatefulWidget {
   final String contentText;
@@ -77,8 +77,8 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
                           "imgURL": uploadedImage ?? 'null',
                           "editorID": editorID
                         });
-                    if (res.statusCode == 200) {
-                      Toast.show('回复已送出.', context, duration: 2);
+                    if (res.data == 'success.') {
+                      Fluttertoast.showToast(msg: '回复已送出.');
                       Navigator.pop(
                           context,
                           MaterialPageRoute(

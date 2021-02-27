@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:inforum/component/actionButton.dart';
 import 'file:///E:/DEV/SYNC_BY_GitHub/Inforum/lib/service/dateTimeFormat.dart';
 import 'package:inforum/data/webConfig.dart';
+import 'package:inforum/service/randomGenerator.dart';
 import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/profilePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,18 +22,18 @@ class CommentListItem extends StatefulWidget {
   final int likeCount;
   final String imgURL;
 
-  const CommentListItem(
-      {Key key,
-      this.postID,
-      this.commenterAvatarURL,
-      this.commenterName,
-      this.commentTime,
-      this.content,
-      this.commentTarget,
-      this.likeState,
-      this.likeCount,
-      this.imgURL})
-      : super(key: key);
+  const CommentListItem({
+    Key key,
+    this.postID,
+    this.commenterAvatarURL,
+    this.commenterName,
+    this.commentTime,
+    this.content,
+    this.commentTarget,
+    this.likeState,
+    this.likeCount,
+    this.imgURL,
+  }) : super(key: key);
 
   @override
   _CommentListItem createState() => _CommentListItem();
@@ -41,6 +42,7 @@ class CommentListItem extends StatefulWidget {
 class _CommentListItem extends State<CommentListItem> {
   int likeState; //0缺省,1为点赞,2为踩
   int likeCount;
+  String imgTag = getRandom(6);
 
   @override
   void initState() {
@@ -136,30 +138,38 @@ class _CommentListItem extends State<CommentListItem> {
                     style: new TextStyle(fontSize: 18),
                   ),
                 ),
-                widget.imgURL != null
-                    ? Material(
-                        elevation: 2,
-                        clipBehavior: Clip.antiAlias,
-                        borderRadius: BorderRadius.circular(5),
-                        child: Ink.image(
-                          width: widget.imgURL != null ? 400 : 0,
-                          height: widget.imgURL != null ? 200 : 0,
-                          fit: BoxFit.cover,
-                          image: CachedNetworkImageProvider(widget.imgURL),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      ImageViewer(
-                                        imageProvider:
-                                            CachedNetworkImageProvider(
-                                                widget.imgURL),
-                                      )));
-                            },
+                Container(
+                  margin: widget.imgURL != null
+                      ? EdgeInsets.only(left: 5, right: 25, bottom: 5, top: 5)
+                      : EdgeInsets.all(0),
+                  child: widget.imgURL != null
+                      ? Hero(
+                          child: Material(
+                            elevation: 2,
+                            clipBehavior: Clip.antiAlias,
+                            borderRadius: BorderRadius.circular(5),
+                            child: Ink.image(
+                              width: widget.imgURL != null ? 400 : 0,
+                              height: widget.imgURL != null ? 200 : 0,
+                              fit: BoxFit.cover,
+                              image: CachedNetworkImageProvider(widget.imgURL),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                      new MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              ImageViewer(
+                                                imgURL: widget.imgURL,
+                                                heroTag: imgTag,
+                                              )));
+                                },
+                              ),
+                            ),
                           ),
-                        ),
-                      )
-                    : Container(),
+                          tag: imgTag,
+                        )
+                      : Container(),
+                ),
                 Row(
                   children: [
                     ActionButton(
@@ -203,7 +213,7 @@ class _CommentListItem extends State<CommentListItem> {
           "postID": widget.postID,
         });
 
-    if (res.statusCode == 200) {
+    if (res.data == 'success.') {
       setState(() {
         switch (likeState) {
           case 0:

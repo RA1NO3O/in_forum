@@ -103,7 +103,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
             "userID": sp.getInt('userID'),
             "userName": textFieldController.text,
           });
-      if (res.statusCode == 200) {
+      if (res.data == 'success.') {
         setState(() {
           userName = textFieldController.text;
         });

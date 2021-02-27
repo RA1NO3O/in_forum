@@ -1,3 +1,4 @@
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
@@ -16,7 +17,7 @@ import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/profilePage.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toast/toast.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class ForumDetailPage extends StatefulWidget {
   final int postID;
@@ -270,9 +271,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                                         new MaterialPageRoute(
                                           builder: (BuildContext bc) =>
                                               ImageViewer(
-                                                  imageProvider:
-                                                      CachedNetworkImageProvider(
-                                                          widget.imgURL),
+                                                  imgURL: widget.imgURL,
                                                   heroTag: widget.heroTag),
                                         ),
                                       );
@@ -315,16 +314,22 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                               txt: dislikeCount.toString()),
                         ),
                         Expanded(
-                            flex: 1,
-                            child: ActionButton(
-                                fun: () => commentBottomSheet(context),
-                                ico: Icon(Icons.mode_comment_outlined),
-                                txt: commentCount.toString())),
+                          flex: 1,
+                          child: ActionButton(
+                            fun: () => commentBottomSheet(context),
+                            ico: Icon(Icons.mode_comment_outlined),
+                            txt: commentCount.toString(),
+                          ),
+                        ),
                         Expanded(
                           flex: 0,
                           child: ActionButton(
-                            //TODO:实现分享按钮
-                            fun: () => Share.share(widget.imgURL),
+                            fun: () async {
+                              var sharingImage = await DefaultCacheManager()
+                                  .getSingleFile(widget.imgURL);
+                              print(sharingImage.path);
+                              Share.shareFiles([sharingImage.path]);
+                            },
                             ico: Icon(Icons.share_outlined),
                           ),
                         ),
@@ -475,7 +480,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
           "userID": sp.getInt('userID'),
           "postID": widget.postID,
         });
-    if (res.statusCode == 200) {
+    if (res.data == 'success.') {
       setState(() {
         isCollect = !isCollect;
       });
@@ -490,7 +495,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
           "userID": sp.getInt('userID'),
           "postID": widget.postID,
         });
-    if (res.statusCode == 200) {
+    if (res.data == 'success.') {
       setState(() {
         switch (likeState) {
           case 0:
@@ -523,7 +528,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
           "userID": sp.getInt('userID'),
           "postID": widget.postID,
         });
-    if (res.statusCode == 200) {
+    if (res.data == 'success.') {
       setState(() {
         switch (likeState) {
           case 0:
@@ -624,7 +629,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
         data: {"postID": widget.postID},
       );
       if (res.data == 'success.') {
-        Toast.show('帖子已删除.', context, duration: 2);
+        Fluttertoast.showToast(msg:'帖子已删除.');
         Navigator.pop(context,
             MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
       }

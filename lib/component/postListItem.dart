@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +6,7 @@ import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/component/imageViewer.dart';
 import 'file:///E:/DEV/SYNC_BY_GitHub/Inforum/lib/service/dateTimeFormat.dart';
 import 'package:inforum/data/webConfig.dart';
+import 'package:inforum/service/randomGenerator.dart';
 import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/postDetail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -212,9 +211,7 @@ class _ForumListItem extends State<ForumListItem> {
                                         new MaterialPageRoute(
                                             builder: (BuildContext context) =>
                                                 ImageViewer(
-                                                    imageProvider:
-                                                        CachedNetworkImageProvider(
-                                                            widget.imgURL),
+                                                    imgURL: widget.imgURL,
                                                     heroTag: imgTag)));
                                   },
                                 ),
@@ -287,16 +284,6 @@ class _ForumListItem extends State<ForumListItem> {
     });
   }
 
-  static String getRandom(int num) {
-    String alphabet = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
-    String left = '';
-    for (var i = 0; i < num; i++) {
-//    right = right + (min + (Random().nextInt(max - min))).toString();
-      left = left + alphabet[Random().nextInt(alphabet.length)];
-    }
-    return left;
-  }
-
   Future<void> _starButtonClick() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     Response res = await Dio().post('$apiServerAddress/starPost/',
@@ -305,7 +292,7 @@ class _ForumListItem extends State<ForumListItem> {
           "userID": sp.getInt('userID'),
           "postID": widget.postID,
         });
-    if (res.statusCode == 200) {
+    if (res.data == 'success.') {
       setState(() {
         isCollect = !isCollect;
         isCollect ? collectCount++ : collectCount--;
@@ -322,7 +309,7 @@ class _ForumListItem extends State<ForumListItem> {
           "postID": widget.postID,
         });
 
-    if (res.statusCode == 200) {
+    if (res.data == 'success.') {
       setState(() {
         switch (likeState) {
           case 0:
@@ -355,7 +342,7 @@ class _ForumListItem extends State<ForumListItem> {
           "userID": sp.getInt('userID'),
           "postID": widget.postID,
         });
-    if (res.statusCode == 200) {
+    if (res.data == 'success.') {
       setState(() {
         switch (likeState) {
           case 0:

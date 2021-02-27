@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:inforum/data/webConfig.dart';
+import 'package:inforum/service/randomGenerator.dart';
 
 Future<String> uploadFile(File file) async {
   final String url = await UploadOss.upload(file: file);
@@ -62,19 +62,6 @@ class UploadOss {
     } catch (e) {
       throw (e.message);
     }
-  }
-
-  /*
-  * 生成固定长度的随机字符串
-  * */
-  static String getRandom(int num) {
-    String alphabet = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
-    String left = '';
-    for (var i = 0; i < num; i++) {
-//    right = right + (min + (Random().nextInt(max - min))).toString();
-      left = left + alphabet[Random().nextInt(alphabet.length)];
-    }
-    return left;
   }
 
   /*

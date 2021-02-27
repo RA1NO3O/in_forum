@@ -9,7 +9,7 @@ import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/service/uploadPictureService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toast/toast.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class EditPostScreen extends StatefulWidget {
   final String titleText;
@@ -173,8 +173,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
                                 "imgURL": uploadedImage ?? 'null',
                                 "editorID": editorID,
                               });
-                          if (res.statusCode == 200) {
-                            Toast.show('帖子已发布.', context, duration: 2);
+                          if (res.data == 'success.') {
+                            Fluttertoast.showToast(msg: '帖子已发布.');
                             Navigator.pop(
                                 context,
                                 MaterialPageRoute(
@@ -199,8 +199,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
                                 "tags": tags,
                                 "imgURL": uploadedImage ?? 'null',
                               });
-                          if (res.statusCode == 200) {
-                            Toast.show('帖子已修改.', context, duration: 2);
+                          if (res.data == 'success.') {
+                            Fluttertoast.showToast(msg: '帖子已修改.');
                             Navigator.pop(
                                 context,
                                 MaterialPageRoute(

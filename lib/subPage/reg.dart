@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/service/loginService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toast/toast.dart';
 
 class RegPage extends StatefulWidget {
   @override
@@ -79,8 +79,8 @@ class _RegPage extends State<RegPage> {
           // "location": location
         },
       );
-      if (res.statusCode == 200) {
-        Toast.show('欢迎,${idController.text}', context, duration: 2);
+      if (res.data == 'success.') {
+        Fluttertoast.showToast(msg: '欢迎,${idController.text}');
         SharedPreferences prefs = await SharedPreferences.getInstance();
         Recordset recordset = await searchUser(idController.text);
         await prefs.setInt('userID', recordset.id);

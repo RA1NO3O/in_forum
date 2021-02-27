@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/service/loginService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toast/toast.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
         prefs.setInt('userID', user['id']);
         prefs.setString('userName', user['userName'].toString());
         prefs.setBool('isLogin', true);
-        Toast.show("欢迎回来,${user['userName']}", context,duration: 3);
+        Fluttertoast.showToast(msg: "欢迎回来,${user['userName']}");
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) {
           return HomeScreen(
