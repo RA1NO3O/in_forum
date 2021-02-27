@@ -1,5 +1,6 @@
+import 'dart:ui';
+
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -11,13 +12,13 @@ import 'package:inforum/component/imageViewer.dart';
 import 'package:inforum/data/postCommentStream.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/home.dart';
+import 'package:inforum/service/dateTimeFormat.dart';
+import 'package:inforum/service/imageShareService.dart';
 import 'package:inforum/service/postDetailService.dart';
 import 'package:inforum/subPage/editPost.dart';
 import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/profilePage.dart';
-import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class ForumDetailPage extends StatefulWidget {
   final int postID;
@@ -60,7 +61,7 @@ class ForumDetailPage extends StatefulWidget {
 }
 
 class _ForumDetailPageState extends State<ForumDetailPage> {
-  String fullText = '';
+  String fullText;
   bool isCollect;
   int likeState = 0; //0缺省,1为点赞,2为踩
   int likeCount;
@@ -85,7 +86,6 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     likeState = widget.likeState;
     commentCount = widget.commentCount;
     _commentController = new TextEditingController();
-    dt = DateTime.parse(widget.time);
     _refresh();
     super.initState();
   }
@@ -230,7 +230,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     new Container(
                         margin: EdgeInsets.only(top: 10, left: 25, right: 25),
                         child: Text(
-                          fullText,
+                          fullText ?? widget.contentShortText,
                           style: new TextStyle(fontSize: 18),
                         )),
                     new Container(
@@ -285,10 +285,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                      child: Text(new DateFormat.yMMMd("zh_CN")
-                          .add_Hms()
-                          .add_EEEE()
-                          .format(dt)),
+                      child: Text(
+                          DateTimeFormat.convertBasicTimeFormat(widget.time)),
                     ),
                     Divider(thickness: 2),
                     Container(
@@ -324,12 +322,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                         Expanded(
                           flex: 0,
                           child: ActionButton(
-                            fun: () async {
-                              var sharingImage = await DefaultCacheManager()
-                                  .getSingleFile(widget.imgURL);
-                              print(sharingImage.path);
-                              Share.shareFiles([sharingImage.path]);
-                            },
+                            fun: () => shareNetworkImage(widget.imgURL),
                             ico: Icon(Icons.share_outlined),
                           ),
                         ),
@@ -629,7 +622,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
         data: {"postID": widget.postID},
       );
       if (res.data == 'success.') {
-        Fluttertoast.showToast(msg:'帖子已删除.');
+        Fluttertoast.showToast(msg: '帖子已删除.');
         Navigator.pop(context,
             MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
       }

@@ -367,19 +367,6 @@ class _ForumListItem extends State<ForumListItem> {
     }
   }
 
-  Future getImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
-    setState(() {
-      if (pickedFile != null) {
-        setState(() {
-          _imagePath = pickedFile.path;
-        });
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
 
   @override
   void dispose() {

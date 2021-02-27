@@ -476,6 +476,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
     setState(() {
       if (pickedFile != null) {
         _localImagePath = pickedFile.path;
+        print(_localImagePath);
       } else {
         print('No image selected.');
       }

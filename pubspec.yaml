@@ -43,6 +43,7 @@ dependencies:
   flutter_cache_manager: ^2.1.1
   image_gallery_saver: '^1.6.8'
   permission_handler: ^5.1.0+2
+  path_provider: ^1.6.27
 
 
 dev_dependencies:

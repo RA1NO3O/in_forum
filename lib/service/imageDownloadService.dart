@@ -1,16 +1,20 @@
 /// 使用 File api
 import 'dart:io';
+
 /// 使用 Uint8List 数据类型
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
+
 /// 使用 DefaultCacheManager 类（可能无法自动引入，需要手动引入）
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 /// 授权管理
 import 'package:permission_handler/permission_handler.dart';
+
 /// 图片缓存管理
 import 'package:cached_network_image/cached_network_image.dart';
+
 /// 保存文件或图片到本地
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 
@@ -18,7 +22,8 @@ class AppUtil {
   /// 保存图片到相册
   ///
   /// 默认为下载网络图片，如需下载资源图片，需要指定 [isAsset] 为 `true`。
-  static Future<void> saveImage(String imageUrl, {bool isAsset: false}) async {
+  static Future<String> saveImage(String imageUrl,
+      {bool isAsset: false}) async {
     try {
       if (imageUrl == null) throw '保存失败，图片不存在！';
 
@@ -41,7 +46,8 @@ class AppUtil {
       } else {
         /// 保存网络图片
         CachedNetworkImage image = CachedNetworkImage(imageUrl: imageUrl);
-        DefaultCacheManager manager = image.cacheManager ?? DefaultCacheManager();
+        DefaultCacheManager manager =
+            image.cacheManager ?? DefaultCacheManager();
         Map<String, String> headers = image.httpHeaders;
         File file = await manager.getSingleFile(
           image.imageUrl,
@@ -55,9 +61,11 @@ class AppUtil {
 
       if (result == null || result == '') throw '图片保存失败';
 
-      print("保存成功");
+      print(result.toString());
+      return result['filePath'];
     } catch (e) {
       print(e.toString());
     }
+    return null;
   }
 }

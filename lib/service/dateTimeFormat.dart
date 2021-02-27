@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class DateTimeFormat {
   static handleDate(String oldTime) {
     String nowTime =
@@ -8,7 +10,7 @@ class DateTimeFormat {
     int nowHour = int.parse(nowTime.split(" ")[1].split(':')[0]);
     int nowMinute = int.parse(nowTime.split(" ")[1].split(':')[1]);
 
-    oldTime=oldTime.split('.')[0].replaceAll("-", "/");
+    oldTime = oldTime.split('.')[0].replaceAll("-", "/");
     int oldYear = int.parse(oldTime.split(" ")[0].split('/')[0]);
     int oldMonth = int.parse(oldTime.split(" ")[0].split('/')[1]);
     int oldDay = int.parse(oldTime.split(" ")[0].split('/')[2]);
@@ -28,9 +30,15 @@ class DateTimeFormat {
       return (difference.inMinutes).toString() + '分钟前';
     } else if (difference.inMinutes <= 1) {
       return '刚刚';
-    }else if(difference.inDays>=365){
-      return (difference.inDays~/365).toString()+'年前';
+    } else if (difference.inDays >= 365) {
+      return (difference.inDays ~/ 365).toString() + '年前';
     }
     return '$oldMonth月$oldDay日';
+  }
+
+  static String convertBasicTimeFormat(String t) {
+    var dt = DateTime.parse(t);
+    var result = DateFormat.yMMMd("zh_CN").add_Hms().add_EEEE().format(dt);
+    return result;
   }
 }
