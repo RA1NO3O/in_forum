@@ -5,6 +5,7 @@ import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/service/loginService.dart';
+import 'package:inforum/subPage/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RegPage extends StatefulWidget {
@@ -13,8 +14,9 @@ class RegPage extends StatefulWidget {
 }
 
 class _RegPage extends State<RegPage> {
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool passwordVisible = false, processing = false;
-  final idController = new TextEditingController(),
+  final userNameController = new TextEditingController(),
       phoneController = new TextEditingController(),
       emailController = new TextEditingController(),
       pwdController = new TextEditingController();
@@ -24,8 +26,8 @@ class _RegPage extends State<RegPage> {
   Future<void> btnRegClick() async {
     bool regPassed = false;
     String errorCode = '0';
-    if (idController.text.isNotEmpty && pwdController.text.isNotEmpty) {
-      Recordset rs = await searchUser(idController.text);
+    if (_formKey.currentState.validate()) {
+      Recordset rs = await searchUser(userNameController.text);
       if (rs == null) {
         rs = await searchUser(emailController.text);
         if (rs == null) {
@@ -41,25 +43,36 @@ class _RegPage extends State<RegPage> {
       } else {
         errorCode += '2';
       }
-    } else {
-      errorCode = '1';
     }
     if (errorCode != '0') {
       var msg = '注册失败,';
-      if (errorCode == '1') {
-        msg = '未填写所有必填字段.';
-      }
-      if (errorCode.contains('2')) {
-        msg += '\n该用户名已存在.';
-      }
       if (errorCode.contains('3')) {
         msg += '\n该邮箱地址已被注册.';
       }
       if (errorCode.contains('4')) {
         msg += '\n该电话号码已被注册.';
       }
-      print(msg);
-      Scaffold.of(context).showSnackBar(errorSnackBar(msg));
+      if (errorCode.contains('2')) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Row(
+            children: [
+              Container(
+                margin: EdgeInsets.only(right: 10),
+                child: Icon(Icons.warning_rounded),
+              ),
+              Text('注册失败,该用户名已存在.\n您要使用这个账号登录吗?'),
+            ],
+          ),
+          backgroundColor: Colors.yellow,
+          action: SnackBarAction(
+            label: '登录',
+            onPressed: () => Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => LoginPage(userName: userNameController.text,))),
+          ),
+        ));
+      } else {
+        Scaffold.of(context).showSnackBar(errorSnackBar(msg));
+      }
     }
 
     if (regPassed) {
@@ -68,7 +81,7 @@ class _RegPage extends State<RegPage> {
         '$apiServerAddress/createAccount/',
         options: new Options(contentType: Headers.formUrlEncodedContentType),
         data: {
-          "username": idController.text,
+          "username": userNameController.text,
           "password": pwdController.text,
           "email": emailController.text.isEmpty ? 'null' : emailController.text,
           "phone": phoneController.text.isEmpty ? 'null' : phoneController.text,
@@ -80,19 +93,19 @@ class _RegPage extends State<RegPage> {
         },
       );
       if (res.data == 'success.') {
-        Fluttertoast.showToast(msg: '欢迎,${idController.text}');
+        Fluttertoast.showToast(msg: '欢迎,${userNameController.text}');
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        Recordset recordset = await searchUser(idController.text);
+        Recordset recordset = await searchUser(userNameController.text);
         await prefs.setInt('userID', recordset.id);
-        await prefs.setString('userName', idController.text);
+        await prefs.setString('userName', userNameController.text);
         await prefs.setBool('isLogin', true);
-        Recordset rs = await searchUser(idController.text);
+        Recordset rs = await searchUser(userNameController.text);
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (BuildContext context) => HomeScreen(
                       userID: rs.id.toString(),
-                      userName: idController.text,
+                      userName: userNameController.text,
                     )),
             result: "null");
       }
@@ -102,99 +115,112 @@ class _RegPage extends State<RegPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      alignment: Alignment.center,
-      width: 350,
-      height: 600,
-      child: Column(
-        children: [
-          //卡片内容
-          new Container(
-            margin: EdgeInsets.only(top: 40, bottom: 30),
-            child: Text(
-              '注册',
-              style: new TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-            ),
-          ),
-          //用户名字段
-          new Container(
-            margin: EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
-            child: TextField(
-              keyboardType: TextInputType.name,
-              controller: idController,
-              decoration: InputDecoration(
-                  labelText: '用户名',
-                  hintText: '可用于登录和查找用户.',
-                  prefixIcon: Icon(Icons.person),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0))),
-            ),
-          ),
-          //电子邮箱字段
-          new Container(
-            margin: EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
-            child: TextField(
-              keyboardType: TextInputType.emailAddress,
-              controller: emailController,
-              decoration: InputDecoration(
-                  labelText: '电子邮箱地址(可选)',
-                  hintText: 'someone@example.com',
-                  prefixIcon: Icon(Icons.mail_rounded),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0))),
-            ),
-          ),
-          new Container(
-            margin: EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
-            child: TextField(
-              keyboardType: TextInputType.phone,
-              controller: phoneController,
-              decoration: InputDecoration(
-                  labelText: '电话号码(可选)',
-                  prefixIcon: Icon(Icons.phone),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0))),
-            ),
-          ),
-          //密码字段
-          new Container(
-            margin: EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
-            child: TextField(
-              controller: pwdController,
-              obscureText: !passwordVisible,
-              textInputAction: TextInputAction.done,
-              decoration: InputDecoration(
-                  labelText: '密码',
-                  prefixIcon: Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      passwordVisible ? Icons.visibility : Icons.visibility_off,
-                      color: passwordVisible ? Colors.blue : Colors.grey,
-                    ),
-                    onPressed: () => setState(() {
-                      passwordVisible = !passwordVisible;
-                    }),
-                  ),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0))),
-            ),
-          ),
-          //注册
-          new Container(
-            width: 80,
-            height: 40,
-            margin: EdgeInsets.only(top: 10),
-            child: RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5.0))),
-              child: Text(
-                '注册',
-                style: new TextStyle(color: Colors.white),
+        alignment: Alignment.center,
+        width: 350,
+        height: 600,
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              //卡片内容
+              new Container(
+                margin: EdgeInsets.only(top: 40, bottom: 30),
+                child: Text(
+                  '注册',
+                  style:
+                      new TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
               ),
-              onPressed: btnRegClick,
-            ),
-          )
-        ],
-      ),
-    );
+              //用户名字段
+              new Container(
+                margin:
+                    EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
+                child: TextFormField(
+                  maxLength: 10,
+                  validator: (value) => value.isEmpty ? '此字段为必填项.' : null,
+                  keyboardType: TextInputType.name,
+                  controller: userNameController,
+                  decoration: InputDecoration(
+                      labelText: '用户名',
+                      prefixIcon: Icon(Icons.person),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0))),
+                ),
+              ),
+              //电子邮箱字段
+              new Container(
+                margin:
+                    EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
+                child: TextFormField(
+                  maxLength: 30,
+                  keyboardType: TextInputType.emailAddress,
+                  controller: emailController,
+                  decoration: InputDecoration(
+                      labelText: '电子邮箱地址(可选)',
+                      hintText: 'someone@example.com',
+                      prefixIcon: Icon(Icons.mail_rounded),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0))),
+                ),
+              ),
+              new Container(
+                margin:
+                    EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
+                child: TextFormField(
+                  maxLength: 14,
+                  keyboardType: TextInputType.phone,
+                  controller: phoneController,
+                  decoration: InputDecoration(
+                      labelText: '电话号码(可选)',
+                      prefixIcon: Icon(Icons.phone),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0))),
+                ),
+              ),
+              //密码字段
+              new Container(
+                margin:
+                    EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
+                child: TextFormField(
+                  maxLength: 20,
+                  validator: (value) => value.isEmpty ? '此字段为必填项.' : null,
+                  controller: pwdController,
+                  obscureText: !passwordVisible,
+                  textInputAction: TextInputAction.done,
+                  decoration: InputDecoration(
+                      labelText: '密码',
+                      prefixIcon: Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          passwordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: passwordVisible ? Colors.blue : Colors.grey,
+                        ),
+                        onPressed: () => setState(() {
+                          passwordVisible = !passwordVisible;
+                        }),
+                      ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0))),
+                ),
+              ),
+              new Container(
+                width: 80,
+                height: 40,
+                margin: EdgeInsets.only(top: 10),
+                child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                  child: Text(
+                    '注册',
+                    style: new TextStyle(color: Colors.white),
+                  ),
+                  onPressed: btnRegClick,
+                ),
+              )
+            ],
+          ),
+        ));
   }
 }

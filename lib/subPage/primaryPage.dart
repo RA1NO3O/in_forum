@@ -17,7 +17,7 @@ class PrimaryPage extends StatefulWidget {
 }
 
 class _PrimaryPage extends State<PrimaryPage> {
-  List<ForumListItem> _list = [];
+  List<PostListItem> _list = [];
   bool loadState = false;
 
   @override
@@ -257,7 +257,7 @@ class _PrimaryPage extends State<PrimaryPage> {
       loadState = true;
       _list.clear();
     });
-    List<ForumListItem> fli = await getList(widget.userID);
+    List<PostListItem> fli = await getList(widget.userID);
     setState(() {
       loadState = false;
       _list.addAll(fli);

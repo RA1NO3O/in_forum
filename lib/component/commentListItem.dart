@@ -24,12 +24,12 @@ class CommentListItem extends StatefulWidget {
 
   const CommentListItem({
     Key key,
-    this.postID,
+    @required this.postID,
     this.commenterAvatarURL,
-    this.commenterName,
-    this.commentTime,
-    this.content,
-    this.commentTarget,
+    @required this.commenterName,
+    @required this.commentTime,
+    @required this.content,
+    @required this.commentTarget,
     this.likeState,
     this.likeCount,
     this.imgURL,
@@ -46,8 +46,8 @@ class _CommentListItem extends State<CommentListItem> {
 
   @override
   void initState() {
-    likeState = widget.likeState;
-    likeCount = widget.likeCount;
+    likeState = widget.likeState ?? 0;
+    likeCount = widget.likeCount ?? 0;
     super.initState();
   }
 

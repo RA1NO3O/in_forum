@@ -14,7 +14,9 @@ SnackBar errorSnackBar(String r) {
   return SnackBar(
     content: Row(
       children: [
-        Icon(Icons.close_rounded),
+        Container(
+          margin: EdgeInsets.only(right: 10),
+          child: Icon(Icons.close_rounded),),
         Text(r),
       ],
     ),

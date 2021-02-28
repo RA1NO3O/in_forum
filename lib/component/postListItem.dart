@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/component/imageViewer.dart';
 import 'file:///E:/DEV/SYNC_BY_GitHub/Inforum/lib/service/dateTimeFormat.dart';
@@ -13,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'customStyles.dart';
 
-class ForumListItem extends StatefulWidget {
+class PostListItem extends StatefulWidget {
   final int postID;
   final String titleText;
   final String contentText;
@@ -30,10 +29,10 @@ class ForumListItem extends StatefulWidget {
   final String time;
   final List<String> tags;
 
-  const ForumListItem({
+  const PostListItem({
     Key key,
-    this.titleText,
-    this.contentText,
+    @required this.titleText,
+    @required this.contentText,
     this.likeCount,
     this.dislikeCount,
     this.commentCount,
@@ -42,18 +41,18 @@ class ForumListItem extends StatefulWidget {
     this.likeState,
     this.isCollect,
     this.imgAuthor,
-    this.authorName,
-    this.isAuthor,
-    this.postID,
-    this.time,
+    @required this.authorName,
+    @required this.isAuthor,
+    @required this.postID,
+    @required this.time,
     this.tags,
   }) : super(key: key);
 
   @override
-  _ForumListItem createState() => _ForumListItem();
+  _PostListItem createState() => _PostListItem();
 }
 
-class _ForumListItem extends State<ForumListItem> {
+class _PostListItem extends State<PostListItem> {
   bool isCollect;
   int likeState; //0缺省,1为点赞,2为踩
   int collectCount;
@@ -68,12 +67,12 @@ class _ForumListItem extends State<ForumListItem> {
 
   @override
   void initState() {
-    likeState = widget.likeState;
-    collectCount = widget.collectCount;
-    likeCount = widget.likeCount;
-    dislikeCount = widget.dislikeCount;
-    commentCount = widget.commentCount;
-    isCollect = widget.isCollect;
+    likeState = widget.likeState ?? 0;
+    collectCount = widget.collectCount ?? 0;
+    likeCount = widget.likeCount ?? 0;
+    dislikeCount = widget.dislikeCount ?? 0;
+    commentCount = widget.commentCount ?? 0;
+    isCollect = widget.isCollect ?? 0;
     super.initState();
   }
 
@@ -366,7 +365,6 @@ class _ForumListItem extends State<ForumListItem> {
       });
     }
   }
-
 
   @override
   void dispose() {

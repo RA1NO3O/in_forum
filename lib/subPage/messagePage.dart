@@ -9,7 +9,6 @@ class MessagePage extends StatefulWidget {
 
 class _MessagePage extends State<MessagePage> {
   bool isEmpty;
-
   ScrollController _listViewController;
 
   @override

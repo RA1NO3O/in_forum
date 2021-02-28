@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/customStyles.dart';
+import 'package:inforum/component/statefulDialog.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/loginService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,8 +16,7 @@ class AccountSettingsPage extends StatefulWidget {
 class _AccountSettingsPage extends State<AccountSettingsPage> {
   SharedPreferences sp;
   var userID;
-  String userName = '123';
-  var textFieldController = new TextEditingController();
+  String userName = 'unknown';
 
   @override
   void initState() {
@@ -41,43 +41,67 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                   shape: roundedRectangleBorder,
                   title: Text('用户名'),
                   subtitle: Text(userName),
+                  trailing: Icon(Icons.more_horiz_rounded),
                   onTap: () async {
+                    bool i;
+                    TextEditingController userNameController =
+                        new TextEditingController();
+                    userNameController.addListener(() {
+                      setState(() {
+                        i = userNameController.text.trim().isNotEmpty;
+                      });
+                    });
+                    userNameController.text = userName;
                     await showDialog(
                       context: context,
-                      builder: (bc) => AlertDialog(
+                      builder: (bc) => StatefulDialog(
                         title: Row(
+                          //确保对话框不会占满空间
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.border_color, size: 32),
                             Text('   输入用户名.')
                           ],
                         ),
-                        content: TextFormField(
+                        content: TextField(
                           autofocus: true,
-                          controller: textFieldController,
+                          controller: userNameController,
                           decoration: InputDecoration(
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(5.0))),
                         ),
                         actions: [
                           FlatButton.icon(
-                              onPressed: () async {
-                                bool r = await tryEditUserName();
-                                if (r) {
-                                  Scaffold.of(context)
-                                      .showSnackBar(doneSnackBar('用户名修改成功'));
-                                } else {
-                                  Scaffold.of(context).showSnackBar(
-                                      errorSnackBar('修改失败,该用户名已存在.'));
-                                }
-                                Navigator.pop(context);
-                              },
+                              onPressed:
+                                  (userNameController.text != userName) && i
+                                      ? () async {
+                                          bool r = await tryEditUserName(
+                                              userNameController.text);
+                                          if (r) {
+                                            Scaffold.of(context).showSnackBar(
+                                                doneSnackBar('用户名修改成功'));
+                                          } else {
+                                            Scaffold.of(context).showSnackBar(
+                                                errorSnackBar('修改失败,该用户名已存在.'));
+                                          }
+                                          Navigator.pop(context);
+                                        }
+                                      : null,
                               icon: Icon(Icons.done),
                               label: Text('完成'))
                         ],
                       ),
                     );
                   },
-                )
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.all(10),
+                  child: Text(
+                    '危险区域',
+                    style: new TextStyle(color: Colors.red),
+                  ),
+                ),
               ],
             ),
           )
@@ -88,6 +112,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
 
   void getUserInfo() async {
     sp = await SharedPreferences.getInstance();
+    userName = sp.getString('userName');
   }
 
   @override
@@ -95,17 +120,17 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
     super.dispose();
   }
 
-  Future<bool> tryEditUserName() async {
+  Future<bool> tryEditUserName(String newUserName) async {
     if (await searchUser(userName) == null) {
       Response res = await Dio().post('$apiServerAddress/editUserName/',
           options: new Options(contentType: Headers.formUrlEncodedContentType),
           data: {
             "userID": sp.getInt('userID'),
-            "userName": textFieldController.text,
+            "userName": newUserName,
           });
       if (res.data == 'success.') {
         setState(() {
-          userName = textFieldController.text;
+          userName = newUserName;
         });
         return true;
       }

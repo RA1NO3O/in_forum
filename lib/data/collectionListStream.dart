@@ -1,9 +1,9 @@
 import 'package:inforum/component/postListItem.dart';
 
 class CollectionListStream{
-  static List<ForumListItem> getCollections(){
-    return <ForumListItem>[
-      ForumListItem(
+  static List<PostListItem> getCollections(){
+    return <PostListItem>[
+      PostListItem(
         postID: 1,
         titleText: '以下的内容仅供测试.',
         contentText:

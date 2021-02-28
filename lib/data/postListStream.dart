@@ -1,15 +1,15 @@
 import 'package:inforum/component/postListItem.dart';
 import 'package:inforum/service/postStreamService.dart';
 
-List<ForumListItem> psis = [];
+List<PostListItem> psis = [];
 
-Future<List<ForumListItem>> getList(String userID) async {
+Future<List<PostListItem>> getList(String userID) async {
   psis.clear();
   List<Recordset> psl = await getPostStream(userID);
 
   psl.forEach((rs) {
     String t = rs.tags;
-    psis.add(ForumListItem(
+    psis.add(PostListItem(
       postID: rs.postId,
       titleText: rs.title,
       contentText: rs.bodyS,

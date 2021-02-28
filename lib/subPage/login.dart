@@ -7,12 +7,17 @@ import 'package:inforum/service/loginService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
+  final String userName;
+  final String password;
+
+  const LoginPage({Key key, this.userName, this.password}) : super(key: key);
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final idController = new TextEditingController();
+  final userNameController = new TextEditingController();
   final pwdController = new TextEditingController();
   bool isProcessing = false;
   bool isNotFilled = true;
@@ -22,7 +27,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    idController.addListener(idListener);
+    userNameController.text = widget.userName ?? '';
+    userNameController.text = widget.password ?? '';
+    userNameController.addListener(idListener);
     pwdController.addListener(pwdListener);
     super.initState();
   }
@@ -39,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void idListener() {
     setState(() {
-      if (idController.text.trim().isNotEmpty) {
+      if (userNameController.text.trim().isNotEmpty) {
         isNotFilled = false;
       } else {
         isNotFilled = true;
@@ -82,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                         }
                       },
                 keyboardType: TextInputType.emailAddress,
-                controller: idController,
+                controller: userNameController,
                 enabled: (!isUserFound) && (!isProcessing),
                 decoration: InputDecoration(
                     labelText: '用户名,手机或者邮箱地址',
@@ -159,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (isUserFound) {
       final Recordset rs =
-          await tryLogin(idController.text, pwdController.text);
+          await tryLogin(userNameController.text, pwdController.text);
 
       if (rs != null) {
         user['id'] = rs.id;
@@ -177,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
             userName: user['userName'],
           );
         }));
-        idController.removeListener(idListener);
+        userNameController.removeListener(idListener);
         setState(() {
           isProcessing = false;
         });
@@ -190,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     } else {
       try {
-        final Recordset rs = await searchUser(idController.text);
+        final Recordset rs = await searchUser(userNameController.text);
 
         if (rs != null) {
           setState(() {
@@ -217,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    idController.dispose();
+    userNameController.dispose();
     pwdController.dispose();
     super.dispose();
   }
