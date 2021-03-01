@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/component/statefulDialog.dart';
 import 'package:inforum/data/webConfig.dart';
@@ -15,7 +15,7 @@ class AccountSettingsPage extends StatefulWidget {
 }
 
 class _AccountSettingsPage extends State<AccountSettingsPage> {
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _fk = GlobalKey<FormState>();
   SharedPreferences sp;
   var userID;
   String userName = 'unknown';
@@ -60,7 +60,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                             ],
                           ),
                           content: Form(
-                            key: _formKey,
+                            key: _fk,
                             child: TextFormField(
                               autofocus: true,
                               validator: (value) =>
@@ -78,7 +78,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                           actions: [
                             FlatButton.icon(
                                 onPressed: () async {
-                                  if (_formKey.currentState.validate()) {
+                                  if (_fk.currentState.validate()) {
                                     bool r = await tryEditUserName(
                                         userNameController.text);
                                     if (r) {

@@ -4,7 +4,7 @@ import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/service/imageDownloadService.dart';
 import 'package:inforum/service/imageShareService.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 
 class ImageViewer extends StatelessWidget {
   final String imgURL;

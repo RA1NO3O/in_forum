@@ -20,7 +20,11 @@ class HomeScreen extends StatefulWidget {
   final String userID;
   final String userName;
 
-  const HomeScreen({Key key, this.userID, this.userName}) : super(key: key);
+  const HomeScreen({
+    Key key,
+    @required this.userID,
+    @required this.userName,
+  }) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -32,6 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
   IconData _actionIcon = Icons.post_add;
   PageController _pageController;
   ScrollController _scrollController;
+  SharedPreferences sp;
+  ScaffoldState scaffold;
 
   void pageChanged() {
     switch (_currentIndex) {
@@ -56,9 +62,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    super.initState();
     _pageController = PageController(initialPage: 0);
     _scrollController = ScrollController();
+    init();
+    super.initState();
   }
 
   @override
@@ -175,36 +182,40 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: _currentIndex == 0 || _currentIndex == 1
           ? Builder(
-              builder: (bc) => new FloatingActionButton(
-                backgroundColor: _currentColor,
-                child: AnimatedSwitcher(
-                  transitionBuilder: (Widget child, Animation<double> anim) {
-                    return FadeScaleTransition(
-                      animation: anim,
-                      child: child,
-                    );
+              builder: (bc) {
+                scaffold = Scaffold.of(bc);
+                return new FloatingActionButton(
+                  backgroundColor: _currentColor,
+                  child: AnimatedSwitcher(
+                    transitionBuilder: (Widget child, Animation<double> anim) {
+                      return FadeScaleTransition(
+                        animation: anim,
+                        child: child,
+                      );
+                    },
+                    duration: Duration(milliseconds: 200),
+                    child: Icon(_actionIcon, key: ValueKey(_actionIcon)),
+                  ),
+                  onPressed: () async {
+                    switch (_currentIndex) {
+                      case 0:
+                        final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    EditPostScreen(mode: 0)));
+                        if (result == '0') {
+                          Scaffold.of(bc)
+                              .showSnackBar(doneSnackBar('  帖子已发布.'));
+                        }
+                        break;
+                      case 1:
+                        break;
+                    }
                   },
-                  duration: Duration(milliseconds: 200),
-                  child: Icon(_actionIcon, key: ValueKey(_actionIcon)),
-                ),
-                onPressed: () async {
-                  switch (_currentIndex) {
-                    case 0:
-                      final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  EditPostScreen(mode: 0)));
-                      if (result == '0') {
-                        Scaffold.of(bc).showSnackBar(doneSnackBar('  帖子已发布.'));
-                      }
-                      break;
-                    case 1:
-                      break;
-                  }
-                },
-                tooltip: _currentIndex == 0 ? '新建帖子' : '新私信',
-              ),
+                  tooltip: _currentIndex == 0 ? '新建帖子' : '新私信',
+                );
+              },
             )
           : null,
     );
@@ -381,5 +392,11 @@ class _HomeScreenState extends State<HomeScreen> {
       return false;
     }
     return result;
+  }
+
+  void init() async {
+    sp = await SharedPreferences.getInstance();
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => scaffold.showSnackBar(welcomeSnackBar(widget.userName)));
   }
 }

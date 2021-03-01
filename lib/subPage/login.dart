@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/service/loginService.dart';
@@ -176,7 +176,7 @@ class _LoginPageState extends State<LoginPage> {
         prefs.setInt('userID', user['id']);
         prefs.setString('userName', user['userName'].toString());
         prefs.setBool('isLogin', true);
-        Fluttertoast.showToast(msg: "欢迎回来,${user['userName']}");
+        // Fluttertoast.showToast(msg: "欢迎回来,${user['userName']}");
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) {
           return HomeScreen(
@@ -188,6 +188,9 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           isProcessing = false;
         });
+        // Scaffold.of(key.currentState.context)
+        //     .showSnackBar(welcomeSnackBar(widget.userName));
+
         return 'ok';
       } else {
         setState(() {

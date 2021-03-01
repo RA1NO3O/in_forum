@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/home.dart';
@@ -97,12 +97,13 @@ class _RegPage extends State<RegPage> {
         },
       );
       if (res.data == 'success.') {
-        Fluttertoast.showToast(msg: '欢迎,${userNameController.text}');
+        // Fluttertoast.showToast(msg: '欢迎,${userNameController.text}');
         SharedPreferences prefs = await SharedPreferences.getInstance();
         Recordset recordset = await searchUser(userNameController.text);
-        await prefs.setInt('userID', recordset.id);
-        await prefs.setString('userName', userNameController.text);
-        await prefs.setBool('isLogin', true);
+        prefs.setInt('userID', recordset.id);
+        prefs.setString('userName', userNameController.text);
+        prefs.setBool('isLogin', true);
+        prefs.setBool('isJustLogin',true);
         Recordset rs = await searchUser(userNameController.text);
         Navigator.pushReplacement(
             context,
