@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/actionButton.dart';
+import 'package:inforum/component/customStyles.dart';
 import 'file:///E:/DEV/SYNC_BY_GitHub/Inforum/lib/service/dateTimeFormat.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/randomGenerator.dart';
@@ -78,10 +79,10 @@ class _CommentListItem extends State<CommentListItem> {
                           onTap: () {
                             Navigator.push(context, MaterialPageRoute(
                                 builder: (BuildContext context) {
-                              return ProfilePage(
-                                userID: widget.commenterName,
-                              );
-                            }));
+                                  return ProfilePage(
+                                    userID: widget.commenterName,
+                                  );
+                                }));
                           },
                         ),
                       ),
@@ -100,7 +101,8 @@ class _CommentListItem extends State<CommentListItem> {
                           margin: EdgeInsets.only(left: 5),
                           child: Text(
                             '@${widget.commentTarget} · '
-                            '${DateTimeFormat.handleDate(widget.commentTime)}',
+                                '${DateTimeFormat.handleDate(
+                                widget.commentTime)}',
                           ),
                         ),
                       ],
@@ -144,30 +146,30 @@ class _CommentListItem extends State<CommentListItem> {
                       : EdgeInsets.all(0),
                   child: widget.imgURL != null
                       ? Hero(
-                          child: Material(
-                            elevation: 2,
-                            clipBehavior: Clip.antiAlias,
-                            borderRadius: BorderRadius.circular(5),
-                            child: Ink.image(
-                              width: widget.imgURL != null ? 400 : 0,
-                              height: widget.imgURL != null ? 200 : 0,
-                              fit: BoxFit.cover,
-                              image: CachedNetworkImageProvider(widget.imgURL),
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                      new MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              ImageViewer(
-                                                imgURL: widget.imgURL,
-                                                heroTag: imgTag,
-                                              )));
-                                },
-                              ),
-                            ),
-                          ),
-                          tag: imgTag,
-                        )
+                    child: Material(
+                      elevation: 2,
+                      clipBehavior: Clip.antiAlias,
+                      borderRadius: BorderRadius.circular(5),
+                      child: Ink.image(
+                        width: widget.imgURL != null ? 400 : 0,
+                        height: widget.imgURL != null ? 200 : 0,
+                        fit: BoxFit.cover,
+                        image: CachedNetworkImageProvider(widget.imgURL),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                                new MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        ImageViewer(
+                                          imgURL: widget.imgURL,
+                                          heroTag: imgTag,
+                                        )));
+                          },
+                        ),
+                      ),
+                    ),
+                    tag: imgTag,
+                  )
                       : Container(),
                 ),
                 Row(
@@ -179,15 +181,21 @@ class _CommentListItem extends State<CommentListItem> {
                             : Icon(Icons.thumb_up),
                         txt: likeCount.toString()),
                     IconButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) => NewCommentScreen(
-                            targetPostID: widget.postID,
-                            imgURL: null,
+                      onPressed: () async {
+                        final result =await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                NewCommentScreen(
+                                  targetPostID: widget.postID,
+                                  imgURL: null,
+                                ),
                           ),
-                        ),
-                      ),
+                        );
+                        if(result=='0'){
+                          Scaffold.of(context).showSnackBar(doneSnackBar('  回复已送出.'));
+                        }
+                      },
                       icon: Icon(Icons.quickreply_rounded),
                       tooltip: '回复',
                     )

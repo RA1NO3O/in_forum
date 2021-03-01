@@ -47,10 +47,10 @@ class _RegPage extends State<RegPage> {
     if (errorCode != '0') {
       var msg = '注册失败,';
       if (errorCode.contains('3')) {
-        msg += '\n该邮箱地址已被注册.';
+        msg += '\n该邮箱地址可能已被注册,请更换一个邮箱地址.';
       }
       if (errorCode.contains('4')) {
-        msg += '\n该电话号码已被注册.';
+        msg += '\n该电话号码可能已被注册,请更换一个电话号码.';
       }
       if (errorCode.contains('2')) {
         Scaffold.of(context).showSnackBar(SnackBar(
@@ -60,14 +60,18 @@ class _RegPage extends State<RegPage> {
                 margin: EdgeInsets.only(right: 10),
                 child: Icon(Icons.warning_rounded),
               ),
-              Text('注册失败,该用户名已存在.\n您要使用这个账号登录吗?'),
+              Text('注册失败,该用户名可能已经存在.\n您想要使用这个账号登录吗?'),
             ],
           ),
           backgroundColor: Colors.yellow,
           action: SnackBarAction(
             label: '登录',
             onPressed: () => Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => LoginPage(userName: userNameController.text,))),
+                context,
+                MaterialPageRoute(
+                    builder: (context) => LoginPage(
+                          userName: userNameController.text,
+                        ))),
           ),
         ));
       } else {

@@ -76,9 +76,11 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   bool loadState = false;
   TextEditingController _commentController;
   DateTime dt;
+  String _time;
 
   @override
   void initState() {
+    _time = widget.time;
     isAuthor = widget.isAuthor;
     isCollect = widget.isCollect;
     likeCount = widget.likeCount;
@@ -102,21 +104,31 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
           isAuthor
               ? new Row(
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.edit),
-                      tooltip: '编辑',
-                      onPressed: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return EditPostScreen(
-                          titleText: widget.titleText,
-                          contentText: fullText,
-                          tags: widget.tags,
-                          imgURL: widget.imgURL,
-                          mode: 1,
-                          postID: widget.postID,
-                          heroTag: widget.heroTag,
-                        );
-                      })),
+                    Builder(
+                      builder: (bc) => IconButton(
+                        icon: Icon(Icons.edit),
+                        tooltip: '编辑',
+                        onPressed: () async {
+                          final result = await Navigator.push(context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) {
+                            return EditPostScreen(
+                              titleText: widget.titleText,
+                              contentText: fullText,
+                              tags: widget.tags,
+                              imgURL: widget.imgURL,
+                              mode: 1,
+                              postID: widget.postID,
+                              heroTag: widget.heroTag,
+                            );
+                          }));
+                          if (result == '0') {
+                            Scaffold.of(bc)
+                                .showSnackBar(doneSnackBar('  帖子已修改.'));
+                            _refresh();
+                          }
+                        },
+                      ),
                     ),
                     IconButton(
                       icon: Icon(Icons.delete_rounded),
@@ -285,8 +297,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                      child: Text(
-                          DateTimeFormat.convertBasicTimeFormat(widget.time)),
+                      child: Text(DateTimeFormat.convertBasicTimeFormat(_time)),
                     ),
                     Divider(thickness: 2),
                     Container(
@@ -573,8 +584,11 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     commentList.clear();
     Recordset rs = await getPostDetail(widget.postID);
     if (rs != null) {
-      fullText = rs.body;
-      authorUserName = rs.username;
+      setState(() {
+        fullText = rs.body;
+        authorUserName = rs.username;
+        _time = rs.lastEditTime.toString();
+      });
     }
     var _list = await getComment(widget.postID, sp.getInt('userID')) ?? [];
     setState(() {
@@ -622,9 +636,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
         data: {"postID": widget.postID},
       );
       if (res.data == 'success.') {
-        Fluttertoast.showToast(msg: '帖子已删除.');
-        Navigator.pop(context,
-            MaterialPageRoute(builder: (BuildContext context) => HomeScreen()));
+        // Fluttertoast.showToast(msg: '帖子已删除.');
+        Navigator.pop(context, '0');
       }
     }
   }

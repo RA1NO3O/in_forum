@@ -174,32 +174,37 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       floatingActionButton: _currentIndex == 0 || _currentIndex == 1
-          ? new FloatingActionButton(
-              backgroundColor: _currentColor,
-              child: AnimatedSwitcher(
-                transitionBuilder: (Widget child, Animation<double> anim) {
-                  return FadeScaleTransition(
-                    animation: anim,
-                    child: child,
-                  );
+          ? Builder(
+              builder: (bc) => new FloatingActionButton(
+                backgroundColor: _currentColor,
+                child: AnimatedSwitcher(
+                  transitionBuilder: (Widget child, Animation<double> anim) {
+                    return FadeScaleTransition(
+                      animation: anim,
+                      child: child,
+                    );
+                  },
+                  duration: Duration(milliseconds: 200),
+                  child: Icon(_actionIcon, key: ValueKey(_actionIcon)),
+                ),
+                onPressed: () async {
+                  switch (_currentIndex) {
+                    case 0:
+                      final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  EditPostScreen(mode: 0)));
+                      if (result == '0') {
+                        Scaffold.of(bc).showSnackBar(doneSnackBar('  帖子已发布.'));
+                      }
+                      break;
+                    case 1:
+                      break;
+                  }
                 },
-                duration: Duration(milliseconds: 200),
-                child: Icon(_actionIcon, key: ValueKey(_actionIcon)),
+                tooltip: _currentIndex == 0 ? '新建帖子' : '新私信',
               ),
-              onPressed: () {
-                switch (_currentIndex) {
-                  case 0:
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                EditPostScreen(mode: 0)));
-                    break;
-                  case 1:
-                    break;
-                }
-              },
-              tooltip: _currentIndex == 0 ? '新建帖子' : '新私信',
             )
           : null,
     );

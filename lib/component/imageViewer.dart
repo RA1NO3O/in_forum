@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/service/imageDownloadService.dart';
 import 'package:inforum/service/imageShareService.dart';
 import 'package:photo_view/photo_view.dart';
@@ -30,12 +31,15 @@ class ImageViewer extends StatelessWidget {
         elevation: 1,
         backgroundColor: Colors.transparent,
         actions: [
-          IconButton(
-              icon: Icon(Icons.download_rounded),
-              onPressed: () {
-                AppUtil.saveImage(imgURL);
-                Fluttertoast.showToast(msg: '图片已保存.');
-              }),
+          Builder(
+            builder: (bc) => IconButton(
+                icon: Icon(Icons.download_rounded),
+                onPressed: () {
+                  AppUtil.saveImage(imgURL);
+                  Scaffold.of(bc).showSnackBar(doneSnackBar('  图片已保存至/Pictures/.'));
+                  // Fluttertoast.showToast(msg: '图片已保存.');
+                }),
+          ),
           IconButton(
             icon: Icon(Icons.share_rounded),
             onPressed: () => shareNetworkImage(imgURL),

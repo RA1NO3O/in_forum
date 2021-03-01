@@ -62,6 +62,7 @@ class _PostListItem extends State<PostListItem> {
   List<String> tagStrings;
   List<Widget> tagWidgets;
   String imgTag = getRandom(6);
+
   // ignore: unused_field
   String _imagePath;
 
@@ -111,9 +112,12 @@ class _PostListItem extends State<PostListItem> {
               padding: EdgeInsets.all(15.0),
               child: Container(
                 child: Flex(direction: Axis.vertical, children: [
-                  InkWell(
-                      onTap: () => Navigator.push(context, MaterialPageRoute(
-                              builder: (BuildContext context) {
+                  Builder(
+                    builder: (bc) => InkWell(
+                        onTap: () async {
+                          final result = await Navigator.push(context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) {
                             return ForumDetailPage(
                               titleText: widget.titleText,
                               contentShortText: widget.contentText,
@@ -131,63 +135,69 @@ class _PostListItem extends State<PostListItem> {
                               time: widget.time,
                               heroTag: imgTag,
                             );
-                          })),
-                      child: Column(
-                        children: [
-                          Container(
-                            margin:
-                                EdgeInsets.only(top: 10, left: 5, bottom: 5),
-                            child: Flex(
-                              direction: Axis.horizontal,
-                              children: [
-                                Container(
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                          margin: EdgeInsets.only(right: 5),
-                                          child: CircleAvatar(
-                                              radius: 15,
-                                              backgroundImage: widget
-                                                          .imgAuthor !=
-                                                      null
-                                                  ? CachedNetworkImageProvider(
-                                                      widget.imgAuthor)
-                                                  : AssetImage(
-                                                      'images/test.jpg'))),
-                                      Text(widget.authorName),
-                                    ],
+                          }));
+                          if (result == '0') {
+                            Scaffold.of(bc)
+                                .showSnackBar(doneSnackBar('帖子已删除.'));
+                          }
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                              margin:
+                                  EdgeInsets.only(top: 10, left: 5, bottom: 5),
+                              child: Flex(
+                                direction: Axis.horizontal,
+                                children: [
+                                  Container(
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                            margin: EdgeInsets.only(right: 5),
+                                            child: CircleAvatar(
+                                                radius: 15,
+                                                backgroundImage: widget
+                                                            .imgAuthor !=
+                                                        null
+                                                    ? CachedNetworkImageProvider(
+                                                        widget.imgAuthor)
+                                                    : AssetImage(
+                                                        'images/test.jpg'))),
+                                        Text(widget.authorName),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Container(),
-                                ),
-                                Container(
-                                    padding: EdgeInsets.only(right: 13),
-                                    child: Text(
-                                        DateTimeFormat.handleDate(widget.time)))
-                              ],
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(),
+                                  ),
+                                  Container(
+                                      padding: EdgeInsets.only(right: 13),
+                                      child: Text(DateTimeFormat.handleDate(
+                                          widget.time)))
+                                ],
+                              ),
                             ),
-                          ),
-                          Container(
-                            alignment: Alignment.topLeft,
-                            padding: EdgeInsets.all(5),
-                            child: Text(
-                              widget.titleText,
-                              style: titleFontStyle,
-                              textAlign: TextAlign.left,
+                            Container(
+                              alignment: Alignment.topLeft,
+                              padding: EdgeInsets.all(5),
+                              child: Text(
+                                widget.titleText,
+                                style: titleFontStyle,
+                                textAlign: TextAlign.left,
+                              ),
                             ),
-                          ),
-                          Container(
-                            alignment: Alignment.topLeft,
-                            padding: EdgeInsets.all(5),
-                            child: Text(
-                              widget.contentText,
-                              style: new TextStyle(fontSize: 16),
+                            Container(
+                              alignment: Alignment.topLeft,
+                              padding: EdgeInsets.all(5),
+                              child: Text(
+                                widget.contentText,
+                                style: new TextStyle(fontSize: 16),
+                              ),
                             ),
-                          ),
-                        ],
-                      )),
+                          ],
+                        )),
+                  ),
                   Container(
                     padding: widget.imgURL != null
                         ? EdgeInsets.all(5)

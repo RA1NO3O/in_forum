@@ -143,75 +143,69 @@ class _EditPostScreenState extends State<EditPostScreen> {
                       );
                     })
                   : Container(),
-              new IconButton(
+              Builder(builder: (bc)=>new IconButton(
                 icon: widget.mode == 0
                     ? Icon(Icons.send_rounded)
                     : Icon(Icons.done),
                 onPressed: titleController.text.trim().isNotEmpty &&
-                        contentController.text.trim().isNotEmpty
+                    contentController.text.trim().isNotEmpty
                     ? () async {
-                        String uploadedImage;
-                        if (_localImagePath != null) {
-                          uploadedImage =
-                              await uploadFile(File(_localImagePath));
-                        } else if (_networkImageLink != null) {
-                          uploadedImage = _networkImageLink;
-                        }
-                        if (widget.mode == 0) {
-                          SharedPreferences prefs =
-                              await SharedPreferences.getInstance();
-                          int editorID = prefs.getInt('userID');
-                          Response res = await Dio().post(
-                              '$apiServerAddress/newPost/',
-                              options: new Options(
-                                  contentType:
-                                      Headers.formUrlEncodedContentType),
-                              data: {
-                                "title": titleController.text,
-                                "content": contentController.text,
-                                "tags": tags,
-                                "imgURL": uploadedImage ?? 'null',
-                                "editorID": editorID,
-                              });
-                          if (res.data == 'success.') {
-                            Fluttertoast.showToast(msg: '帖子已发布.');
-                            Navigator.pop(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        HomeScreen()));
-                          }
-                        } else {
-                          print('${widget.postID}\n'
-                              '${titleController.text}\n'
-                              '${contentController.text}\n'
-                              '$tags\n'
-                              '$uploadedImage');
-                          Response res = await Dio().post(
-                              '$apiServerAddress/editPost/',
-                              options: new Options(
-                                  contentType:
-                                      Headers.formUrlEncodedContentType),
-                              data: {
-                                "postID": widget.postID,
-                                "title": titleController.text,
-                                "content": contentController.text,
-                                "tags": tags,
-                                "imgURL": uploadedImage ?? 'null',
-                              });
-                          if (res.data == 'success.') {
-                            Fluttertoast.showToast(msg: '帖子已修改.');
-                            Navigator.pop(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        HomeScreen()));
-                          }
-                        }
-                      }
+                  String uploadedImage;
+                  if (_localImagePath != null) {
+                    uploadedImage =
+                    await uploadFile(File(_localImagePath));
+                  } else if (_networkImageLink != null) {
+                    uploadedImage = _networkImageLink;
+                  }
+                  if (widget.mode == 0) {
+                    SharedPreferences prefs =
+                    await SharedPreferences.getInstance();
+                    int editorID = prefs.getInt('userID');
+                    Response res = await Dio().post(
+                        '$apiServerAddress/newPost/',
+                        options: new Options(
+                            contentType:
+                            Headers.formUrlEncodedContentType),
+                        data: {
+                          "title": titleController.text,
+                          "content": contentController.text,
+                          "tags": tags,
+                          "imgURL": uploadedImage ?? 'null',
+                          "editorID": editorID,
+                        });
+                    if (res.data == 'success.') {
+                      // Fluttertoast.showToast(msg: '帖子已发布.');
+                      Navigator.pop(context, '0');
+                    }
+                  } else {
+                    print('${widget.postID}\n'
+                        '${titleController.text}\n'
+                        '${contentController.text}\n'
+                        '$tags\n'
+                        '$uploadedImage');
+                    Response res = await Dio().post(
+                        '$apiServerAddress/editPost/',
+                        options: new Options(
+                            contentType:
+                            Headers.formUrlEncodedContentType),
+                        data: {
+                          "postID": widget.postID,
+                          "title": titleController.text,
+                          "content": contentController.text,
+                          "tags": tags,
+                          "imgURL": uploadedImage ?? 'null',
+                        });
+                    if (res.data == 'success.') {
+                      // Fluttertoast.showToast(msg: '帖子已修改.');
+                      Navigator.pop(context, '0');
+                    }else{
+                      Scaffold.of(bc).showSnackBar(errorSnackBar(res.data));
+                    }
+                  }
+                }
                     : null,
                 tooltip: widget.mode == 0 ? '发帖' : '提交更改',
-              )
+              ),)
             ],
           ),
           body: ListView(

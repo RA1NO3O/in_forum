@@ -78,11 +78,8 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
                           "editorID": editorID
                         });
                     if (res.data == 'success.') {
-                      Fluttertoast.showToast(msg: '回复已送出.');
-                      Navigator.pop(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => HomeScreen()));
+                      // Fluttertoast.showToast(msg: '回复已送出.');
+                      Navigator.pop(context, '0');
                     }
                   }
                 : null,
