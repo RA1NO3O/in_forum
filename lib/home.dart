@@ -27,17 +27,17 @@ class HomeScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   Color _currentColor = Colors.blue;
   IconData _actionIcon = Icons.post_add;
   PageController _pageController;
   ScrollController _scrollController;
   SharedPreferences sp;
-  ScaffoldState scaffold;
+  static ScaffoldState scaffold;
 
   void pageChanged() {
     switch (_currentIndex) {
@@ -207,6 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (result == '0') {
                           Scaffold.of(bc)
                               .showSnackBar(doneSnackBar('  帖子已发布.'));
+
                         }
                         break;
                       case 1:
@@ -305,8 +306,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  CollectionPage()));
+                              builder: (BuildContext context) => CollectionPage(
+                                    userID: widget.userID,
+                                  )));
                     },
                   ),
                   ListTile(

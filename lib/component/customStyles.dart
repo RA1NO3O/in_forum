@@ -16,7 +16,8 @@ SnackBar errorSnackBar(String r) {
       children: [
         Container(
           margin: EdgeInsets.only(right: 10),
-          child: Icon(Icons.close_rounded),),
+          child: Icon(Icons.close_rounded),
+        ),
         Text(r),
       ],
     ),
@@ -60,3 +61,4 @@ ThemeData darkTheme = ThemeData(
 );
 TextStyle titleFontStyle =
     new TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
+TextStyle invalidTextStyle = new TextStyle(color: Colors.grey);

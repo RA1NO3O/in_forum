@@ -11,14 +11,17 @@ class PrimaryPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  _PrimaryPage createState() {
-    return _PrimaryPage();
+  PrimaryPageState createState() {
+    return PrimaryPageState();
   }
 }
 
-class _PrimaryPage extends State<PrimaryPage> {
-  List<PostListItem> _list = [];
+class PrimaryPageState extends State<PrimaryPage> {
+  static final GlobalKey<AnimatedListState> listKey =
+      GlobalKey<AnimatedListState>();
+  static List<PostListItem> streamList = [];
   bool loadState = false;
+  ScaffoldState scaffold;
 
   @override
   void initState() {
@@ -32,10 +35,21 @@ class _PrimaryPage extends State<PrimaryPage> {
       strokeWidth: 2.5,
       onRefresh: _refresh,
       child: !loadState
-          ? ListView(
-              controller: widget.scrollController,
-              children: _list,
+          ? AnimatedList(
+              key: listKey,
+              initialItemCount: streamList.length,
+              itemBuilder: (context, index, _animation) {
+                scaffold = Scaffold.of(context);
+                return SizeTransition(
+                    axis: Axis.vertical,
+                    sizeFactor: _animation,
+                    child: streamList[index]);
+              },
             )
+          // ListView(
+          //   controller: widget.scrollController,
+          //   children: _list,
+          // )
           : ListView.builder(
               scrollDirection: Axis.vertical,
               itemCount: 4,
@@ -255,12 +269,14 @@ class _PrimaryPage extends State<PrimaryPage> {
   _getStream() async {
     setState(() {
       loadState = true;
-      _list.clear();
+      streamList.clear();
     });
-    List<PostListItem> fli = await getList(widget.userID);
+
+    List<PostListItem> psis = await getList(widget.userID);
+
     setState(() {
       loadState = false;
-      _list.addAll(fli);
+      streamList.addAll(psis);
     });
   }
 

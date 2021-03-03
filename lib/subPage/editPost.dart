@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:inforum/component/customStyles.dart';
+import 'package:inforum/component/postListItem.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/uploadPictureService.dart';
+import 'package:inforum/subPage/primaryPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
 
@@ -35,6 +37,7 @@ class EditPostScreen extends StatefulWidget {
 }
 
 class _EditPostScreenState extends State<EditPostScreen> {
+  SharedPreferences sp;
   final titleController = new TextEditingController();
   final contentController = new TextEditingController();
   var tags = List<String>();
@@ -109,7 +112,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   }
 
   Future<void> getDraft() async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
+    sp = await SharedPreferences.getInstance();
     draftTitle = sp.getString('draft_title');
     draftContent = sp.getString('draft_content');
     draftTags = sp.getStringList('draft_tags');
@@ -142,69 +145,72 @@ class _EditPostScreenState extends State<EditPostScreen> {
                       );
                     })
                   : Container(),
-              Builder(builder: (bc)=>new IconButton(
-                icon: widget.mode == 0
-                    ? Icon(Icons.send_rounded)
-                    : Icon(Icons.done),
-                onPressed: titleController.text.trim().isNotEmpty &&
-                    contentController.text.trim().isNotEmpty
-                    ? () async {
-                  String uploadedImage;
-                  if (_localImagePath != null) {
-                    uploadedImage =
-                    await uploadFile(File(_localImagePath));
-                  } else if (_networkImageLink != null) {
-                    uploadedImage = _networkImageLink;
-                  }
-                  if (widget.mode == 0) {
-                    SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
-                    int editorID = prefs.getInt('userID');
-                    Response res = await Dio().post(
-                        '$apiServerAddress/newPost/',
-                        options: new Options(
-                            contentType:
-                            Headers.formUrlEncodedContentType),
-                        data: {
-                          "title": titleController.text,
-                          "content": contentController.text,
-                          "tags": tags,
-                          "imgURL": uploadedImage ?? 'null',
-                          "editorID": editorID,
-                        });
-                    if (res.data == 'success.') {
-                      // Fluttertoast.showToast(msg: '帖子已发布.');
-                      Navigator.pop(context, '0');
-                    }
-                  } else {
-                    print('${widget.postID}\n'
-                        '${titleController.text}\n'
-                        '${contentController.text}\n'
-                        '$tags\n'
-                        '$uploadedImage');
-                    Response res = await Dio().post(
-                        '$apiServerAddress/editPost/',
-                        options: new Options(
-                            contentType:
-                            Headers.formUrlEncodedContentType),
-                        data: {
-                          "postID": widget.postID,
-                          "title": titleController.text,
-                          "content": contentController.text,
-                          "tags": tags,
-                          "imgURL": uploadedImage ?? 'null',
-                        });
-                    if (res.data == 'success.') {
-                      // Fluttertoast.showToast(msg: '帖子已修改.');
-                      Navigator.pop(context, '0');
-                    }else{
-                      Scaffold.of(bc).showSnackBar(errorSnackBar(res.data));
-                    }
-                  }
-                }
-                    : null,
-                tooltip: widget.mode == 0 ? '发帖' : '提交更改',
-              ),)
+              Builder(
+                builder: (bc) => new IconButton(
+                  icon: widget.mode == 0
+                      ? Icon(Icons.send_rounded)
+                      : Icon(Icons.done),
+                  onPressed: titleController.text.trim().isNotEmpty &&
+                          contentController.text.trim().isNotEmpty
+                      ? () async {
+                          String uploadedImage;
+                          if (_localImagePath != null) {
+                            uploadedImage =
+                                await uploadFile(File(_localImagePath));
+                          } else if (_networkImageLink != null) {
+                            uploadedImage = _networkImageLink;
+                          }
+                          if (widget.mode == 0) {
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            int editorID = prefs.getInt('userID');
+                            Response res = await Dio().post(
+                                '$apiServerAddress/newPost/',
+                                options: new Options(
+                                    contentType:
+                                        Headers.formUrlEncodedContentType),
+                                data: {
+                                  "title": titleController.text,
+                                  "content": contentController.text,
+                                  "tags": tags,
+                                  "imgURL": uploadedImage ?? 'null',
+                                  "editorID": editorID,
+                                });
+                            if (res.data == 'success.') {
+                              // Fluttertoast.showToast(msg: '帖子已发布.');
+                              Navigator.pop(context, '0');
+                            }
+                          } else {
+                            print('${widget.postID}\n'
+                                '${titleController.text}\n'
+                                '${contentController.text}\n'
+                                '$tags\n'
+                                '$uploadedImage');
+                            Response res = await Dio().post(
+                                '$apiServerAddress/editPost/',
+                                options: new Options(
+                                    contentType:
+                                        Headers.formUrlEncodedContentType),
+                                data: {
+                                  "postID": widget.postID,
+                                  "title": titleController.text,
+                                  "content": contentController.text,
+                                  "tags": tags,
+                                  "imgURL": uploadedImage ?? 'null',
+                                });
+                            if (res.data == 'success.') {
+                              // Fluttertoast.showToast(msg: '帖子已修改.');
+                              Navigator.pop(context, '0');
+                            } else {
+                              Scaffold.of(bc)
+                                  .showSnackBar(errorSnackBar(res.data));
+                            }
+                          }
+                        }
+                      : null,
+                  tooltip: widget.mode == 0 ? '发帖' : '提交更改',
+                ),
+              )
             ],
           ),
           body: ListView(
@@ -333,7 +339,23 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   color: Colors.blue,
                 ),
                 onPressed: () {
+                  var index = PrimaryPageState.streamList.length;
                   _networkImageLink = imgLinkEditor.text;
+                  PrimaryPageState.streamList.insert(
+                    index,
+                    PostListItem(
+                      titleText: titleController.text,
+                      contentText: contentController.text,
+                      imgURL: _networkImageLink,
+                      authorName: sp.getString('nickName'),
+                      imgAuthor: sp.getString('avatarURL'),
+                      isAuthor: true,
+                      time: DateTime.now().toString(),
+                      tags: tags,
+                      index: index,
+                    ),
+                  );
+                  PrimaryPageState.listKey.currentState.insertItem(index);
                   Navigator.pop(context);
                 },
               ),

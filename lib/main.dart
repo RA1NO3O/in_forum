@@ -99,44 +99,45 @@ class _MainPageState extends State<MainPage> {
               margin: EdgeInsets.all(30),
               alignment: Alignment.center,
               child: Scaffold(
-                  appBar: AppBar(
-                    title: Hero(
-                        tag: 'title',
-                        child: Text(widget.title, style: titleTextStyle())),
-                    leading: state != 0
-                        ? IconButton(
-                            icon: Icon(Icons.arrow_back),
-                            onPressed: () {
-                              setState(() {
-                                state = 0;
-                              });
-                            },
-                          )
-                        : null,
-                  ),
-                  backgroundColor: Colors.transparent,
-                  body: ListView(
-                    children: [
-                      PageTransitionSwitcher(
-                        duration: const Duration(milliseconds: 500),
-                        reverse: state == 0,
-                        transitionBuilder:
-                            (child, animation, secondaryAnimation) {
-                          return SharedAxisTransition(
-                            child: child,
-                            animation: animation,
-                            secondaryAnimation: secondaryAnimation,
-                            transitionType: SharedAxisTransitionType.horizontal,
-                          );
-                        },
-                        child: state == 0
-                            ? defaultPage()
-                            : state == 1
-                                ? LoginPage()
-                                : RegPage(),
-                      ),
-                    ],
-                  )),
+                appBar: AppBar(
+                  title: Hero(
+                      tag: 'title',
+                      child: Text(widget.title, style: titleTextStyle())),
+                  leading: state != 0
+                      ? IconButton(
+                          icon: Icon(Icons.arrow_back),
+                          onPressed: () {
+                            setState(() {
+                              state = 0;
+                            });
+                          },
+                        )
+                      : null,
+                ),
+                backgroundColor: Colors.transparent,
+                body: ListView(
+                  children: [
+                    PageTransitionSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                      reverse: state == 0,
+                      transitionBuilder:
+                          (child, animation, secondaryAnimation) {
+                        return SharedAxisTransition(
+                          child: child,
+                          animation: animation,
+                          secondaryAnimation: secondaryAnimation,
+                          transitionType: SharedAxisTransitionType.horizontal,
+                        );
+                      },
+                      child: state == 0
+                          ? defaultPage()
+                          : state == 1
+                              ? LoginPage()
+                              : RegPage(),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],

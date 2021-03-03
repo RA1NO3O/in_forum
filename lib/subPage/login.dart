@@ -3,7 +3,8 @@ import 'package:flutter/widgets.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/home.dart';
-import 'package:inforum/service/loginService.dart';
+import 'package:inforum/service/loginService.dart' as LoginRS;
+import 'package:inforum/service/profileService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -99,7 +100,9 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             //密码字段
-            Container(
+            AnimatedContainer(
+              curve: Curves.easeOutCubic,
+              duration: Duration(milliseconds: 500),
               padding: isUserFound
                   ? EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10)
                   : EdgeInsets.zero,
@@ -165,31 +168,35 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (isUserFound) {
-      final Recordset rs =
-          await tryLogin(userNameController.text, pwdController.text);
+      final LoginRS.Recordset rs =
+          await LoginRS.tryLogin(userNameController.text, pwdController.text);
 
       if (rs != null) {
         user['id'] = rs.id;
+        var rs2 = await getProfile(rs.id.toString());
         //写入登录状态
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        print(prefs.getInt('userID'));
-        prefs.setInt('userID', user['id']);
-        prefs.setString('userName', user['userName'].toString());
+
+        prefs.setInt('userID', rs.id);
+        prefs.setString('userName', rs2.username);
+        prefs.setString('nickName', rs2.nickname);
+        prefs.setString('avatarURL', rs2.avatarUrl);
+        prefs.setString('bannerURL', rs2.bannerUrl);
+        prefs.setString('bio', rs2.bio);
+        prefs.setString('location', rs2.location);
+
         prefs.setBool('isLogin', true);
-        // Fluttertoast.showToast(msg: "欢迎回来,${user['userName']}");
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) {
           return HomeScreen(
-            userID: user['id'].toString(),
-            userName: user['userName'],
+            userID: rs.id.toString(),
+            userName: rs2.username,
           );
         }));
         userNameController.removeListener(idListener);
         setState(() {
           isProcessing = false;
         });
-        // Scaffold.of(key.currentState.context)
-        //     .showSnackBar(welcomeSnackBar(widget.userName));
 
         return 'ok';
       } else {
@@ -200,7 +207,8 @@ class _LoginPageState extends State<LoginPage> {
       }
     } else {
       try {
-        final Recordset rs = await searchUser(userNameController.text);
+        final LoginRS.Recordset rs =
+            await LoginRS.searchUser(userNameController.text);
 
         if (rs != null) {
           setState(() {

@@ -8,6 +8,7 @@ import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/randomGenerator.dart';
 import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/postDetail.dart';
+import 'package:inforum/subPage/primaryPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'customStyles.dart';
@@ -15,6 +16,7 @@ import 'customStyles.dart';
 class PostListItem extends StatefulWidget {
   final int postID;
   final String titleText;
+  @required
   final String contentText;
   final int likeState;
   final int likeCount;
@@ -28,7 +30,7 @@ class PostListItem extends StatefulWidget {
   final bool isAuthor;
   final String time;
   final List<String> tags;
-
+  final int index;
   const PostListItem({
     Key key,
     @required this.titleText,
@@ -43,9 +45,10 @@ class PostListItem extends StatefulWidget {
     this.imgAuthor,
     @required this.authorName,
     @required this.isAuthor,
-    @required this.postID,
+    this.postID,
     @required this.time,
     this.tags,
+    this.index,
   }) : super(key: key);
 
   @override
@@ -53,6 +56,7 @@ class PostListItem extends StatefulWidget {
 }
 
 class _PostListItem extends State<PostListItem> {
+  TextStyle v;
   bool isCollect;
   int likeState; //0缺省,1为点赞,2为踩
   int collectCount;
@@ -62,12 +66,12 @@ class _PostListItem extends State<PostListItem> {
   List<String> tagStrings;
   List<Widget> tagWidgets;
   String imgTag = getRandom(6);
-
   // ignore: unused_field
   String _imagePath;
 
   @override
   void initState() {
+    v = widget.postID == null ? invalidTextStyle : new TextStyle();
     likeState = widget.likeState ?? 0;
     collectCount = widget.collectCount ?? 0;
     likeCount = widget.likeCount ?? 0;
@@ -104,7 +108,7 @@ class _PostListItem extends State<PostListItem> {
     _getTagWidgets();
     return Builder(builder: (BuildContext bc) {
       return Card(
-        margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+        margin: EdgeInsets.only(left: 10, right: 10, top: 10),
         elevation: 1,
         child: Column(
           children: [
@@ -114,89 +118,114 @@ class _PostListItem extends State<PostListItem> {
                 child: Flex(direction: Axis.vertical, children: [
                   Builder(
                     builder: (bc) => InkWell(
-                        onTap: () async {
-                          final result = await Navigator.push(context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) {
-                            return ForumDetailPage(
-                              titleText: widget.titleText,
-                              contentShortText: widget.contentText,
-                              likeCount: likeCount,
-                              dislikeCount: dislikeCount,
-                              likeState: likeState,
-                              commentCount: commentCount,
-                              imgURL: widget.imgURL,
-                              isCollect: isCollect,
-                              imgAuthor: widget.imgAuthor,
-                              authorName: widget.authorName,
-                              isAuthor: widget.isAuthor,
-                              tags: widget.tags,
-                              postID: widget.postID,
-                              time: widget.time,
-                              heroTag: imgTag,
-                            );
-                          }));
-                          if (result == '0') {
-                            Scaffold.of(bc)
-                                .showSnackBar(doneSnackBar('帖子已删除.'));
-                          }
-                        },
-                        child: Column(
-                          children: [
-                            Container(
-                              margin:
-                                  EdgeInsets.only(top: 10, left: 5, bottom: 5),
-                              child: Flex(
-                                direction: Axis.horizontal,
-                                children: [
-                                  Container(
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                            margin: EdgeInsets.only(right: 5),
-                                            child: CircleAvatar(
-                                                radius: 15,
-                                                backgroundImage: widget
-                                                            .imgAuthor !=
-                                                        null
-                                                    ? CachedNetworkImageProvider(
-                                                        widget.imgAuthor)
-                                                    : AssetImage(
-                                                        'images/test.jpg'))),
-                                        Text(widget.authorName),
-                                      ],
-                                    ),
+                      onTap: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) {
+                              return PostDetailPage(
+                                titleText: widget.titleText,
+                                contentShortText: widget.contentText,
+                                likeCount: likeCount,
+                                dislikeCount: dislikeCount,
+                                likeState: likeState,
+                                commentCount: commentCount,
+                                imgURL: widget.imgURL,
+                                isCollect: isCollect,
+                                imgAuthor: widget.imgAuthor,
+                                authorName: widget.authorName,
+                                isAuthor: widget.isAuthor,
+                                tags: widget.tags,
+                                postID: widget.postID,
+                                time: widget.time,
+                                heroTag: imgTag,
+                              );
+                            },
+                          ),
+                        );
+                        if (result == '0') {
+                          Scaffold.of(bc).showSnackBar(doneSnackBar('帖子已删除.'));
+                          PrimaryPageState.listKey.currentState.removeItem(
+                            widget.index,
+                            (context, animation) {
+                              PrimaryPageState.streamList
+                                  .removeAt(widget.index);
+                              return SizeTransition(
+                                  sizeFactor: animation,
+                                  axis: Axis.vertical,
+                                  child: PrimaryPageState
+                                      .streamList[widget.index]);
+                            },
+                          );
+                        }
+                      },
+                      child: Column(
+                        children: [
+                          Container(
+                            margin:
+                                EdgeInsets.only(top: 10, left: 5, bottom: 5),
+                            child: Flex(
+                              direction: Axis.horizontal,
+                              children: [
+                                Container(
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                          margin: EdgeInsets.only(right: 5),
+                                          child: CircleAvatar(
+                                              radius: 15,
+                                              backgroundImage: widget
+                                                          .imgAuthor !=
+                                                      null
+                                                  ? CachedNetworkImageProvider(
+                                                      widget.imgAuthor)
+                                                  : AssetImage(
+                                                      'images/test.jpg'))),
+                                      Text(widget.authorName, style: v),
+                                    ],
                                   ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Container(),
-                                  ),
-                                  Container(
-                                      padding: EdgeInsets.only(right: 13),
-                                      child: Text(DateTimeFormat.handleDate(
-                                          widget.time)))
-                                ],
-                              ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(right: 13),
+                                  child: Text(
+                                      DateTimeFormat.handleDate(widget.time),
+                                      style: v),
+                                ),
+                              ],
                             ),
-                            Container(
-                              alignment: Alignment.topLeft,
-                              padding: EdgeInsets.all(5),
-                              child: Text(
-                                widget.titleText,
-                                style: titleFontStyle,
-                                textAlign: TextAlign.left,
-                              ),
+                          ),
+                          Container(
+                            alignment: Alignment.topLeft,
+                            padding: EdgeInsets.all(5),
+                            child: Text(
+                              widget.titleText,
+                              style: widget.postID != null
+                                  ? titleFontStyle
+                                  : new TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey),
+                              textAlign: TextAlign.left,
                             ),
-                            Container(
-                              alignment: Alignment.topLeft,
-                              padding: EdgeInsets.all(5),
-                              child: Text(
-                                widget.contentText,
-                                style: new TextStyle(fontSize: 16),
-                              ),
+                          ),
+                          Container(
+                            alignment: Alignment.topLeft,
+                            padding: EdgeInsets.all(5),
+                            child: Text(
+                              widget.contentText,
+                              style: widget.postID != null
+                                  ? new TextStyle(fontSize: 16)
+                                  : new TextStyle(
+                                      fontSize: 16, color: Colors.grey),
                             ),
-                          ],
-                        )),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   Container(
                     padding: widget.imgURL != null
@@ -217,11 +246,13 @@ class _PostListItem extends State<PostListItem> {
                                 child: InkWell(
                                   onTap: () {
                                     Navigator.of(context).push(
-                                        new MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                ImageViewer(
-                                                    imgURL: widget.imgURL,
-                                                    heroTag: imgTag)));
+                                      new MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            ImageViewer(
+                                                imgURL: widget.imgURL,
+                                                heroTag: imgTag),
+                                      ),
+                                    );
                                   },
                                 ),
                               ),

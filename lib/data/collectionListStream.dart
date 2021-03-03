@@ -1,29 +1,29 @@
 import 'package:inforum/component/postListItem.dart';
+import 'package:inforum/service/postCollectionService.dart';
 
-class CollectionListStream{
-  static List<PostListItem> getCollections(){
-    return <PostListItem>[
-      PostListItem(
-        postID: 1,
-        titleText: '以下的内容仅供测试.',
-        contentText:
-        'This is a Test. All of the text below is used to test widget.'
-            '\nThis is 2nd line. '
-            '\nThis is 3rd line.'
-            '\nThis is 4th line.',
-        likeCount: 1000,
-        likeState: 0,
-        dislikeCount: 0,
-        commentCount: 1,
-        collectCount: 5,
-        isCollect: false,
-        imgURL: 'images/test.jpg',
-        authorName: 'レエイン',
-        imgAuthor: 'images/test.jpg',
-        isAuthor: true,
-        time: '2020/12/05 15:02:16',
-        tags: ['Test', '123', '456'],
-      ),
-    ];
-  }
+List<PostListItem> pcls = [];
+Future<List<PostListItem>> getCollectionList(String userID) async {
+  pcls.clear();
+  List<Recordset> pcl = await getPostCollection(userID);
+  pcl.forEach((rs) {
+    String t = rs.tags;
+    pcls.add(PostListItem(
+      postID: rs.postId,
+      titleText: rs.title,
+      contentText: rs.bodyS,
+      likeCount: rs.likeCount,
+      dislikeCount: rs.dislikeCount,
+      likeState: rs.likeState ?? 0,
+      commentCount: rs.commentCount,
+      collectCount: rs.collectCount,
+      isCollect: rs.isCollected ?? false,
+      imgURL: rs.imageUrl ?? null,
+      authorName: rs.nickname,
+      isAuthor: rs.isEditor == 1 ? true : false,
+      imgAuthor: rs.avatarUrl ?? null,
+      time: rs.collectTime.toString(),
+      tags: t != null ? t.split(',') : null,
+    ));
+  });
+  return pcls;
 }

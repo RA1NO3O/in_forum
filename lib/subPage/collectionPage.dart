@@ -1,8 +1,11 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:inforum/component/postListItem.dart';
 import 'package:inforum/data/collectionListStream.dart';
 
 class CollectionPage extends StatefulWidget {
+  final String userID;
+
+  const CollectionPage({Key key, this.userID}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return _CollectionPage();
@@ -10,61 +13,76 @@ class CollectionPage extends StatefulWidget {
 }
 
 class _CollectionPage extends State<CollectionPage> {
-  List<Widget> _collectionList = new List<Widget>();
-  bool isEmpty = true;
+  List<PostListItem> _collectionList = [];
+  bool loadState = false;
 
   @override
   void initState() {
+    _getList();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    getList();
     return Scaffold(
-        appBar: AppBar(
-          title: Text('收藏'),
-          // centerTitle: true,
-          actions: [
-            IconButton(
-                tooltip: '搜索收藏', icon: Icon(Icons.search), onPressed: () {}),
-          ],
-        ),
-        body: RefreshIndicator(
-          strokeWidth: 2.5,
-          onRefresh: _refresh,
-          child: isEmpty
-              ? ListView(
-                  children: _collectionList,
-                )
-              : Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.star_outline_rounded,
-                        size: 100,
-                      ),
-                      Text('您收藏的所有帖子都将位于此处')
-                    ],
-                  ),
+      appBar: AppBar(
+        title: Text('收藏'),
+        // centerTitle: true,
+        actions: [
+          IconButton(
+              tooltip: '搜索收藏', icon: Icon(Icons.search), onPressed: () {}),
+        ],
+      ),
+      body: RefreshIndicator(
+        strokeWidth: 2.5,
+        onRefresh: _refresh,
+        child: !loadState
+            ? _collectionList.isNotEmpty
+                ? ListView(
+                    children: _collectionList,
+                  )
+                : Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.star_outline_rounded,
+                          size: 100,
+                        ),
+                        Text('您收藏的所有帖子都将位于此处')
+                      ],
+                    ),
+                  )
+            : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.hourglass_top_rounded,
+                      size: 100,
+                    ),
+                    Text('请稍等')
+                  ],
                 ),
-        ));
+              ),
+      ),
+    );
   }
 
   Future<void> _refresh() async {
-    await getList();
+    await _getList();
+    return;
   }
 
-  getList() {
+  _getList() async {
     setState(() {
-      if (CollectionListStream.getCollections().isNotEmpty) {
-        _collectionList.clear();
-        _collectionList.addAll(CollectionListStream.getCollections());
-        isEmpty = false;
-      } else {
-        isEmpty = true;
-      }
+      loadState = true;
+      _collectionList.clear();
+    });
+    List<PostListItem> pcl = await getCollectionList(widget.userID);
+    setState(() {
+      loadState = false;
+      _collectionList.addAll(pcl);
     });
   }
 

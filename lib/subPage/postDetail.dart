@@ -19,7 +19,7 @@ import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/profilePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ForumDetailPage extends StatefulWidget {
+class PostDetailPage extends StatefulWidget {
   final int postID;
   final String titleText;
   final String contentShortText;
@@ -36,7 +36,7 @@ class ForumDetailPage extends StatefulWidget {
   final String time;
   final String heroTag;
 
-  const ForumDetailPage({
+  const PostDetailPage({
     Key key,
     this.titleText,
     this.likeCount,
@@ -56,10 +56,10 @@ class ForumDetailPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ForumDetailPageState createState() => _ForumDetailPageState();
+  _PostDetailPageState createState() => _PostDetailPageState();
 }
 
-class _ForumDetailPageState extends State<ForumDetailPage> {
+class _PostDetailPageState extends State<PostDetailPage> {
   String fullText;
   bool isCollect;
   int likeState = 0; //0缺省,1为点赞,2为踩
@@ -322,13 +322,14 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                               txt: dislikeCount.toString()),
                         ),
                         Expanded(
-                          flex: 1,
-                          child: ActionButton(
-                            fun: () => commentBottomSheet(context),
-                            ico: Icon(Icons.mode_comment_outlined),
-                            txt: commentCount.toString(),
-                          ),
-                        ),
+                            flex: 1,
+                            child: Builder(
+                              builder: (BuildContext bc) => ActionButton(
+                                fun: () => commentBottomSheet(bc),
+                                ico: Icon(Icons.mode_comment_outlined),
+                                txt: commentCount.toString(),
+                              ),
+                            )),
                         Expanded(
                           flex: 0,
                           child: ActionButton(
@@ -370,17 +371,23 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                             Icons.photo_outlined,
                             color: Colors.blue,
                           ),
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  NewCommentScreen(
-                                targetPostID: widget.postID,
-                                contentText: _commentController.text,
-                                imgURL: null,
+                          onPressed: () async {
+                            var result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    NewCommentScreen(
+                                  targetPostID: widget.postID,
+                                  contentText: _commentController.text,
+                                  imgURL: null,
+                                ),
                               ),
-                            ),
-                          ),
+                            );
+                            if (result == '0') {
+                              Scaffold.of(context)
+                                  .showSnackBar(doneSnackBar('  回复已送出.'));
+                            }
+                          },
                         ),
                       ],
                     ),
@@ -394,9 +401,9 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     );
   }
 
-  void commentBottomSheet(BuildContext bc) {
+  Future<void> commentBottomSheet(BuildContext bc) async {
     TextEditingController _commentController = new TextEditingController();
-    showModalBottomSheet(
+    var result = await showModalBottomSheet(
       isScrollControlled: true,
       context: bc,
       builder: (bc) => SingleChildScrollView(
@@ -458,7 +465,25 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                       child: Text('发送'),
                       colorBrightness: Brightness.dark,
                       color: Colors.blue,
-                      onPressed: () {},
+                      onPressed: () async {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        int editorID = prefs.getInt('userID');
+                        Response res = await Dio().post(
+                            '$apiServerAddress/newComment/',
+                            options: new Options(
+                                contentType: Headers.formUrlEncodedContentType),
+                            data: {
+                              "targetPostID": widget.postID,
+                              "content": _commentController.text,
+                              "imgURL": 'null',
+                              "editorID": editorID
+                            });
+                        if (res.data == 'success.') {
+                          // Fluttertoast.showToast(msg: '回复已送出.');
+                          Navigator.pop(context, '0');
+                        }
+                      },
                     ),
                   ),
                 ],
@@ -468,6 +493,9 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
         ),
       ),
     );
+    if (result == '0') {
+      Scaffold.of(bc).showSnackBar(doneSnackBar('  回复已送出.'));
+    }
   }
 
   @override
