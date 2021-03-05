@@ -3,10 +3,10 @@ import 'package:inforum/component/commentListItem.dart';
 import 'package:inforum/service/postCommentService.dart';
 
 List<CommentListItem> pcis = [];
-
 Future<List<Widget>> getComment(int postID, int userID) async {
   pcis.clear();
-  List<Recordset> pcl = await getPostComment(postID, userID);
+
+  List<CommentRecordset> pcl = await getPostComment(postID, userID);
   pcl.forEach((rs) {
     pcis.add(CommentListItem(
       commenterAvatarURL: rs.avatarUrl,
@@ -18,6 +18,7 @@ Future<List<Widget>> getComment(int postID, int userID) async {
       imgURL: rs.imageUrl,
       likeState: rs.likeState ?? 0,
       likeCount: rs.likeCount,
+      isAuthor: rs.isEditor == 1 ? true : false,
     ));
   });
   pcis.sort((a, b) => b.postID.compareTo(a.postID)); //按ID排序,ID数字越大越新

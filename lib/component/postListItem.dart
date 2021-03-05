@@ -31,6 +31,7 @@ class PostListItem extends StatefulWidget {
   final String time;
   final List<String> tags;
   final int index;
+
   const PostListItem({
     Key key,
     @required this.titleText,
@@ -66,6 +67,7 @@ class _PostListItem extends State<PostListItem> {
   List<String> tagStrings;
   List<Widget> tagWidgets;
   String imgTag = getRandom(6);
+
   // ignore: unused_field
   String _imagePath;
 
@@ -108,7 +110,7 @@ class _PostListItem extends State<PostListItem> {
     _getTagWidgets();
     return Builder(builder: (BuildContext bc) {
       return Card(
-        margin: EdgeInsets.only(left: 10, right: 10, top: 10),
+        margin: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 2),
         elevation: 1,
         child: Column(
           children: [
@@ -144,17 +146,32 @@ class _PostListItem extends State<PostListItem> {
                           ),
                         );
                         if (result == '0') {
-                          Scaffold.of(bc).showSnackBar(doneSnackBar('帖子已删除.'));
+                          ScaffoldMessenger.of(bc)
+                              .showSnackBar(doneSnackBar('帖子已删除.'));
                           PrimaryPageState.listKey.currentState.removeItem(
                             widget.index,
                             (context, animation) {
                               PrimaryPageState.streamList
                                   .removeAt(widget.index);
                               return SizeTransition(
-                                  sizeFactor: animation,
-                                  axis: Axis.vertical,
-                                  child: PrimaryPageState
-                                      .streamList[widget.index]);
+                                sizeFactor: animation,
+                                axis: Axis.vertical,
+                                child: PostListItem(
+                                    titleText: widget.titleText,
+                                    contentText: widget.contentText,
+                                    likeCount: widget.likeCount,
+                                    dislikeCount: widget.dislikeCount,
+                                    commentCount: widget.commentCount,
+                                    collectCount: widget.collectCount,
+                                    imgURL: widget.imgURL,
+                                    likeState: widget.likeState,
+                                    isCollect: widget.isCollect,
+                                    imgAuthor: widget.imgAuthor,
+                                    authorName: widget.authorName,
+                                    isAuthor: widget.isAuthor,
+                                    time: widget.time,
+                                    tags: widget.tags),
+                              );
                             },
                           );
                         }

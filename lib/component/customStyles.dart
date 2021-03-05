@@ -49,11 +49,13 @@ SnackBar doneSnackBar(String r) {
 }
 
 ThemeData lightTheme = ThemeData(
+  appBarTheme: AppBarTheme(brightness: Brightness.light),
   brightness: Brightness.light,
   focusColor: themeColor,
   buttonColor: themeColor,
 );
 ThemeData darkTheme = ThemeData(
+  appBarTheme: AppBarTheme(brightness: Brightness.dark),
   brightness: Brightness.dark,
   accentColor: themeColor,
   primaryColor: Colors.black,

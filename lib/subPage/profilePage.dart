@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inforum/service/profileService.dart';
 
 class ProfilePage extends StatefulWidget {
   final String userID;
@@ -14,9 +15,19 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePage extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
+  String _userName;
+  String _nickName;
+  DateTime _birthday;
+  String _bio;
+  String _location;
+  String _avatarURL;
+  String _bannerURL;
+  String _followerCount = '0';
+  String _followingCount = '0';
 
   @override
   void initState() {
+    _refresh();
     _tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
@@ -79,5 +90,20 @@ class _ProfilePage extends State<ProfilePage>
         ),
       ),
     );
+  }
+
+  void _refresh() async {
+    var rs = await getProfile(widget.userID);
+    setState(() {
+      _userName = rs.username;
+      _nickName = rs.nickname;
+      _birthday = rs.birthday;
+      _bio = rs.bio;
+      _location = rs.location;
+      _avatarURL = rs.avatarUrl;
+      _bannerURL = rs.bannerUrl;
+      _followerCount = rs.followerCount.toString();
+      _followingCount = rs.followingCount.toString();
+    });
   }
 }

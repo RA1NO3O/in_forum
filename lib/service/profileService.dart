@@ -11,10 +11,10 @@ ProfileService profileServiceFromJson(String str) =>
 
 String profileServiceToJson(ProfileService data) => json.encode(data.toJson());
 
-Future<Recordset> getProfile(String id) async {
+Future<ProfileRecordset> getProfile(String id) async {
   Response res = await Dio().get('$apiServerAddress/getProfile/$id');
   final ProfileService ps = profileServiceFromJson(res.toString());
-  final Recordset rs = ps.recordset.isEmpty ? null : ps.recordset[0];
+  final ProfileRecordset rs = ps.recordset.isEmpty ? null : ps.recordset[0];
   return rs;
 }
 
@@ -26,20 +26,20 @@ class ProfileService {
     this.rowsAffected,
   });
 
-  List<List<Recordset>> recordsets;
-  List<Recordset> recordset;
+  List<List<ProfileRecordset>> recordsets;
+  List<ProfileRecordset> recordset;
   Output output;
   List<int> rowsAffected;
 
   factory ProfileService.fromJson(Map<String, dynamic> json) => ProfileService(
         recordsets: json["recordsets"] == null
             ? null
-            : List<List<Recordset>>.from(json["recordsets"].map((x) =>
-                List<Recordset>.from(x.map((x) => Recordset.fromJson(x))))),
+            : List<List<ProfileRecordset>>.from(json["recordsets"].map((x) =>
+                List<ProfileRecordset>.from(x.map((x) => ProfileRecordset.fromJson(x))))),
         recordset: json["recordset"] == null
             ? null
-            : List<Recordset>.from(
-                json["recordset"].map((x) => Recordset.fromJson(x))),
+            : List<ProfileRecordset>.from(
+                json["recordset"].map((x) => ProfileRecordset.fromJson(x))),
         output: json["output"] == null ? null : Output.fromJson(json["output"]),
         rowsAffected: json["rowsAffected"] == null
             ? null
@@ -69,8 +69,8 @@ class Output {
   Map<String, dynamic> toJson() => {};
 }
 
-class Recordset {
-  Recordset({
+class ProfileRecordset {
+  ProfileRecordset({
     this.nickname,
     this.username,
     this.birthday,
@@ -92,7 +92,7 @@ class Recordset {
   int followerCount;
   int followingCount;
 
-  factory Recordset.fromJson(Map<String, dynamic> json) => Recordset(
+  factory ProfileRecordset.fromJson(Map<String, dynamic> json) => ProfileRecordset(
         nickname: json["nickname"] == null ? null : json["nickname"],
         username: json["username"] == null ? null : json["username"],
         birthday:

@@ -13,11 +13,11 @@ PostCollectionService postCollectionServiceFromJson(String str) =>
 String postCollectionServiceToJson(PostCollectionService data) =>
     json.encode(data.toJson());
 
-Future<List<Recordset>> getPostCollection(String userID) async {
+Future<List<CollectionRecordset>> getPostCollection(String userID) async {
   Response res = await Dio().get('$apiServerAddress/getCollection/$userID');
   final PostCollectionService pcs =
       postCollectionServiceFromJson(res.toString());
-  final List<Recordset> rs = pcs.recordset.isEmpty ? [] : pcs.recordset;
+  final List<CollectionRecordset> rs = pcs.recordset.isEmpty ? [] : pcs.recordset;
   return rs;
 }
 
@@ -29,14 +29,14 @@ class PostCollectionService {
         this.rowsAffected,
     });
 
-    List<List<Recordset>> recordsets;
-    List<Recordset> recordset;
+    List<List<CollectionRecordset>> recordsets;
+    List<CollectionRecordset> recordset;
     Output output;
     List<int> rowsAffected;
 
     factory PostCollectionService.fromJson(Map<String, dynamic> json) => PostCollectionService(
-        recordsets: json["recordsets"] == null ? null : List<List<Recordset>>.from(json["recordsets"].map((x) => List<Recordset>.from(x.map((x) => Recordset.fromJson(x))))),
-        recordset: json["recordset"] == null ? null : List<Recordset>.from(json["recordset"].map((x) => Recordset.fromJson(x))),
+        recordsets: json["recordsets"] == null ? null : List<List<CollectionRecordset>>.from(json["recordsets"].map((x) => List<CollectionRecordset>.from(x.map((x) => CollectionRecordset.fromJson(x))))),
+        recordset: json["recordset"] == null ? null : List<CollectionRecordset>.from(json["recordset"].map((x) => CollectionRecordset.fromJson(x))),
         output: json["output"] == null ? null : Output.fromJson(json["output"]),
         rowsAffected: json["rowsAffected"] == null ? null : List<int>.from(json["rowsAffected"].map((x) => x)),
     );
@@ -59,8 +59,8 @@ class Output {
     };
 }
 
-class Recordset {
-    Recordset({
+class CollectionRecordset {
+    CollectionRecordset({
         this.postId,
         this.title,
         this.bodyS,
@@ -98,7 +98,7 @@ class Recordset {
     int likeState;
     DateTime collectTime;
 
-    factory Recordset.fromJson(Map<String, dynamic> json) => Recordset(
+    factory CollectionRecordset.fromJson(Map<String, dynamic> json) => CollectionRecordset(
         postId: json["postID"] == null ? null : json["postID"],
         title: json["title"] == null ? null : json["title"],
         bodyS: json["body_S"] == null ? null : json["body_S"],

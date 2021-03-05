@@ -22,6 +22,7 @@ class CommentListItem extends StatefulWidget {
   final int likeState;
   final int likeCount;
   final String imgURL;
+  final bool isAuthor;
 
   const CommentListItem({
     Key key,
@@ -34,6 +35,7 @@ class CommentListItem extends StatefulWidget {
     this.likeState,
     this.likeCount,
     this.imgURL,
+    this.isAuthor,
   }) : super(key: key);
 
   @override
@@ -41,12 +43,14 @@ class CommentListItem extends StatefulWidget {
 }
 
 class _CommentListItem extends State<CommentListItem> {
+  String _imgURL;
   int likeState; //0缺省,1为点赞,2为踩
   int likeCount;
   String imgTag = getRandom(6);
 
   @override
   void initState() {
+    _imgURL = widget.imgURL;
     likeState = widget.likeState ?? 0;
     likeCount = widget.likeCount ?? 0;
     super.initState();
@@ -70,8 +74,10 @@ class _CommentListItem extends State<CommentListItem> {
                       clipBehavior: Clip.hardEdge,
                       color: Colors.transparent,
                       child: Ink.image(
-                        image: CachedNetworkImageProvider(
-                            widget.commenterAvatarURL),
+                        image: widget.commenterAvatarURL != null
+                            ? CachedNetworkImageProvider(
+                                widget.commenterAvatarURL)
+                            : AssetImage('images/test.jpg'),
                         fit: BoxFit.cover,
                         width: 50,
                         height: 50,
@@ -79,10 +85,10 @@ class _CommentListItem extends State<CommentListItem> {
                           onTap: () {
                             Navigator.push(context, MaterialPageRoute(
                                 builder: (BuildContext context) {
-                                  return ProfilePage(
-                                    userID: widget.commenterName,
-                                  );
-                                }));
+                              return ProfilePage(
+                                userID: widget.commenterName,
+                              );
+                            }));
                           },
                         ),
                       ),
@@ -101,8 +107,7 @@ class _CommentListItem extends State<CommentListItem> {
                           margin: EdgeInsets.only(left: 5),
                           child: Text(
                             '@${widget.commentTarget} · '
-                                '${DateTimeFormat.handleDate(
-                                widget.commentTime)}',
+                            '${DateTimeFormat.handleDate(widget.commentTime)}',
                           ),
                         ),
                       ],
@@ -111,10 +116,61 @@ class _CommentListItem extends State<CommentListItem> {
                       flex: 1,
                       child: Container(),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.keyboard_arrow_down_rounded),
-                      //TODO:用户下拉菜单
-                      onPressed: () {},
+                    Builder(
+                      builder: (bc) => PopupMenuButton(
+                        // icon: Icon(Icons.keyboard_arrow_down_rounded),
+                        itemBuilder: widget.isAuthor
+                            ? (bc) => <PopupMenuEntry>[
+                                  PopupMenuItem(
+                                    value: 'edit',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.edit_rounded),
+                                        Text('  编辑'),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 'delete',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.delete_rounded),
+                                        Text('  删除'),
+                                      ],
+                                    ),
+                                  ),
+                                ]
+                            : (bc) => <PopupMenuEntry>[
+                                  PopupMenuItem(
+                                    value: 'shield',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.do_disturb_alt_rounded),
+                                        Text('  屏蔽'),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 'report',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.report),
+                                        Text('  举报'),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                        onSelected: (result) {
+                          switch (result) {
+                            case 'delete':
+                              if (_deleteConfirmDialog() == '0') {
+                                ScaffoldMessenger.of(bc)
+                                    .showSnackBar(doneSnackBar('回复已删除.'));
+                              }
+                              break;
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -141,35 +197,33 @@ class _CommentListItem extends State<CommentListItem> {
                   ),
                 ),
                 Container(
-                  margin: widget.imgURL != null
+                  margin: _imgURL != null
                       ? EdgeInsets.only(left: 5, right: 25, bottom: 5, top: 5)
                       : EdgeInsets.all(0),
-                  child: widget.imgURL != null
+                  child: _imgURL != null
                       ? Hero(
-                    child: Material(
-                      elevation: 2,
-                      clipBehavior: Clip.antiAlias,
-                      borderRadius: BorderRadius.circular(5),
-                      child: Ink.image(
-                        width: widget.imgURL != null ? 400 : 0,
-                        height: widget.imgURL != null ? 200 : 0,
-                        fit: BoxFit.cover,
-                        image: CachedNetworkImageProvider(widget.imgURL),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(
-                                new MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        ImageViewer(
-                                          imgURL: widget.imgURL,
-                                          heroTag: imgTag,
-                                        )));
-                          },
-                        ),
-                      ),
-                    ),
-                    tag: imgTag,
-                  )
+                          child: Material(
+                            elevation: 2,
+                            clipBehavior: Clip.antiAlias,
+                            borderRadius: BorderRadius.circular(5),
+                            child: Ink.image(
+                              fit: BoxFit.cover,
+                              image: CachedNetworkImageProvider(_imgURL),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                      new MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              ImageViewer(
+                                                imgURL: _imgURL,
+                                                heroTag: imgTag,
+                                              )));
+                                },
+                              ),
+                            ),
+                          ),
+                          tag: imgTag,
+                        )
                       : Container(),
                 ),
                 Row(
@@ -182,21 +236,22 @@ class _CommentListItem extends State<CommentListItem> {
                         txt: likeCount.toString()),
                     IconButton(
                       onPressed: () async {
-                        final result =await Navigator.push(
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                NewCommentScreen(
-                                  targetPostID: widget.postID,
-                                  imgURL: null,
-                                ),
+                            builder: (BuildContext context) => NewCommentScreen(
+                              targetPostID: widget.postID,
+                              targetUserName: widget.commentTarget,
+                              imgURL: null,
+                            ),
                           ),
                         );
-                        if(result=='0'){
-                          Scaffold.of(context).showSnackBar(doneSnackBar('  回复已送出.'));
+                        if (result == '0') {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(doneSnackBar('  回复已送出.'));
                         }
                       },
-                      icon: Icon(Icons.quickreply_rounded),
+                      icon: Icon(Icons.quickreply_outlined),
                       tooltip: '回复',
                     )
                   ],
@@ -240,6 +295,52 @@ class _CommentListItem extends State<CommentListItem> {
             break;
         }
       });
+    }
+  }
+  _deleteConfirmDialog() async {
+    bool result = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Column(
+              children: [
+                Icon(
+                  Icons.help_rounded,
+                  size: 40,
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 10),
+                  child: Text('删除帖子?'),
+                )
+              ],
+            ),
+            actions: <Widget>[
+              TextButton.icon(
+                icon: Icon(Icons.arrow_back_rounded),
+                label: Text('取消'),
+                onPressed: () => Navigator.pop(context, false),
+              ),
+              TextButton.icon(
+                style: ButtonStyle(
+                  foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.redAccent),
+                ),
+                icon: Icon(Icons.delete_forever_rounded),
+                label: Text('确认'),
+                onPressed: () => Navigator.pop(context, true),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+    if (result) {
+      Response res = await Dio().delete(
+        '$apiServerAddress/deletePost/',
+        options: new Options(contentType: Headers.formUrlEncodedContentType),
+        data: {"postID": widget.postID},
+      );
+      if (res.data == 'success.') {
+        Navigator.pop(context, '0');
+      }
     }
   }
 }

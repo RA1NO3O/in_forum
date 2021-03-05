@@ -13,10 +13,11 @@ PostCommentService postCommentServiceFromJson(String str) =>
 String postCommentServiceToJson(PostCommentService data) =>
     json.encode(data.toJson());
 
-Future<List<Recordset>> getPostComment(int postID,int userID) async {
-  Response res = await Dio().get('$apiServerAddress/getComment/$postID?userID=$userID');
+Future<List<CommentRecordset>> getPostComment(int postID, int userID) async {
+  Response res =
+      await Dio().get('$apiServerAddress/getComment/$postID?userID=$userID');
   final PostCommentService pcs = postCommentServiceFromJson(res.toString());
-  final List<Recordset> rs = pcs.recordset.isEmpty ? [] : pcs.recordset;
+  final List<CommentRecordset> rs = pcs.recordset.isEmpty ? [] : pcs.recordset;
   return rs;
 }
 
@@ -28,8 +29,8 @@ class PostCommentService {
     this.rowsAffected,
   });
 
-  List<List<Recordset>> recordsets;
-  List<Recordset> recordset;
+  List<List<CommentRecordset>> recordsets;
+  List<CommentRecordset> recordset;
   Output output;
   List<int> rowsAffected;
 
@@ -37,12 +38,12 @@ class PostCommentService {
       PostCommentService(
         recordsets: json["recordsets"] == null
             ? null
-            : List<List<Recordset>>.from(json["recordsets"].map((x) =>
-                List<Recordset>.from(x.map((x) => Recordset.fromJson(x))))),
+            : List<List<CommentRecordset>>.from(json["recordsets"].map((x) =>
+                List<CommentRecordset>.from(x.map((x) => CommentRecordset.fromJson(x))))),
         recordset: json["recordset"] == null
             ? null
-            : List<Recordset>.from(
-                json["recordset"].map((x) => Recordset.fromJson(x))),
+            : List<CommentRecordset>.from(
+                json["recordset"].map((x) => CommentRecordset.fromJson(x))),
         output: json["output"] == null ? null : Output.fromJson(json["output"]),
         rowsAffected: json["rowsAffected"] == null
             ? null
@@ -72,8 +73,8 @@ class Output {
   Map<String, dynamic> toJson() => {};
 }
 
-class Recordset {
-  Recordset({
+class CommentRecordset {
+  CommentRecordset({
     this.postId,
     this.body,
     this.imageUrl,
@@ -81,9 +82,11 @@ class Recordset {
     this.username,
     this.avatarUrl,
     this.nickname,
+    this.targetCommentPostId,
     this.likeCount,
     this.likeState,
     this.userId,
+    this.isEditor,
   });
 
   int postId;
@@ -93,11 +96,13 @@ class Recordset {
   String username;
   String avatarUrl;
   String nickname;
+  int targetCommentPostId;
   int likeCount;
   int likeState;
   int userId;
+  int isEditor;
 
-  factory Recordset.fromJson(Map<String, dynamic> json) => Recordset(
+  factory CommentRecordset.fromJson(Map<String, dynamic> json) => CommentRecordset(
         postId: json["postID"] == null ? null : json["postID"],
         body: json["body"] == null ? null : json["body"],
         imageUrl: json["imageURL"],
@@ -107,9 +112,13 @@ class Recordset {
         username: json["username"] == null ? null : json["username"],
         avatarUrl: json["avatarURL"] == null ? null : json["avatarURL"],
         nickname: json["nickname"] == null ? null : json["nickname"],
+        targetCommentPostId: json["target_comment_postID"] == null
+            ? null
+            : json["target_comment_postID"],
         likeCount: json["likeCount"] == null ? null : json["likeCount"],
-        likeState: json["like_State"] == null ? null : json["like_State"],
-        userId: json["user_ID"] == null ? null : json["user_ID"],
+        likeState: json["like_State"],
+        userId: json["user_ID"],
+        isEditor: json["isEditor"] == null ? null : json["isEditor"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -121,8 +130,11 @@ class Recordset {
         "username": username == null ? null : username,
         "avatarURL": avatarUrl == null ? null : avatarUrl,
         "nickname": nickname == null ? null : nickname,
+        "target_comment_postID":
+            targetCommentPostId == null ? null : targetCommentPostId,
         "likeCount": likeCount == null ? null : likeCount,
-        "like_State": likeState == null ? null : likeState,
-        "user_ID": userId == null ? null : userId,
+        "like_State": likeState,
+        "user_ID": userId,
+        "isEditor": isEditor == null ? null : isEditor,
       };
 }

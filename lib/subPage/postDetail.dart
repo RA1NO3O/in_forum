@@ -1,6 +1,4 @@
 import 'dart:ui';
-
-// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -60,8 +58,11 @@ class PostDetailPage extends StatefulWidget {
 }
 
 class _PostDetailPageState extends State<PostDetailPage> {
-  String fullText;
+  String _title;
+  String _fullText;
+  List<String> _tags;
   bool isCollect;
+  String _imgURL;
   int likeState = 0; //0缺省,1为点赞,2为踩
   int likeCount;
   int dislikeCount;
@@ -112,17 +113,17 @@ class _PostDetailPageState extends State<PostDetailPage> {
                               MaterialPageRoute(
                                   builder: (BuildContext context) {
                             return EditPostScreen(
-                              titleText: widget.titleText,
-                              contentText: fullText,
-                              tags: widget.tags,
-                              imgURL: widget.imgURL,
+                              titleText: _title,
+                              contentText: _fullText,
+                              tags: _tags,
+                              imgURL: _imgURL,
                               mode: 1,
                               postID: widget.postID,
                               heroTag: widget.heroTag,
                             );
                           }));
                           if (result == '0') {
-                            Scaffold.of(bc)
+                            ScaffoldMessenger.of(bc)
                                 .showSnackBar(doneSnackBar('  帖子已修改.'));
                             _refresh();
                           }
@@ -218,11 +219,49 @@ class _PostDetailPageState extends State<PostDetailPage> {
                             flex: 1,
                             child: Container(),
                           ),
-                          IconButton(
-                            icon: Icon(Icons.keyboard_arrow_down_rounded),
-                            //TODO:用户下拉菜单
-                            onPressed: () {},
-                          )
+                          PopupMenuButton(
+                            // icon: Icon(Icons.keyboard_arrow_down_rounded),
+                            itemBuilder: (bc) => <PopupMenuEntry>[
+                              PopupMenuItem(
+                                value: 'forward',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                        Icons.subdirectory_arrow_right_rounded),
+                                    Text('  转发'),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'shield',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.do_disturb_alt_rounded),
+                                    Text('  屏蔽')
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'report',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.report),
+                                    Text('  举报'),
+                                  ],
+                                ),
+                              ),
+                            ],
+                            onSelected: (result) {
+                              switch (result) {
+                                case 'forward':
+                                  break;
+                                case 'shield':
+                                  break;
+                                case 'report':
+                                  break;
+                              }
+                            },
+                          ),
                         ],
                       ),
                     ),
@@ -233,7 +272,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       ),
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        widget.titleText,
+                        _title ?? widget.titleText,
                         style: titleFontStyle,
                         textAlign: TextAlign.left,
                       ),
@@ -241,7 +280,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                     new Container(
                         margin: EdgeInsets.only(top: 10, left: 25, right: 25),
                         child: Text(
-                          fullText ?? widget.contentShortText,
+                          _fullText ?? widget.contentShortText,
                           style: new TextStyle(fontSize: 18),
                         )),
                     new Container(
@@ -379,12 +418,13 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                     NewCommentScreen(
                                   targetPostID: widget.postID,
                                   contentText: _commentController.text,
+                                  targetUserName: authorUserName,
                                   imgURL: null,
                                 ),
                               ),
                             );
                             if (result == '0') {
-                              Scaffold.of(context)
+                              ScaffoldMessenger.of(context)
                                   .showSnackBar(doneSnackBar('  回复已送出.'));
                             }
                           },
@@ -420,7 +460,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 textInputAction: TextInputAction.send,
                 controller: _commentController,
                 decoration: InputDecoration(
-                  hintText: '发布回复',
+                  hintText: '回复给@$authorUserName',
                   suffixIcon: IconButton(
                     icon: Icon(Icons.open_in_full_rounded),
                     tooltip: '全屏撰写',
@@ -430,6 +470,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         builder: (BuildContext context) => NewCommentScreen(
                           targetPostID: widget.postID,
                           contentText: _commentController.text,
+                          targetUserName: authorUserName,
                           imgURL: null,
                         ),
                       ),
@@ -453,6 +494,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                             builder: (BuildContext context) => NewCommentScreen(
                               targetPostID: widget.postID,
                               contentText: _commentController.text,
+                              targetUserName: authorUserName,
                               imgURL: null,
                             ),
                           ),
@@ -461,10 +503,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
                   Expanded(flex: 1, child: Container()),
                   Expanded(
                     flex: 0,
-                    child: FlatButton(
+                    child: TextButton(
                       child: Text('发送'),
-                      colorBrightness: Brightness.dark,
-                      color: Colors.blue,
                       onPressed: () async {
                         SharedPreferences prefs =
                             await SharedPreferences.getInstance();
@@ -480,7 +520,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
                               "editorID": editorID
                             });
                         if (res.data == 'success.') {
-                          // Fluttertoast.showToast(msg: '回复已送出.');
                           Navigator.pop(context, '0');
                         }
                       },
@@ -494,7 +533,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       ),
     );
     if (result == '0') {
-      Scaffold.of(bc).showSnackBar(doneSnackBar('  回复已送出.'));
+      ScaffoldMessenger.of(bc).showSnackBar(doneSnackBar('  回复已送出.'));
     }
   }
 
@@ -609,12 +648,15 @@ class _PostDetailPageState extends State<PostDetailPage> {
   Future<void> _refresh() async {
     sp = await SharedPreferences.getInstance();
     commentList.clear();
-    Recordset rs = await getPostDetail(widget.postID);
+    PostDetailRecordset rs = await getPostDetail(widget.postID);
     if (rs != null) {
       setState(() {
-        fullText = rs.body;
+        _title = rs.title;
+        _fullText = rs.body;
         authorUserName = rs.username;
+        _imgURL = rs.imageUrl;
         _time = rs.lastEditTime.toString();
+        _tags = rs.tags != null ? rs.tags.split(',') : null;
       });
     }
     var _list = await getComment(widget.postID, sp.getInt('userID')) ?? [];
@@ -626,36 +668,39 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
   deleteConfirmDialog() async {
     bool result = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Column(
-          children: [
-            Icon(
-              Icons.help_rounded,
-              size: 40,
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Column(
+              children: [
+                Icon(
+                  Icons.help_rounded,
+                  size: 40,
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 10),
+                  child: Text('删除帖子?'),
+                )
+              ],
             ),
-            Container(
-              margin: EdgeInsets.only(top: 10),
-              child: Text('删除帖子?'),
-            )
-          ],
-        ),
-        actions: <Widget>[
-          FlatButton.icon(
-            textColor: Colors.blue,
-            icon: Icon(Icons.arrow_back_rounded),
-            label: Text('取消'),
-            onPressed: () => Navigator.pop(context, false),
+            actions: <Widget>[
+              TextButton.icon(
+                icon: Icon(Icons.arrow_back_rounded),
+                label: Text('取消'),
+                onPressed: () => Navigator.pop(context, false),
+              ),
+              TextButton.icon(
+                style: ButtonStyle(
+                  foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.redAccent),
+                ),
+                icon: Icon(Icons.delete_forever_rounded),
+                label: Text('确认'),
+                onPressed: () => Navigator.pop(context, true),
+              ),
+            ],
           ),
-          FlatButton.icon(
-            textColor: Colors.redAccent,
-            icon: Icon(Icons.delete_forever_rounded),
-            label: Text('确认'),
-            onPressed: () => Navigator.pop(context, true),
-          ),
-        ],
-      ),
-    );
+        ) ??
+        false;
     if (result) {
       Response res = await Dio().delete(
         '$apiServerAddress/deletePost/',
@@ -663,7 +708,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
         data: {"postID": widget.postID},
       );
       if (res.data == 'success.') {
-        // Fluttertoast.showToast(msg: '帖子已删除.');
         Navigator.pop(context, '0');
       }
     }

@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/home.dart';
@@ -27,7 +26,7 @@ class _RegPage extends State<RegPage> {
     bool regPassed = false;
     String errorCode = '0';
     if (_formKey.currentState.validate()) {
-      Recordset rs = await searchUser(userNameController.text);
+      LoginRecordset rs = await searchUser(userNameController.text);
       if (rs == null) {
         rs = await searchUser(emailController.text);
         if (rs == null) {
@@ -53,7 +52,7 @@ class _RegPage extends State<RegPage> {
         msg += '\n该电话号码可能已被注册,请更换一个电话号码.';
       }
       if (errorCode.contains('2')) {
-        Scaffold.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Row(
             children: [
               Container(
@@ -75,7 +74,7 @@ class _RegPage extends State<RegPage> {
           ),
         ));
       } else {
-        Scaffold.of(context).showSnackBar(errorSnackBar(msg));
+        ScaffoldMessenger.of(context).showSnackBar(errorSnackBar(msg));
       }
     }
 
@@ -97,14 +96,13 @@ class _RegPage extends State<RegPage> {
         },
       );
       if (res.data == 'success.') {
-        // Fluttertoast.showToast(msg: '欢迎,${userNameController.text}');
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        Recordset recordset = await searchUser(userNameController.text);
+        LoginRecordset recordset = await searchUser(userNameController.text);
         prefs.setInt('userID', recordset.id);
         prefs.setString('userName', userNameController.text);
         prefs.setBool('isLogin', true);
-        prefs.setBool('isJustLogin',true);
-        Recordset rs = await searchUser(userNameController.text);
+        prefs.setBool('isJustLogin', true);
+        LoginRecordset rs = await searchUser(userNameController.text);
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -214,9 +212,12 @@ class _RegPage extends State<RegPage> {
                 width: 80,
                 height: 40,
                 margin: EdgeInsets.only(top: 10),
-                child: RaisedButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                      shape: MaterialStateProperty.all<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                  )),
                   child: Text(
                     '注册',
                     style: new TextStyle(color: Colors.white),

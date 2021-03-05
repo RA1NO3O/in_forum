@@ -60,8 +60,6 @@ class AppUtil {
       final result = await ImageGallerySaver.saveImage(imageBytes);
 
       if (result == null || result == '') throw '图片保存失败';
-
-      print(result.toString());
       return result['filePath'];
     } catch (e) {
       print(e.toString());

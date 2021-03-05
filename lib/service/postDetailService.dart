@@ -13,10 +13,10 @@ PostDetailService postDetailServiceFromJson(String str) =>
 String postDetailServiceToJson(PostDetailService data) =>
     json.encode(data.toJson());
 
-Future<Recordset> getPostDetail(int postID) async {
+Future<PostDetailRecordset> getPostDetail(int postID) async {
   Response res = await Dio().get('$apiServerAddress/getPostDetail/$postID');
   final PostDetailService pds = postDetailServiceFromJson(res.toString());
-  final Recordset rs = pds.recordset.isEmpty ? null : pds.recordset[0];
+  final PostDetailRecordset rs = pds.recordset.isEmpty ? null : pds.recordset[0];
   return rs;
 }
 
@@ -28,8 +28,8 @@ class PostDetailService {
     this.rowsAffected,
   });
 
-  List<List<Recordset>> recordsets;
-  List<Recordset> recordset;
+  List<List<PostDetailRecordset>> recordsets;
+  List<PostDetailRecordset> recordset;
   Output output;
   List<int> rowsAffected;
 
@@ -37,12 +37,12 @@ class PostDetailService {
       PostDetailService(
         recordsets: json["recordsets"] == null
             ? null
-            : List<List<Recordset>>.from(json["recordsets"].map((x) =>
-                List<Recordset>.from(x.map((x) => Recordset.fromJson(x))))),
+            : List<List<PostDetailRecordset>>.from(json["recordsets"].map((x) =>
+                List<PostDetailRecordset>.from(x.map((x) => PostDetailRecordset.fromJson(x))))),
         recordset: json["recordset"] == null
             ? null
-            : List<Recordset>.from(
-                json["recordset"].map((x) => Recordset.fromJson(x))),
+            : List<PostDetailRecordset>.from(
+                json["recordset"].map((x) => PostDetailRecordset.fromJson(x))),
         output: json["output"] == null ? null : Output.fromJson(json["output"]),
         rowsAffected: json["rowsAffected"] == null
             ? null
@@ -72,8 +72,8 @@ class Output {
   Map<String, dynamic> toJson() => {};
 }
 
-class Recordset {
-  Recordset({
+class PostDetailRecordset {
+  PostDetailRecordset({
     this.avatarUrl,
     this.nickname,
     this.username,
@@ -105,7 +105,7 @@ class Recordset {
   int collectCount;
   int editorId;
 
-  factory Recordset.fromJson(Map<String, dynamic> json) => Recordset(
+  factory PostDetailRecordset.fromJson(Map<String, dynamic> json) => PostDetailRecordset(
     avatarUrl: json["avatarURL"] == null ? null : json["avatarURL"],
     nickname: json["nickname"] == null ? null : json["nickname"],
     username: json["username"] == null ? null : json["username"],

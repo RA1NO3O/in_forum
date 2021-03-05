@@ -4,7 +4,6 @@ import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/service/imageDownloadService.dart';
 import 'package:inforum/service/imageShareService.dart';
 import 'package:photo_view/photo_view.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 
 class ImageViewer extends StatelessWidget {
   final String imgURL;
@@ -36,8 +35,8 @@ class ImageViewer extends StatelessWidget {
                 icon: Icon(Icons.download_rounded),
                 onPressed: () {
                   AppUtil.saveImage(imgURL);
-                  Scaffold.of(bc).showSnackBar(doneSnackBar('  图片已保存至/Pictures/.'));
-                  // Fluttertoast.showToast(msg: '图片已保存.');
+                  ScaffoldMessenger.of(bc)
+                      .showSnackBar(doneSnackBar('  图片已保存至/Pictures/.'));
                 }),
           ),
           IconButton(

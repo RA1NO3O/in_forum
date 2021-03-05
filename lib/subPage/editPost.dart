@@ -10,7 +10,6 @@ import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/uploadPictureService.dart';
 import 'package:inforum/subPage/primaryPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 
 class EditPostScreen extends StatefulWidget {
   final String titleText;
@@ -40,7 +39,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   SharedPreferences sp;
   final titleController = new TextEditingController();
   final contentController = new TextEditingController();
-  var tags = List<String>();
+  var tags = [];
   var tagChips;
   bool saved = false;
   bool edited = false;
@@ -118,7 +117,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
     draftTags = sp.getStringList('draft_tags');
     titleController.text = draftTitle;
     contentController.text = draftContent;
-    tags = draftTags ?? List<String>();
+    tags = draftTags ?? [];
     refreshTagList();
   }
 
@@ -138,7 +137,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
                         onPressed: () {
                           save(titleController.text, contentController.text,
                               tags);
-                          Scaffold.of(bc).showSnackBar(doneSnackBar('已存为草稿.'));
+                          ScaffoldMessenger.of(bc)
+                              .showSnackBar(doneSnackBar('已存为草稿.'));
                           saved = true;
                         },
                         tooltip: '存为草稿',
@@ -177,15 +177,9 @@ class _EditPostScreenState extends State<EditPostScreen> {
                                   "editorID": editorID,
                                 });
                             if (res.data == 'success.') {
-                              // Fluttertoast.showToast(msg: '帖子已发布.');
                               Navigator.pop(context, '0');
                             }
                           } else {
-                            print('${widget.postID}\n'
-                                '${titleController.text}\n'
-                                '${contentController.text}\n'
-                                '$tags\n'
-                                '$uploadedImage');
                             Response res = await Dio().post(
                                 '$apiServerAddress/editPost/',
                                 options: new Options(
@@ -199,10 +193,25 @@ class _EditPostScreenState extends State<EditPostScreen> {
                                   "imgURL": uploadedImage ?? 'null',
                                 });
                             if (res.data == 'success.') {
-                              // Fluttertoast.showToast(msg: '帖子已修改.');
+                              PrimaryPageState.streamList.insert(
+                                0,
+                                PostListItem(
+                                  titleText: titleController.text,
+                                  contentText: contentController.text,
+                                  imgURL: _networkImageLink,
+                                  authorName: sp.getString('nickName'),
+                                  imgAuthor: sp.getString('avatarURL'),
+                                  isAuthor: true,
+                                  time: DateTime.now().toString(),
+                                  tags: tags,
+                                  index: 0,
+                                ),
+                              );
+                              PrimaryPageState.listKey.currentState
+                                  .insertItem(0);
                               Navigator.pop(context, '0');
                             } else {
-                              Scaffold.of(bc)
+                              ScaffoldMessenger.of(bc)
                                   .showSnackBar(errorSnackBar(res.data));
                             }
                           }
@@ -254,53 +263,54 @@ class _EditPostScreenState extends State<EditPostScreen> {
                       ),
                     ),
                     Container(
-                        margin: EdgeInsets.all(10),
-                        alignment: Alignment.center,
-                        child: (_localImagePath == null) &&
-                                (_networkImageLink == null)
-                            ? Row(
-                                children: [
-                                  TextButton.icon(
-                                    icon: Icon(Icons.photo_library_rounded),
-                                    label: Text('添加图片'),
-                                    onPressed: getImage,
-                                  ),
-                                  Text('或者'),
-                                  Builder(
-                                    builder: (bc) => TextButton.icon(
-                                      icon: Icon(Icons.insert_link_rounded),
-                                      label: Text('网络图片'),
-                                      onPressed: () => addNetworkImage(bc),
-                                    ),
-                                  )
-                                ],
-                              )
-                            : Dismissible(
-                                key: new Key(''),
-                                // ignore: non_constant_identifier_names
-                                onDismissed: (DismissDirection) {
-                                  setState(() {
-                                    _localImagePath = null;
-                                    _networkImageLink = null;
-                                  });
-                                },
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                      maxHeight: 400, maxWidth: 400),
-                                  child: _localImagePath != null
-                                      ? Image.file(
-                                          File(_localImagePath),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Hero(
-                                          child: Image.network(
-                                            _networkImageLink,
-                                            fit: BoxFit.cover,
-                                          ),
-                                          tag: widget.heroTag,
-                                        ),
+                      margin: EdgeInsets.all(10),
+                      alignment: Alignment.center,
+                      child: (_localImagePath == null) &&
+                              (_networkImageLink == null)
+                          ? Row(
+                              children: [
+                                TextButton.icon(
+                                  icon: Icon(Icons.photo_library_rounded),
+                                  label: Text('添加图片'),
+                                  onPressed: getImage,
                                 ),
-                              ))
+                                Text('或者'),
+                                Builder(
+                                  builder: (bc) => TextButton.icon(
+                                    icon: Icon(Icons.insert_link_rounded),
+                                    label: Text('网络图片'),
+                                    onPressed: () => addNetworkImage(bc),
+                                  ),
+                                )
+                              ],
+                            )
+                          : Dismissible(
+                              key: new Key(''),
+                              // ignore: non_constant_identifier_names
+                              onDismissed: (DismissDirection) {
+                                setState(() {
+                                  _localImagePath = null;
+                                  _networkImageLink = null;
+                                });
+                              },
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                    maxHeight: 400, maxWidth: 400),
+                                child: _localImagePath != null
+                                    ? Image.file(
+                                        File(_localImagePath),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Hero(
+                                        child: Image.network(
+                                          _networkImageLink,
+                                          fit: BoxFit.cover,
+                                        ),
+                                        tag: widget.heroTag,
+                                      ),
+                              ),
+                            ),
+                    ),
                   ],
                 ),
               ),
@@ -339,24 +349,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   color: Colors.blue,
                 ),
                 onPressed: () {
-                  var index = PrimaryPageState.streamList.length;
-                  _networkImageLink = imgLinkEditor.text;
-                  PrimaryPageState.streamList.insert(
-                    index,
-                    PostListItem(
-                      titleText: titleController.text,
-                      contentText: contentController.text,
-                      imgURL: _networkImageLink,
-                      authorName: sp.getString('nickName'),
-                      imgAuthor: sp.getString('avatarURL'),
-                      isAuthor: true,
-                      time: DateTime.now().toString(),
-                      tags: tags,
-                      index: index,
-                    ),
-                  );
-                  PrimaryPageState.listKey.currentState.insertItem(index);
-                  Navigator.pop(context);
+                  setState(() {
+                    _networkImageLink = imgLinkEditor.text;
+                    Navigator.pop(context);
+                  });
                 },
               ),
             ),
@@ -452,8 +448,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 ],
               ),
               actions: <Widget>[
-                FlatButton.icon(
-                  textColor: Colors.blue,
+                TextButton.icon(
                   icon: widget.mode == 0
                       ? Icon(Icons.save)
                       : Icon(Icons.arrow_back_rounded),
@@ -463,8 +458,11 @@ class _EditPostScreenState extends State<EditPostScreen> {
                     Navigator.pop(context, true);
                   },
                 ),
-                FlatButton.icon(
-                  textColor: Colors.redAccent,
+                TextButton.icon(
+                  style: ButtonStyle(
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.redAccent),
+                  ),
                   icon: Icon(Icons.delete_rounded),
                   label: Text('舍弃'),
                   onPressed: () async {
@@ -491,9 +489,6 @@ class _EditPostScreenState extends State<EditPostScreen> {
     setState(() {
       if (pickedFile != null) {
         _localImagePath = pickedFile.path;
-        print(_localImagePath);
-      } else {
-        print('No image selected.');
       }
     });
   }

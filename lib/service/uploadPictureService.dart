@@ -7,7 +7,6 @@ import 'package:inforum/service/randomGenerator.dart';
 
 Future<String> uploadFile(File file) async {
   final String url = await UploadOss.upload(file: file);
-  print(url);
   return url;
 }
 
@@ -76,7 +75,6 @@ class UploadOss {
 
   /// 获取文件类型
   static String getFileType(String path) {
-    print(path);
     List<String> array = path.split('.');
     return array[array.length - 1];
   }

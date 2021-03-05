@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/service/loginService.dart' as LoginRS;
@@ -86,7 +85,8 @@ class _LoginPageState extends State<LoginPage> {
                     : () async {
                         String r = await btnNextClick();
                         if (r != 'ok') {
-                          Scaffold.of(bc).showSnackBar(errorSnackBar(r));
+                          ScaffoldMessenger.of(bc)
+                              .showSnackBar(errorSnackBar(r));
                         }
                       },
                 keyboardType: TextInputType.emailAddress,
@@ -116,7 +116,8 @@ class _LoginPageState extends State<LoginPage> {
                           : () async {
                               String r = await btnNextClick();
                               if (r != 'ok') {
-                                Scaffold.of(bc).showSnackBar(errorSnackBar(r));
+                                ScaffoldMessenger.of(bc)
+                                    .showSnackBar(errorSnackBar(r));
                               }
                             },
                       decoration: InputDecoration(
@@ -140,9 +141,12 @@ class _LoginPageState extends State<LoginPage> {
               width: 80,
               height: 40,
               margin: EdgeInsets.only(top: 10),
-              child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0))),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                    shape: MaterialStateProperty.all<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                )),
                 child: Text(
                   isUserFound ? '登录' : '下一步',
                 ),
@@ -151,7 +155,8 @@ class _LoginPageState extends State<LoginPage> {
                     : () async {
                         String r = await btnNextClick();
                         if (r != 'ok') {
-                          Scaffold.of(bc).showSnackBar(errorSnackBar(r));
+                          ScaffoldMessenger.of(bc)
+                              .showSnackBar(errorSnackBar(r));
                         }
                       },
               ),
@@ -168,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (isUserFound) {
-      final LoginRS.Recordset rs =
+      final LoginRS.LoginRecordset rs =
           await LoginRS.tryLogin(userNameController.text, pwdController.text);
 
       if (rs != null) {
@@ -207,7 +212,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     } else {
       try {
-        final LoginRS.Recordset rs =
+        final LoginRS.LoginRecordset rs =
             await LoginRS.searchUser(userNameController.text);
 
         if (rs != null) {

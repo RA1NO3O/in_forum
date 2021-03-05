@@ -3,7 +3,7 @@ import 'package:inforum/service/postStreamService.dart';
 
 Future<List<PostListItem>> getList(String userID) async {
   List<PostListItem> psis = [];
-  List<Recordset> psl = await getPostStream(userID);
+  List<PostRecordset> psl = await getPostStream(userID);
   psl.asMap().forEach((index, value) {
     String t = value.tags;
     psis.add(PostListItem(

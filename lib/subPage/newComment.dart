@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/uploadPictureService.dart';
@@ -13,9 +12,14 @@ class NewCommentScreen extends StatefulWidget {
   final String contentText;
   final int targetPostID;
   final String imgURL;
+  final String targetUserName;
 
   const NewCommentScreen(
-      {Key key, this.contentText, this.imgURL, this.targetPostID})
+      {Key key,
+      this.contentText,
+      this.imgURL,
+      this.targetPostID,
+      this.targetUserName})
       : super(key: key);
 
   @override
@@ -77,7 +81,6 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
                           "editorID": editorID
                         });
                     if (res.data == 'success.') {
-                      // Fluttertoast.showToast(msg: '回复已送出.');
                       Navigator.pop(context, '0');
                     }
                   }
@@ -89,7 +92,22 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
       body: ListView(
         children: [
           Container(
-            margin: EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 10),
+            margin: EdgeInsets.only(left: 25, top: 10, right: 25),
+            child: Row(
+              children: [
+                Text('回复给'),
+                TextButton(
+                  child: Text(
+                    '@${widget.targetUserName}',
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 25, right: 25, bottom: 10),
             child: Column(
               children: [
                 Container(
@@ -211,8 +229,6 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
         setState(() {
           _localImagePath = pickedFile.path;
         });
-      } else {
-        print('No image selected.');
       }
     });
   }

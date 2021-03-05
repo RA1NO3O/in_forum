@@ -11,20 +11,20 @@ LoginService loginServiceFromJson(String str) =>
 
 String loginServiceToJson(LoginService data) => json.encode(data.toJson());
 
-Future<Recordset> tryLogin(String userName, String password) async {
+Future<LoginRecordset> tryLogin(String userName, String password) async {
   Response res = await Dio().get('$apiServerAddress/login'
       '?username=$userName&password=$password');
   final LoginService loginService = loginServiceFromJson(res.toString());
-  final Recordset rs =
+  final LoginRecordset rs =
       loginService.recordset.isEmpty ? null : loginService.recordset[0];
   return rs;
 }
 
-Future<Recordset> searchUser(String userName) async {
+Future<LoginRecordset> searchUser(String userName) async {
   Response res = await Dio().get('$apiServerAddress/searchUser'
       '?userName=$userName');
   final LoginService loginService = loginServiceFromJson(res.toString());
-  final Recordset rs =
+  final LoginRecordset rs =
       loginService.recordset.isEmpty ? null : loginService.recordset[0];
   return rs;
 }
@@ -37,20 +37,20 @@ class LoginService {
     this.rowsAffected,
   });
 
-  List<List<Recordset>> recordsets;
-  List<Recordset> recordset;
+  List<List<LoginRecordset>> recordsets;
+  List<LoginRecordset> recordset;
   Output output;
   List<int> rowsAffected;
 
   factory LoginService.fromJson(Map<String, dynamic> json) => LoginService(
         recordsets: json["recordsets"] == null
             ? null
-            : List<List<Recordset>>.from(json["recordsets"].map((x) =>
-                List<Recordset>.from(x.map((x) => Recordset.fromJson(x))))),
+            : List<List<LoginRecordset>>.from(json["recordsets"].map((x) =>
+                List<LoginRecordset>.from(x.map((x) => LoginRecordset.fromJson(x))))),
         recordset: json["recordset"] == null
             ? null
-            : List<Recordset>.from(
-                json["recordset"].map((x) => Recordset.fromJson(x))),
+            : List<LoginRecordset>.from(
+                json["recordset"].map((x) => LoginRecordset.fromJson(x))),
         output: json["output"] == null ? null : Output.fromJson(json["output"]),
         rowsAffected: json["rowsAffected"] == null
             ? null
@@ -80,8 +80,8 @@ class Output {
   Map<String, dynamic> toJson() => {};
 }
 
-class Recordset {
-  Recordset({
+class LoginRecordset {
+  LoginRecordset({
     this.id,
     this.username,
   });
@@ -89,7 +89,7 @@ class Recordset {
   int id;
   String username;
 
-  factory Recordset.fromJson(Map<String, dynamic> json) => Recordset(
+  factory LoginRecordset.fromJson(Map<String, dynamic> json) => LoginRecordset(
         id: json["id"] == null ? null : json["id"],
         username: json["username"] == null ? null : json["username"],
       );

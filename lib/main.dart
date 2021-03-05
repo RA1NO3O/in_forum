@@ -182,7 +182,7 @@ class _MainPageState extends State<MainPage> {
                 Container(
                   width: 40,
                   height: 25,
-                  child: FlatButton(
+                  child: TextButton(
                     onPressed: btnLoginClick,
                     child: Text(
                       '登录',
@@ -192,7 +192,6 @@ class _MainPageState extends State<MainPage> {
                         color: Colors.lightBlue,
                       ),
                     ),
-                    padding: EdgeInsets.all(0),
                   ),
                 ),
               ],

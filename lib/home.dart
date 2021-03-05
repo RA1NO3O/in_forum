@@ -9,8 +9,6 @@ import 'package:inforum/subPage/profilePage.dart';
 import 'package:inforum/subPage/searchPage.dart';
 import 'package:inforum/subPage/settingsPage/settingsPage.dart';
 import 'package:inforum/subPage/notificationPage.dart';
-
-// import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'component/customStyles.dart';
@@ -37,21 +35,25 @@ class HomeScreenState extends State<HomeScreen> {
   PageController _pageController;
   ScrollController _scrollController;
   SharedPreferences sp;
-  static ScaffoldState scaffold;
+  static ScaffoldMessengerState scaffold;
+  String _hintText;
 
   void pageChanged() {
     switch (_currentIndex) {
       case 0:
         _currentColor = Colors.blue;
-        _actionIcon = Icons.post_add;
+        _actionIcon = Icons.post_add_rounded;
+        _hintText = '新建帖子';
         break;
       case 1:
         _currentColor = Colors.pink;
         _actionIcon = Icons.add_comment;
+        _hintText = '新私信';
         break;
       case 2:
         _currentColor = Colors.cyan;
-        _actionIcon = Icons.more_horiz;
+        _actionIcon = Icons.search_rounded;
+        _hintText = '新搜索';
         break;
       case 3:
         _currentColor = Colors.orange;
@@ -180,10 +182,12 @@ class HomeScreenState extends State<HomeScreen> {
           });
         },
       ),
-      floatingActionButton: _currentIndex == 0 || _currentIndex == 1
+      floatingActionButton: _currentIndex == 0 ||
+              _currentIndex == 1 ||
+              _currentIndex == 2
           ? Builder(
               builder: (bc) {
-                scaffold = Scaffold.of(bc);
+                scaffold = ScaffoldMessenger.of(bc);
                 return new FloatingActionButton(
                   backgroundColor: _currentColor,
                   child: AnimatedSwitcher(
@@ -205,16 +209,19 @@ class HomeScreenState extends State<HomeScreen> {
                                 builder: (BuildContext context) =>
                                     EditPostScreen(mode: 0)));
                         if (result == '0') {
-                          Scaffold.of(bc)
+                          ScaffoldMessenger.of(bc)
                               .showSnackBar(doneSnackBar('  帖子已发布.'));
-
                         }
                         break;
                       case 1:
                         break;
+                      case 2:
+                        showSearch(
+                            context: context, delegate: CustomSearchDelegate());
+                        break;
                     }
                   },
-                  tooltip: _currentIndex == 0 ? '新建帖子' : '新私信',
+                  tooltip: _hintText,
                 );
               },
             )
@@ -372,16 +379,18 @@ class HomeScreenState extends State<HomeScreen> {
               ],
             ),
             actions: <Widget>[
-              FlatButton.icon(
-                  textColor: Colors.redAccent,
+              TextButton.icon(
+                  style: ButtonStyle(
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.redAccent),
+                  ),
                   onPressed: () {
                     sp.setBool('isLogin', false);
                     Navigator.of(context).pop(true);
                   },
                   icon: Icon(Icons.done_rounded),
                   label: Text('是')),
-              FlatButton.icon(
-                  textColor: Colors.blue,
+              TextButton.icon(
                   onPressed: () {
                     Navigator.of(context).pop(false);
                   },

@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/component/statefulDialog.dart';
 import 'package:inforum/data/webConfig.dart';
@@ -19,6 +19,8 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
   SharedPreferences sp;
   var userID;
   String userName = 'unknown';
+  String nickName = 'unknown';
+  String avatarURL;
   TextEditingController userNameController = new TextEditingController();
 
   @override
@@ -45,7 +47,6 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                     shape: roundedRectangleBorder,
                     title: Text('用户名'),
                     subtitle: Text(userName),
-                    trailing: Icon(Icons.more_horiz_rounded),
                     onTap: () async {
                       userNameController.text = userName;
                       final result = await showDialog(
@@ -66,7 +67,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                               validator: (value) =>
                                   (userNameController.text == userName) ||
                                           userNameController.text.isEmpty
-                                      ? '请输入新的用户名.'
+                                      ? '请使用新的用户名.'
                                       : null,
                               controller: userNameController,
                               decoration: InputDecoration(
@@ -76,18 +77,14 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                             ),
                           ),
                           actions: [
-                            FlatButton.icon(
+                            TextButton.icon(
                                 onPressed: () async {
                                   if (_fk.currentState.validate()) {
                                     bool r = await tryEditUserName(
                                         userNameController.text);
                                     if (r) {
-                                      // Fluttertoast.showToast(
-                                      //     msg: '用户名修改成功');
                                       Navigator.pop(bc, '0');
                                     } else {
-                                      // Fluttertoast.showToast(
-                                      //     msg: '修改失败,该用户名已存在.');
                                       Navigator.pop(bc, '1');
                                     }
                                   }
@@ -99,15 +96,26 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                       );
                       switch (result) {
                         case '0':
-                          Scaffold.of(bc)
+                          ScaffoldMessenger.of(bc)
                               .showSnackBar(errorSnackBar('  用户名已修改.\n'
-                                  '今后,请使用修改后的用户名进行登录.'));
+                                  '  今后,请使用修改后的用户名进行登录.'));
                           break;
                         case '1':
-                          Scaffold.of(bc).showSnackBar(errorSnackBar('  修改失败,\n'
-                              '该用户名可能已存在.'));
+                          ScaffoldMessenger.of(bc)
+                              .showSnackBar(errorSnackBar('  修改失败,\n'
+                                  '  该用户名可能已存在.'));
                       }
                     },
+                  ),
+                ),
+                Builder(
+                  builder: (bc) => ListTile(
+                    leading: Icon(Icons.emoji_people),
+                    shape: roundedRectangleBorder,
+                    title: Text('个人资料'),
+                    subtitle: Text('修改可供他人查看的个人资料'),
+                    //TODO:修改昵称
+                    onTap: () {},
                   ),
                 ),
                 Container(
@@ -116,6 +124,21 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                   child: Text(
                     '危险区域',
                     style: new TextStyle(color: Colors.red),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.all(5),
+                  width: 350,
+                  height: 45,
+                  child: ElevatedButton.icon(
+                    icon: Icon(Icons.delete_forever_rounded),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.redAccent),
+                    ),
+                    label: Text('删除账户'),
+                    //TODO:删除账户
+                    onPressed: () {},
                   ),
                 ),
               ],
@@ -128,7 +151,11 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
 
   void getUserInfo() async {
     sp = await SharedPreferences.getInstance();
-    userName = sp.getString('userName');
+    setState(() {
+      userName = sp.getString('userName');
+      nickName = sp.getString('nickName');
+      avatarURL = sp.getString('avatarURL');
+    });
   }
 
   @override
