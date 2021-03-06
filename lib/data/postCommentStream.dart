@@ -19,6 +19,7 @@ Future<List<Widget>> getComment(int postID, int userID) async {
       likeState: rs.likeState ?? 0,
       likeCount: rs.likeCount,
       isAuthor: rs.isEditor == 1 ? true : false,
+      editorID: rs.editorId,
     ));
   });
   pcis.sort((a, b) => b.postID.compareTo(a.postID)); //按ID排序,ID数字越大越新

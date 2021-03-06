@@ -84,6 +84,7 @@ class CommentRecordset {
     this.nickname,
     this.targetCommentPostId,
     this.likeCount,
+    this.editorId,
     this.likeState,
     this.userId,
     this.isEditor,
@@ -98,8 +99,9 @@ class CommentRecordset {
   String nickname;
   int targetCommentPostId;
   int likeCount;
-  int likeState;
-  int userId;
+  int editorId;
+  dynamic likeState;
+  dynamic userId;
   int isEditor;
 
   factory CommentRecordset.fromJson(Map<String, dynamic> json) => CommentRecordset(
@@ -116,6 +118,7 @@ class CommentRecordset {
             ? null
             : json["target_comment_postID"],
         likeCount: json["likeCount"] == null ? null : json["likeCount"],
+        editorId: json["editorID"] == null ? null : json["editorID"],
         likeState: json["like_State"],
         userId: json["user_ID"],
         isEditor: json["isEditor"] == null ? null : json["isEditor"],
@@ -133,6 +136,7 @@ class CommentRecordset {
         "target_comment_postID":
             targetCommentPostId == null ? null : targetCommentPostId,
         "likeCount": likeCount == null ? null : likeCount,
+        "editorID": editorId == null ? null : editorId,
         "like_State": likeState,
         "user_ID": userId,
         "isEditor": isEditor == null ? null : isEditor,

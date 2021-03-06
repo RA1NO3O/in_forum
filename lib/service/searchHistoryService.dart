@@ -10,7 +10,7 @@ _init() async {
 Future<List<Widget>> getSearchHistory() async {
   _init();
   List<Widget> widgets = [];
-  List<String> h = sp.getStringList('searchHistory');
+  List<String> h = sp.getStringList('searchHistory')??[];
   if (h != null) {
     h.forEach((value) {
       widgets.add(ListTile(title: Text(value), onTap: () {}));

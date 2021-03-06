@@ -35,10 +35,16 @@ class DateTimeFormat {
     }
     return '$oldMonth月$oldDay日';
   }
+}
 
-  static String convertBasicTimeFormat(String t) {
-    var dt = DateTime.parse(t);
-    var result = DateFormat.yMMMd("zh_CN").add_Hms().add_EEEE().format(dt);
-    return result;
-  }
+String convertBasicTimeFormat(String t) {
+  var dt = DateTime.parse(t);
+  var result = DateFormat.yMMMd("zh_CN").add_Hms().add_EEEE().format(dt);
+  return result;
+}
+
+String convertBasicDateFormat(String d) {
+  var r = DateTime.parse(d);
+  var result = DateFormat.yMMMd("zh_CN").format(r);
+  return result;
 }

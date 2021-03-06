@@ -3,8 +3,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/component/customStyles.dart';
-import 'file:///E:/DEV/SYNC_BY_GitHub/Inforum/lib/service/dateTimeFormat.dart';
+
 import 'package:inforum/data/webConfig.dart';
+import 'package:inforum/service/dateTimeFormat.dart';
 import 'package:inforum/service/randomGenerator.dart';
 import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/profilePage.dart';
@@ -18,7 +19,8 @@ class CommentListItem extends StatefulWidget {
   final String commenterName;
   final String commentTime;
   final String content;
-  final String commentTarget; //留空为直接回复在帖子下,否则为回复给指定ID的对话
+  final String commentTarget;
+  final int editorID;
   final int likeState;
   final int likeCount;
   final String imgURL;
@@ -36,6 +38,7 @@ class CommentListItem extends StatefulWidget {
     this.likeCount,
     this.imgURL,
     this.isAuthor,
+    @required this.editorID,
   }) : super(key: key);
 
   @override
@@ -46,7 +49,8 @@ class _CommentListItem extends State<CommentListItem> {
   String _imgURL;
   int likeState; //0缺省,1为点赞,2为踩
   int likeCount;
-  String imgTag = getRandom(6);
+  String _imgTag = getRandom(6);
+  String _avatarHeroTag = getRandom(6);
 
   @override
   void initState() {
@@ -68,30 +72,35 @@ class _CommentListItem extends State<CommentListItem> {
                 Flex(
                   direction: Axis.horizontal,
                   children: [
-                    Material(
-                      elevation: 3,
-                      shape: CircleBorder(),
-                      clipBehavior: Clip.hardEdge,
-                      color: Colors.transparent,
-                      child: Ink.image(
-                        image: widget.commenterAvatarURL != null
-                            ? CachedNetworkImageProvider(
-                                widget.commenterAvatarURL)
-                            : AssetImage('images/test.jpg'),
-                        fit: BoxFit.cover,
-                        width: 50,
-                        height: 50,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (BuildContext context) {
-                              return ProfilePage(
-                                userID: widget.commenterName,
-                              );
-                            }));
-                          },
+                    Hero(
+                      child: Material(
+                        elevation: 2,
+                        shape: CircleBorder(),
+                        clipBehavior: Clip.hardEdge,
+                        color: Colors.transparent,
+                        child: Ink.image(
+                          image: widget.commenterAvatarURL != null
+                              ? CachedNetworkImageProvider(
+                                  widget.commenterAvatarURL)
+                              : AssetImage('images/default_avatar.png'),
+                          fit: BoxFit.contain,
+                          width: 50,
+                          height: 50,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(
+                                  builder: (BuildContext context) {
+                                return ProfilePage(
+                                  userID: widget.editorID,
+                                  avatarHeroTag: _avatarHeroTag,
+                                  avatarURL: widget.commenterAvatarURL,
+                                );
+                              }));
+                            },
+                          ),
                         ),
                       ),
+                      tag: _avatarHeroTag,
                     ),
                     Row(
                       children: [
@@ -203,26 +212,29 @@ class _CommentListItem extends State<CommentListItem> {
                   child: _imgURL != null
                       ? Hero(
                           child: Material(
-                            elevation: 2,
+                            elevation: 1,
                             clipBehavior: Clip.antiAlias,
                             borderRadius: BorderRadius.circular(5),
                             child: Ink.image(
                               fit: BoxFit.cover,
+                              height: widget.imgURL != null ? 200 : 0,
                               image: CachedNetworkImageProvider(_imgURL),
                               child: InkWell(
                                 onTap: () {
                                   Navigator.of(context).push(
-                                      new MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              ImageViewer(
-                                                imgURL: _imgURL,
-                                                heroTag: imgTag,
-                                              )));
+                                    new MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          ImageViewer(
+                                        imgURL: _imgURL,
+                                        heroTag: _imgTag,
+                                      ),
+                                    ),
+                                  );
                                 },
                               ),
                             ),
                           ),
-                          tag: imgTag,
+                          tag: _imgTag,
                         )
                       : Container(),
                 ),
@@ -297,6 +309,7 @@ class _CommentListItem extends State<CommentListItem> {
       });
     }
   }
+
   _deleteConfirmDialog() async {
     bool result = await showDialog<bool>(
           context: context,

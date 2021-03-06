@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:inforum/component/postListItem.dart';
-import 'package:inforum/data/postListStream.dart';
+import 'package:inforum/service/postStreamService.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 
 class PrimaryPage extends StatefulWidget {
-  final String userID;
+  final int userID;
   final ScrollController scrollController;
 
   const PrimaryPage({Key key, this.userID, this.scrollController})
@@ -40,11 +40,11 @@ class PrimaryPageState extends State<PrimaryPage> {
               ? AnimatedList(
                   key: listKey,
                   initialItemCount: streamList.length,
-                  itemBuilder: (context, index, _animation) {
+                  itemBuilder: (context, index, animation) {
                     scaffold = Scaffold.of(context);
                     return SizeTransition(
                         axis: Axis.vertical,
-                        sizeFactor: _animation,
+                        sizeFactor: animation,
                         child: streamList[index]);
                   },
                 )
@@ -176,7 +176,6 @@ class PrimaryPageState extends State<PrimaryPage> {
                                     shimmerDuration: 2000,
                                     child: Container(
                                       color: Colors.grey,
-                                      width: 400,
                                       height: 200,
                                     ),
                                   ),
@@ -274,7 +273,7 @@ class PrimaryPageState extends State<PrimaryPage> {
       streamList.clear();
     });
 
-    List<PostListItem> psis = await getList(widget.userID);
+    List<PostListItem> psis = await getPostStream(widget.userID);
 
     setState(() {
       loadState = false;

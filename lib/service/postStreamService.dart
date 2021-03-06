@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:inforum/component/postListItem.dart';
 import 'package:inforum/data/webConfig.dart';
 
 PostStreamService postStreamServiceFromJson(String str) =>
@@ -13,19 +14,60 @@ PostStreamService postStreamServiceFromJson(String str) =>
 String postStreamServiceToJson(PostStreamService data) =>
     json.encode(data.toJson());
 
-Future<List<PostRecordset>> getPostStream(String userID) async {
+Future<List<PostListItem>> getPostStream(int userID) async {
   Response res = await Dio().get('$apiServerAddress/getPosts/$userID');
   final PostStreamService pss = postStreamServiceFromJson(res.toString());
   final List<PostRecordset> rs = pss.recordset.isEmpty ? [] : pss.recordset;
-  for(int i=0;i<rs.length;i++){
-    for(int j=i+1;j<rs.length;j++){
-      if(rs[i].postId==rs[j].postId){
+  for (int i = 0; i < rs.length; i++) {
+    for (int j = i + 1; j < rs.length; j++) {
+      if (rs[i].postId == rs[j].postId) {
         rs.removeAt(j);
         j--;
       }
     }
   }
-  return rs;
+  return convertListToWidgets(rs);
+}
+
+Future<List<PostListItem>> getPostsByID(int userID,int currentUserID) async {
+  Response res = await Dio().get('$apiServerAddress/getPostsByUser/$userID?currentUserID=$currentUserID');
+  final PostStreamService pss = postStreamServiceFromJson(res.toString());
+  final List<PostRecordset> rs = pss.recordset.isEmpty ? [] : pss.recordset;
+  for (int i = 0; i < rs.length; i++) {
+    for (int j = i + 1; j < rs.length; j++) {
+      if (rs[i].postId == rs[j].postId) {
+        rs.removeAt(j);
+        j--;
+      }
+    }
+  }
+  return convertListToWidgets(rs);
+}
+
+Future<List<PostListItem>> convertListToWidgets(List<PostRecordset> rs) async {
+  List<PostListItem> psis = [];
+  rs.asMap().forEach((index, value) {
+    String t = value.tags;
+    psis.add(PostListItem(
+      postID: value.postId,
+      titleText: value.title,
+      contentText: value.bodyS,
+      likeCount: value.likeCount,
+      dislikeCount: value.dislikeCount,
+      likeState: value.likeState ?? 0,
+      commentCount: value.commentCount,
+      collectCount: value.collectCount,
+      isCollect: value.isCollected ?? false,
+      imgURL: value.imageUrl ?? null,
+      authorName: value.nickname,
+      imgAuthor: value.avatarUrl ?? null,
+      isAuthor: value.isEditor == 1 ? true : false,
+      time: value.lastEditTime.toString(),
+      tags: t != null ? t.split(',') : null,
+      index: index,
+    ));
+  });
+  return psis;
 }
 
 class PostStreamService {
@@ -46,7 +88,8 @@ class PostStreamService {
         recordsets: json["recordsets"] == null
             ? null
             : List<List<PostRecordset>>.from(json["recordsets"].map((x) =>
-                List<PostRecordset>.from(x.map((x) => PostRecordset.fromJson(x))))),
+                List<PostRecordset>.from(
+                    x.map((x) => PostRecordset.fromJson(x))))),
         recordset: json["recordset"] == null
             ? null
             : List<PostRecordset>.from(

@@ -1,6 +1,9 @@
 import 'package:animations/animations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:inforum/service/profileService.dart';
+import 'package:inforum/service/randomGenerator.dart';
 import 'package:inforum/subPage/collectionPage.dart';
 import 'package:inforum/subPage/editPost.dart';
 import 'package:inforum/subPage/messagePage.dart';
@@ -15,13 +18,15 @@ import 'component/customStyles.dart';
 import 'main.dart';
 
 class HomeScreen extends StatefulWidget {
-  final String userID;
+  final int userID;
   final String userName;
+  final String nickName;
 
   const HomeScreen({
     Key key,
     @required this.userID,
     @required this.userName,
+    @required this.nickName,
   }) : super(key: key);
 
   @override
@@ -37,30 +42,10 @@ class HomeScreenState extends State<HomeScreen> {
   SharedPreferences sp;
   static ScaffoldMessengerState scaffold;
   String _hintText;
-
-  void pageChanged() {
-    switch (_currentIndex) {
-      case 0:
-        _currentColor = Colors.blue;
-        _actionIcon = Icons.post_add_rounded;
-        _hintText = '新建帖子';
-        break;
-      case 1:
-        _currentColor = Colors.pink;
-        _actionIcon = Icons.add_comment;
-        _hintText = '新私信';
-        break;
-      case 2:
-        _currentColor = Colors.cyan;
-        _actionIcon = Icons.search_rounded;
-        _hintText = '新搜索';
-        break;
-      case 3:
-        _currentColor = Colors.orange;
-        _actionIcon = Icons.edit;
-        break;
-    }
-  }
+  String _avatarURL;
+  String _followerCount = '0';
+  String _followingCount = '0';
+  String _avatarHeroTag = getRandom(6);
 
   @override
   void initState() {
@@ -70,10 +55,18 @@ class HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+  void init() async {
+    sp = await SharedPreferences.getInstance();
+    var rs = await getProfile(widget.userID);
+    setState(() {
+      _avatarURL = sp.getString('avatarURL');
+
+      _followerCount = rs.followerCount.toString();
+      _followingCount = rs.followingCount.toString();
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => scaffold.showSnackBar(welcomeSnackBar(widget.userName)));
   }
 
   @override
@@ -109,6 +102,29 @@ class HomeScreenState extends State<HomeScreen> {
           ),
           label: '通知')
     ];
+    void pageChanged() {
+      switch (_currentIndex) {
+        case 0:
+          _currentColor = Colors.blue;
+          _actionIcon = Icons.post_add_rounded;
+          _hintText = '新建帖子';
+          break;
+        case 1:
+          _currentColor = Colors.pink;
+          _actionIcon = Icons.add_comment;
+          _hintText = '新私信';
+          break;
+        case 2:
+          _currentColor = Colors.cyan;
+          _actionIcon = Icons.search_rounded;
+          _hintText = '新搜索';
+          break;
+        case 3:
+          _currentColor = Colors.orange;
+          _actionIcon = Icons.edit;
+          break;
+      }
+    }
 
     return Scaffold(
       drawer: mainDrawer(),
@@ -154,8 +170,7 @@ class HomeScreenState extends State<HomeScreen> {
               });
             },
             children: <Widget>[
-              PrimaryPage(
-                  userID: widget.userID == null ? 'Unknown ' : widget.userID),
+              PrimaryPage(userID: widget.userID),
               MessagePage(),
               SearchPage(),
               NotificationPage(),
@@ -236,37 +251,44 @@ class HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           Container(
-            height: 250,
+            height: 220,
             child: DrawerHeader(
               child: Column(
                 children: [
-                  Material(
-                    elevation: 2,
-                    shape: CircleBorder(),
-                    clipBehavior: Clip.hardEdge,
-                    color: Colors.transparent,
-                    child: Ink.image(
-                      image: AssetImage('images/test.jpg'),
-                      fit: BoxFit.cover,
-                      width: 85,
-                      height: 85,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(
-                              builder: (BuildContext context) {
-                            return ProfilePage(
-                              userID: widget.userID,
-                            );
-                          }));
-                        },
+                  Hero(
+                    child: Material(
+                      elevation: 2,
+                      shape: CircleBorder(),
+                      clipBehavior: Clip.hardEdge,
+                      color: Colors.transparent,
+                      child: Ink.image(
+                        image: _avatarURL != null
+                            ? CachedNetworkImageProvider(_avatarURL)
+                            : AssetImage('images/default_avatar.png'),
+                        fit: BoxFit.cover,
+                        width: 85,
+                        height: 85,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (BuildContext context) {
+                              return ProfilePage(
+                                userID: widget.userID,
+                                avatarHeroTag: _avatarHeroTag,
+                                avatarURL: _avatarURL,
+                              );
+                            }));
+                          },
+                        ),
                       ),
                     ),
+                    tag: _avatarHeroTag,
                   ),
                   Container(
                     alignment: Alignment.center,
                     margin: EdgeInsets.only(top: 15),
                     child: Text(
-                      widget.userID == null ? 'Unknown' : widget.userName,
+                      widget.userID == null ? 'Unknown' : widget.nickName,
                       style: new TextStyle(fontSize: 25),
                     ),
                   ),
@@ -278,7 +300,7 @@ class HomeScreenState extends State<HomeScreen> {
                       children: [
                         Container(
                           margin: EdgeInsets.only(right: 10),
-                          child: Text('123',
+                          child: Text(_followingCount,
                               style: new TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -287,7 +309,7 @@ class HomeScreenState extends State<HomeScreen> {
                         Text('正在关注'),
                         Container(
                           margin: EdgeInsets.only(left: 20, right: 10),
-                          child: Text('98',
+                          child: Text(_followerCount,
                               style: new TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -405,9 +427,9 @@ class HomeScreenState extends State<HomeScreen> {
     return result;
   }
 
-  void init() async {
-    sp = await SharedPreferences.getInstance();
-    WidgetsBinding.instance.addPostFrameCallback(
-        (_) => scaffold.showSnackBar(welcomeSnackBar(widget.userName)));
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 }

@@ -12,6 +12,7 @@ import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/dateTimeFormat.dart';
 import 'package:inforum/service/imageShareService.dart';
 import 'package:inforum/service/postDetailService.dart';
+import 'package:inforum/service/randomGenerator.dart';
 import 'package:inforum/subPage/editPost.dart';
 import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/profilePage.dart';
@@ -63,6 +64,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   List<String> _tags;
   bool isCollect;
   String _imgURL;
+  int _editorID;
   int likeState = 0; //0缺省,1为点赞,2为踩
   int likeCount;
   int dislikeCount;
@@ -77,9 +79,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
   TextEditingController _commentController;
   DateTime dt;
   String _time;
+  String _avatarHeroTag;
 
   @override
   void initState() {
+    _avatarHeroTag = getRandom(6);
     _time = widget.time;
     isAuthor = widget.isAuthor;
     isCollect = widget.isCollect;
@@ -163,29 +167,35 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       child: Flex(
                         direction: Axis.horizontal,
                         children: [
-                          Material(
-                            elevation: 3,
-                            shape: CircleBorder(),
-                            clipBehavior: Clip.hardEdge,
-                            color: Colors.transparent,
-                            child: Ink.image(
-                              image: widget.imgAuthor != null
-                                  ? CachedNetworkImageProvider(widget.imgAuthor)
-                                  : AssetImage('images/test.jpg'),
-                              fit: BoxFit.cover,
-                              width: 80,
-                              height: 80,
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(
-                                      builder: (BuildContext context) {
-                                    return ProfilePage(
-                                      userID: widget.authorName,
-                                    );
-                                  }));
-                                },
+                          Hero(
+                            child: Material(
+                              elevation: 2,
+                              shape: CircleBorder(),
+                              clipBehavior: Clip.antiAlias,
+                              color: Colors.transparent,
+                              child: Ink.image(
+                                image: widget.imgAuthor != null
+                                    ? CachedNetworkImageProvider(
+                                        widget.imgAuthor)
+                                    : AssetImage('images/default_avatar.png'),
+                                fit: BoxFit.contain,
+                                width: 80,
+                                height: 80,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(context, MaterialPageRoute(
+                                        builder: (BuildContext context) {
+                                      return ProfilePage(
+                                        userID: _editorID,
+                                        avatarHeroTag: _avatarHeroTag,
+                                        avatarURL: widget.imgAuthor,
+                                      );
+                                    }));
+                                  },
+                                ),
                               ),
                             ),
+                            tag: _avatarHeroTag,
                           ),
                           Flex(
                             direction: Axis.vertical,
@@ -210,7 +220,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                   alignment: Alignment.centerLeft,
                                   height: 25,
                                   margin: EdgeInsets.only(left: 10),
-                                  child: Text(authorUserName),
+                                  child: Text('@$authorUserName'),
                                 ),
                               ),
                             ],
@@ -266,10 +276,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       ),
                     ),
                     new Container(
-                      margin: EdgeInsets.only(
-                        top: 10,
-                        left: 25,
-                      ),
+                      margin: EdgeInsets.only(top: 10, left: 25, right: 25),
                       alignment: Alignment.centerLeft,
                       child: Text(
                         _title ?? widget.titleText,
@@ -335,7 +342,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                      child: Text(DateTimeFormat.convertBasicTimeFormat(_time)),
+                      child: Text(convertBasicTimeFormat(_time)),
                     ),
                     Divider(thickness: 2),
                     Container(
@@ -657,6 +664,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         _imgURL = rs.imageUrl;
         _time = rs.lastEditTime.toString();
         _tags = rs.tags != null ? rs.tags.split(',') : null;
+        _editorID = rs.editorId;
       });
     }
     var _list = await getComment(widget.postID, sp.getInt('userID')) ?? [];

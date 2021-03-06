@@ -13,7 +13,7 @@ PostCollectionService postCollectionServiceFromJson(String str) =>
 String postCollectionServiceToJson(PostCollectionService data) =>
     json.encode(data.toJson());
 
-Future<List<CollectionRecordset>> getPostCollection(String userID) async {
+Future<List<CollectionRecordset>> getPostCollection(int userID) async {
   Response res = await Dio().get('$apiServerAddress/getCollection/$userID');
   final PostCollectionService pcs =
       postCollectionServiceFromJson(res.toString());
@@ -73,6 +73,7 @@ class CollectionRecordset {
         this.dislikeCount,
         this.commentCount,
         this.collectCount,
+        this.editorId,
         this.isEditor,
         this.userId,
         this.isCollected,
@@ -92,6 +93,7 @@ class CollectionRecordset {
     int dislikeCount;
     int commentCount;
     int collectCount;
+    int editorId;
     int isEditor;
     int userId;
     bool isCollected;
@@ -111,6 +113,7 @@ class CollectionRecordset {
         dislikeCount: json["dislikeCount"] == null ? null : json["dislikeCount"],
         commentCount: json["commentCount"] == null ? null : json["commentCount"],
         collectCount: json["collectCount"] == null ? null : json["collectCount"],
+        editorId: json["editorID"] == null ? null : json["editorID"],
         isEditor: json["isEditor"] == null ? null : json["isEditor"],
         userId: json["user_ID"] == null ? null : json["user_ID"],
         isCollected: json["isCollected"] == null ? null : json["isCollected"],
@@ -131,6 +134,7 @@ class CollectionRecordset {
         "dislikeCount": dislikeCount == null ? null : dislikeCount,
         "commentCount": commentCount == null ? null : commentCount,
         "collectCount": collectCount == null ? null : collectCount,
+        "editorID": editorId == null ? null : editorId,
         "isEditor": isEditor == null ? null : isEditor,
         "user_ID": userId == null ? null : userId,
         "isCollected": isCollected == null ? null : isCollected,

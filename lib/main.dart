@@ -30,8 +30,9 @@ Future<void> main() async {
     darkTheme: darkTheme,
     home: isLogin
         ? HomeScreen(
-            userID: prefs.getInt('userID').toString(),
+            userID: prefs.getInt('userID'),
             userName: prefs.getString('userName'),
+            nickName: prefs.getString('nickName'),
           )
         : MainPage(
             title: 'Inforum',
@@ -180,8 +181,8 @@ class _MainPageState extends State<MainPage> {
               children: [
                 Text('已有账号? 点此'),
                 Container(
-                  width: 40,
-                  height: 25,
+                  width: 48,
+                  height: 40,
                   child: TextButton(
                     onPressed: btnLoginClick,
                     child: Text(

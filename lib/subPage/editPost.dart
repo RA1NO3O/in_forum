@@ -274,7 +274,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                                   label: Text('添加图片'),
                                   onPressed: getImage,
                                 ),
-                                Text('或者'),
+                                Text(' 或者 '),
                                 Builder(
                                   builder: (bc) => TextButton.icon(
                                     icon: Icon(Icons.insert_link_rounded),

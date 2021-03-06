@@ -3,7 +3,7 @@ import 'package:inforum/component/postListItem.dart';
 import 'package:inforum/data/collectionListStream.dart';
 
 class CollectionPage extends StatefulWidget {
-  final String userID;
+  final int userID;
 
   const CollectionPage({Key key, this.userID}) : super(key: key);
   @override

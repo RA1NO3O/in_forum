@@ -2,7 +2,7 @@ import 'package:inforum/component/postListItem.dart';
 import 'package:inforum/service/postCollectionService.dart';
 
 List<PostListItem> pcls = [];
-Future<List<PostListItem>> getCollectionList(String userID) async {
+Future<List<PostListItem>> getCollectionList(int userID) async {
   pcls.clear();
   List<CollectionRecordset> pcl = await getPostCollection(userID);
   pcl.forEach((rs) {

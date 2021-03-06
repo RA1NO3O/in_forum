@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/actionButton.dart';
 import 'package:inforum/component/imageViewer.dart';
-import 'file:///E:/DEV/SYNC_BY_GitHub/Inforum/lib/service/dateTimeFormat.dart';
 import 'package:inforum/data/webConfig.dart';
+import 'package:inforum/service/dateTimeFormat.dart';
 import 'package:inforum/service/randomGenerator.dart';
 import 'package:inforum/subPage/newComment.dart';
 import 'package:inforum/subPage/postDetail.dart';
@@ -197,7 +197,7 @@ class _PostListItem extends State<PostListItem> {
                                                   ? CachedNetworkImageProvider(
                                                       widget.imgAuthor)
                                                   : AssetImage(
-                                                      'images/test.jpg'))),
+                                                      'images/default_avatar.png'))),
                                       Text(widget.authorName, style: v),
                                     ],
                                   ),
@@ -251,11 +251,10 @@ class _PostListItem extends State<PostListItem> {
                     child: widget.imgURL != null
                         ? Hero(
                             child: Material(
-                              elevation: 2,
+                              elevation: 1,
                               clipBehavior: Clip.antiAlias,
                               borderRadius: BorderRadius.circular(5),
                               child: Ink.image(
-                                width: widget.imgURL != null ? 400 : 0,
                                 height: widget.imgURL != null ? 200 : 0,
                                 fit: BoxFit.cover,
                                 image:
@@ -316,6 +315,7 @@ class _PostListItem extends State<PostListItem> {
                                     builder: (BuildContext context) =>
                                         NewCommentScreen(
                                       targetPostID: widget.postID,
+                                      targetUserName: widget.authorName,
                                       imgURL: null,
                                     ),
                                   ),

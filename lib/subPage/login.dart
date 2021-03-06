@@ -108,6 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                   : EdgeInsets.zero,
               child: isUserFound
                   ? TextField(
+                      autofocus: true,
                       controller: pwdController,
                       obscureText: !passwordVisible,
                       textInputAction: TextInputAction.done,
@@ -178,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (rs != null) {
         user['id'] = rs.id;
-        var rs2 = await getProfile(rs.id.toString());
+        var rs2 = await getProfile(rs.id);
         //写入登录状态
         SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -194,8 +195,9 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) {
           return HomeScreen(
-            userID: rs.id.toString(),
+            userID: rs.id,
             userName: rs2.username,
+            nickName: rs2.nickname,
           );
         }));
         userNameController.removeListener(idListener);

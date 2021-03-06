@@ -107,8 +107,9 @@ class _RegPage extends State<RegPage> {
             context,
             MaterialPageRoute(
                 builder: (BuildContext context) => HomeScreen(
-                      userID: rs.id.toString(),
+                      userID: rs.id,
                       userName: userNameController.text,
+                      nickName: nickname,
                     )),
             result: "null");
       }
