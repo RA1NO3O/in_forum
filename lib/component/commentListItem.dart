@@ -254,6 +254,7 @@ class _CommentListItem extends State<CommentListItem> {
                             builder: (BuildContext context) => NewCommentScreen(
                               targetPostID: widget.postID,
                               targetUserName: widget.commentTarget,
+                              targetUserID: widget.editorID,
                               imgURL: null,
                             ),
                           ),

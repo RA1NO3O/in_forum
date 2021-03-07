@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:inforum/component/postListItem.dart';
 import 'package:inforum/service/postStreamService.dart';
 import 'package:skeleton_text/skeleton_text.dart';
@@ -11,14 +12,10 @@ class PrimaryPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  PrimaryPageState createState() {
-    return PrimaryPageState();
-  }
+  _PrimaryPageState createState() => _PrimaryPageState();
 }
 
-class PrimaryPageState extends State<PrimaryPage> {
-  static final GlobalKey<AnimatedListState> listKey =
-      GlobalKey<AnimatedListState>();
+class _PrimaryPageState extends State<PrimaryPage> {
   static List<PostListItem> streamList = [];
   bool loadState = false;
   ScaffoldState scaffold;
@@ -37,19 +34,14 @@ class PrimaryPageState extends State<PrimaryPage> {
         child: Scrollbar(
           radius: Radius.circular(5),
           child: !loadState
-              ? AnimatedList(
-                  key: listKey,
-                  initialItemCount: streamList.length,
-                  itemBuilder: (context, index, animation) {
-                    scaffold = Scaffold.of(context);
-                    return SizeTransition(
-                        axis: Axis.vertical,
-                        sizeFactor: animation,
-                        child: streamList[index]);
-                  },
+              ? StaggeredGridView.extentBuilder(
+                  maxCrossAxisExtent: 240,
+                  itemCount: streamList.length,
+                  itemBuilder: (context, index) => streamList[index],
+                  staggeredTileBuilder: (index) => StaggeredTile.fit(2),
                 )
-              : ListView.builder(
-                  scrollDirection: Axis.vertical,
+              : StaggeredGridView.extentBuilder(
+                  maxCrossAxisExtent: 240,
                   itemCount: 4,
                   itemBuilder: (bc, index) => Card(
                     margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
@@ -258,6 +250,7 @@ class PrimaryPageState extends State<PrimaryPage> {
                       ],
                     ),
                   ),
+                  staggeredTileBuilder: (index) => StaggeredTile.fit(2),
                 ),
         ));
   }

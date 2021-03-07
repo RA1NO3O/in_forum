@@ -6,9 +6,11 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/uploadPictureService.dart';
+import 'package:inforum/subPage/profilePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NewCommentScreen extends StatefulWidget {
+  final int targetUserID;
   final String contentText;
   final int targetPostID;
   final String imgURL;
@@ -18,8 +20,9 @@ class NewCommentScreen extends StatefulWidget {
       {Key key,
       this.contentText,
       this.imgURL,
-      this.targetPostID,
-      this.targetUserName})
+      @required this.targetPostID,
+      @required this.targetUserName,
+      @required this.targetUserID})
       : super(key: key);
 
   @override
@@ -95,13 +98,18 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
             margin: EdgeInsets.only(left: 25, top: 10, right: 25),
             child: Row(
               children: [
-                Text('回复给'),
+                Text('回复给 '),
                 TextButton(
                   child: Text(
                     '@${widget.targetUserName}',
                     style: TextStyle(color: Colors.blue),
                   ),
-                  onPressed: () {},
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (bc) => ProfilePage(
+                              userID: widget.targetUserID,
+                              avatarHeroTag: 'null'))),
                 ),
               ],
             ),

@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:inforum/component/customStyles.dart';
-import 'package:inforum/component/postListItem.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/uploadPictureService.dart';
-import 'package:inforum/subPage/primaryPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditPostScreen extends StatefulWidget {
@@ -193,22 +191,6 @@ class _EditPostScreenState extends State<EditPostScreen> {
                                   "imgURL": uploadedImage ?? 'null',
                                 });
                             if (res.data == 'success.') {
-                              PrimaryPageState.streamList.insert(
-                                0,
-                                PostListItem(
-                                  titleText: titleController.text,
-                                  contentText: contentController.text,
-                                  imgURL: _networkImageLink,
-                                  authorName: sp.getString('nickName'),
-                                  imgAuthor: sp.getString('avatarURL'),
-                                  isAuthor: true,
-                                  time: DateTime.now().toString(),
-                                  tags: tags,
-                                  index: 0,
-                                ),
-                              );
-                              PrimaryPageState.listKey.currentState
-                                  .insertItem(0);
                               Navigator.pop(context, '0');
                             } else {
                               ScaffoldMessenger.of(bc)

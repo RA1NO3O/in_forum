@@ -36,9 +36,14 @@ class UploadOss {
 
     //创建dio对象
     Dio dio = new Dio(options);
-    // 生成oss的路径和文件名我这里目前设置的是moment/test.mp4
-    String pathName =
-        '$rootDir/${getRandom(12)}.${fileType == null ? getFileType(file.path) : fileType}';
+    // 生成oss的路径和文件名
+    String pathName;
+    if (getFileType(file.path) == 'HEIC' || getFileType(file.path) == 'heic') {
+
+    } else {
+      pathName = '$rootDir/${getRandom(12)}.'
+          '${fileType == null ? getFileType(file.path) : fileType}';
+    }
 
     // 请求参数的form对象
     FormData data = new FormData.fromMap({
@@ -56,7 +61,6 @@ class UploadOss {
       // 发送请求
       response = await dio.post(url, data: data, cancelToken: CancelToken());
       // 成功后返回文件访问路径
-      print(response.statusMessage);
       return '$url/$pathName';
     } catch (e) {
       throw (e.message);
@@ -70,7 +74,8 @@ class UploadOss {
     // ignore: null_aware_before_operator
     return filePath?.substring(
         // ignore: null_aware_before_operator
-        filePath?.lastIndexOf("/") + 1, filePath?.length);
+        filePath?.lastIndexOf("/") + 1,
+        filePath?.length);
   }
 
   /// 获取文件类型

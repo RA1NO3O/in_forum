@@ -20,6 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PostDetailPage extends StatefulWidget {
   final int postID;
+  final int editorID;
   final String titleText;
   final String contentShortText;
   final int likeCount;
@@ -44,14 +45,15 @@ class PostDetailPage extends StatefulWidget {
     this.imgURL,
     this.isCollect,
     this.likeState,
-    this.authorName,
+    @required this.authorName,
     this.imgAuthor,
-    this.isAuthor,
-    this.postID,
+    @required this.isAuthor,
+    @required this.postID,
     this.tags,
     this.time,
     this.heroTag,
     this.contentShortText,
+    @required this.editorID,
   }) : super(key: key);
 
   @override
@@ -389,7 +391,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
                     Column(
                       children: loadState
                           ? commentList
-                          : [Center(child: Icon(Icons.hourglass_top_rounded))],
+                          : [
+                              Center(child: Icon(Icons.hourglass_top_rounded)),
+                              Text('载入中')
+                            ],
                     )
                   ]),
                 ),
@@ -423,6 +428,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                               MaterialPageRoute(
                                 builder: (BuildContext context) =>
                                     NewCommentScreen(
+                                  targetUserID: widget.editorID,
                                   targetPostID: widget.postID,
                                   contentText: _commentController.text,
                                   targetUserName: authorUserName,
@@ -475,6 +481,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       context,
                       MaterialPageRoute(
                         builder: (BuildContext context) => NewCommentScreen(
+                          targetUserID: widget.editorID,
                           targetPostID: widget.postID,
                           contentText: _commentController.text,
                           targetUserName: authorUserName,
@@ -499,6 +506,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                           context,
                           MaterialPageRoute(
                             builder: (BuildContext context) => NewCommentScreen(
+                              targetUserID: widget.editorID,
                               targetPostID: widget.postID,
                               contentText: _commentController.text,
                               targetUserName: authorUserName,

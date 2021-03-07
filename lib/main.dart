@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/subPage/reg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,8 +25,8 @@ Future<void> main() async {
 
   runApp(MaterialApp(
     title: 'Inforum',
-    theme: lightTheme,
-    darkTheme: darkTheme,
+    theme: ThemeData.light(),
+    darkTheme: ThemeData.dark(),
     home: isLogin
         ? HomeScreen(
             userID: prefs.getInt('userID'),
@@ -102,8 +101,12 @@ class _MainPageState extends State<MainPage> {
               child: Scaffold(
                 appBar: AppBar(
                   title: Hero(
-                      tag: 'title',
-                      child: Text(widget.title, style: titleTextStyle())),
+                    tag: 'title',
+                    child: Text(
+                      widget.title,
+                      style: Theme.of(context).primaryTextTheme.headline5,
+                    ),
+                  ),
                   leading: state != 0
                       ? IconButton(
                           icon: Icon(Icons.arrow_back),

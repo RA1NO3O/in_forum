@@ -48,19 +48,31 @@ SnackBar doneSnackBar(String r) {
   );
 }
 
-ThemeData lightTheme = ThemeData(
-  appBarTheme: AppBarTheme(brightness: Brightness.light),
-  brightness: Brightness.light,
-  focusColor: themeColor,
-  buttonColor: themeColor,
-);
-ThemeData darkTheme = ThemeData(
-  appBarTheme: AppBarTheme(brightness: Brightness.dark),
-  brightness: Brightness.dark,
-  accentColor: themeColor,
-  primaryColor: Colors.black,
-  buttonColor: themeColor,
-);
+Widget emptyHint() => Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.inbox_rounded,
+            size: 100,
+          ),
+          Text('无内容')
+        ],
+      ),
+    );
+// ThemeData lightTheme = ThemeData(
+//   appBarTheme: AppBarTheme(brightness: Brightness.light),
+//   brightness: Brightness.light,
+//   focusColor: themeColor,
+//   buttonColor: themeColor,
+// );
+// ThemeData darkTheme = ThemeData(
+//   appBarTheme: AppBarTheme(brightness: Brightness.dark),
+//   brightness: Brightness.dark,
+//   accentColor: themeColor,
+//   primaryColor: Colors.black,
+//   buttonColor: themeColor,
+// );
 TextStyle titleFontStyle =
     new TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
 TextStyle invalidTextStyle = new TextStyle(color: Colors.grey);

@@ -8,6 +8,7 @@ Future<List<PostListItem>> getCollectionList(int userID) async {
   pcl.forEach((rs) {
     String t = rs.tags;
     pcls.add(PostListItem(
+      editorID: rs.editorId,
       postID: rs.postId,
       titleText: rs.title,
       contentText: rs.bodyS,

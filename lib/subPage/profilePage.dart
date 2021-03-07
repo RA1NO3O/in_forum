@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:inforum/component/GalleryListItem.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/component/imageViewer.dart';
 import 'package:inforum/component/postListItem.dart';
@@ -17,7 +19,7 @@ class ProfilePage extends StatefulWidget {
       {Key key,
       @required this.userID,
       @required this.avatarHeroTag,
-      @required this.avatarURL})
+      this.avatarURL})
       : super(key: key);
 
   @override
@@ -42,6 +44,8 @@ class _ProfilePage extends State<ProfilePage>
   String _joinTime;
   int _length1 = 0;
   List<PostListItem> _postListItems = [];
+  List<GalleryListItem> _galleryListItems = [];
+  List<PostListItem> _likedPostItems = [];
   bool _loadState = false;
 
   @override
@@ -57,10 +61,16 @@ class _ProfilePage extends State<ProfilePage>
     setState(() {
       _loadState = true;
       _postListItems.clear();
+      _galleryListItems.clear();
     });
     SharedPreferences sp = await SharedPreferences.getInstance();
     var rs = await getProfile(widget.userID);
-    _postListItems.addAll(await getPostsByID(widget.userID,sp.getInt('userID')));
+    _postListItems
+        .addAll(await getPostsByID(widget.userID, sp.getInt('userID')));
+    _galleryListItems
+        .addAll(await getGalleryByUser(widget.userID, sp.getInt('userID')));
+    _likedPostItems
+        .addAll(await getLikedPostsByUser(widget.userID, sp.getInt('userID')));
     setState(() {
       _length1 = _postListItems.length;
       if (widget.userID == sp.getInt('userID')) {
@@ -73,7 +83,6 @@ class _ProfilePage extends State<ProfilePage>
         _birthday = sp.getString('birthday');
         _joinTime = sp.getString('joinTime');
       }
-
       _userName = rs.username ?? 'unknown';
       _nickName = rs.nickname ?? 'unknown';
       _birthday = rs.birthday.toString();
@@ -124,6 +133,8 @@ class _ProfilePage extends State<ProfilePage>
                           flex: 0,
                           child: _bannerURL != null
                               ? CachedNetworkImage(
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.broken_image_rounded),
                                   imageUrl: _bannerURL,
                                   fit: BoxFit.cover,
                                   height: 150,
@@ -272,41 +283,49 @@ class _ProfilePage extends State<ProfilePage>
             )
           ];
         },
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            !_loadState
-                ? AnimatedList(
-                    scrollDirection: Axis.vertical,
-                    initialItemCount: _length1,
-                    itemBuilder: (bc, index, animation) => SizeTransition(
-                      sizeFactor: animation,
-                      axis: Axis.vertical,
-                      child: _postListItems[index],
-                    ),
-                  )
-                : Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+        body: RefreshIndicator(
+            strokeWidth: 2.5,
+            child: Scrollbar(
+              radius: Radius.circular(5),
+              child: TabBarView(
+                controller: _tabController,
                 children: [
-                  Icon(
-                    Icons.inbox_rounded,
-                    size: 100,
-                  ),
-                  Text('无内容')
+                  !_loadState
+                      ? StaggeredGridView.extentBuilder(
+                          maxCrossAxisExtent: 240,
+                          itemCount: _postListItems.length,
+                          itemBuilder: (context, index) =>
+                              _postListItems[index],
+                          staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                        )
+                      : emptyHint(),
+                  //媒体
+                  !_loadState
+                      ? GridView.extent(
+                          primary: false,
+                          // mainAxisSpacing: 1,
+                          // crossAxisSpacing: 1,
+                          maxCrossAxisExtent: 100,
+                          children: _galleryListItems,
+                        )
+                      : emptyHint(),
+                  //赞
+                  !_loadState
+                      ? StaggeredGridView.extentBuilder(
+                          maxCrossAxisExtent: 240,
+                          itemCount: _likedPostItems.length,
+                          itemBuilder: (context, index) =>
+                              _likedPostItems[index],
+                          staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                        )
+                      : emptyHint(),
                 ],
               ),
             ),
-            //媒体
-            ListView(
-              children: [],
-            ),
-            //赞
-            ListView(
-              children: [],
-            ),
-          ],
-        ),
+            onRefresh: () async {
+              await _refresh();
+              return;
+            }),
       ),
     );
   }

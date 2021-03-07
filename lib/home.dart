@@ -134,7 +134,7 @@ class HomeScreenState extends State<HomeScreen> {
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                elevation: 5,
+                elevation: 2,
                 title: InkWell(
                   onDoubleTap: () {
                     setState(() {
@@ -149,7 +149,7 @@ class HomeScreenState extends State<HomeScreen> {
                       tag: 'title',
                       child: Text(
                         'Inforum',
-                        style: titleTextStyle(),
+                        style: Theme.of(context).primaryTextTheme.headline5,
                       ),
                     ),
                   ),
@@ -204,6 +204,9 @@ class HomeScreenState extends State<HomeScreen> {
               builder: (bc) {
                 scaffold = ScaffoldMessenger.of(bc);
                 return new FloatingActionButton(
+                  foregroundColor: Theme.of(context)
+                      .floatingActionButtonTheme
+                      .foregroundColor,
                   backgroundColor: _currentColor,
                   child: AnimatedSwitcher(
                     transitionBuilder: (Widget child, Animation<double> anim) {
@@ -251,7 +254,7 @@ class HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           Container(
-            height: 220,
+            height: 230,
             child: DrawerHeader(
               child: Column(
                 children: [
