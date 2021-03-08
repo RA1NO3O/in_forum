@@ -13,11 +13,11 @@ PostCollectionService postCollectionServiceFromJson(String str) =>
 String postCollectionServiceToJson(PostCollectionService data) =>
     json.encode(data.toJson());
 
-Future<List<CollectionRecordset>> getPostCollection(int userID) async {
+Future<List<CollectionRecordset>?> getPostCollection(int? userID) async {
   Response res = await Dio().get('$apiServerAddress/getCollection/$userID');
   final PostCollectionService pcs =
       postCollectionServiceFromJson(res.toString());
-  final List<CollectionRecordset> rs = pcs.recordset.isEmpty ? [] : pcs.recordset;
+  final List<CollectionRecordset>? rs = pcs.recordset!.isEmpty ? [] : pcs.recordset;
   return rs;
 }
 
@@ -29,10 +29,10 @@ class PostCollectionService {
         this.rowsAffected,
     });
 
-    List<List<CollectionRecordset>> recordsets;
-    List<CollectionRecordset> recordset;
-    Output output;
-    List<int> rowsAffected;
+    List<List<CollectionRecordset>>? recordsets;
+    List<CollectionRecordset>? recordset;
+    Output? output;
+    List<int>? rowsAffected;
 
     factory PostCollectionService.fromJson(Map<String, dynamic> json) => PostCollectionService(
         recordsets: json["recordsets"] == null ? null : List<List<CollectionRecordset>>.from(json["recordsets"].map((x) => List<CollectionRecordset>.from(x.map((x) => CollectionRecordset.fromJson(x))))),
@@ -42,17 +42,17 @@ class PostCollectionService {
     );
 
     Map<String, dynamic> toJson() => {
-        "recordsets": recordsets == null ? null : List<dynamic>.from(recordsets.map((x) => List<dynamic>.from(x.map((x) => x.toJson())))),
-        "recordset": recordset == null ? null : List<dynamic>.from(recordset.map((x) => x.toJson())),
-        "output": output == null ? null : output.toJson(),
-        "rowsAffected": rowsAffected == null ? null : List<dynamic>.from(rowsAffected.map((x) => x)),
+        "recordsets": recordsets == null ? null : List<dynamic>.from(recordsets!.map((x) => List<dynamic>.from(x.map((x) => x.toJson())))),
+        "recordset": recordset == null ? null : List<dynamic>.from(recordset!.map((x) => x.toJson())),
+        "output": output == null ? null : output!.toJson(),
+        "rowsAffected": rowsAffected == null ? null : List<dynamic>.from(rowsAffected!.map((x) => x)),
     };
 }
 
 class Output {
     Output();
 
-    factory Output.fromJson(Map<String, dynamic> json) => Output(
+    factory Output.fromJson(Map<String, dynamic>? json) => Output(
     );
 
     Map<String, dynamic> toJson() => {
@@ -81,24 +81,24 @@ class CollectionRecordset {
         this.collectTime,
     });
 
-    int postId;
-    String title;
-    String bodyS;
-    String imageUrl;
-    DateTime lastEditTime;
-    String nickname;
-    String tags;
-    String avatarUrl;
-    int likeCount;
-    int dislikeCount;
-    int commentCount;
-    int collectCount;
-    int editorId;
-    int isEditor;
-    int userId;
-    bool isCollected;
-    int likeState;
-    DateTime collectTime;
+    int? postId;
+    String? title;
+    String? bodyS;
+    String? imageUrl;
+    DateTime? lastEditTime;
+    String? nickname;
+    String? tags;
+    String? avatarUrl;
+    int? likeCount;
+    int? dislikeCount;
+    int? commentCount;
+    int? collectCount;
+    int? editorId;
+    int? isEditor;
+    int? userId;
+    bool? isCollected;
+    int? likeState;
+    DateTime? collectTime;
 
     factory CollectionRecordset.fromJson(Map<String, dynamic> json) => CollectionRecordset(
         postId: json["postID"] == null ? null : json["postID"],
@@ -126,7 +126,7 @@ class CollectionRecordset {
         "title": title == null ? null : title,
         "body_S": bodyS == null ? null : bodyS,
         "imageURL": imageUrl == null ? null : imageUrl,
-        "lastEditTime": lastEditTime == null ? null : lastEditTime.toIso8601String(),
+        "lastEditTime": lastEditTime == null ? null : lastEditTime!.toIso8601String(),
         "nickname": nickname == null ? null : nickname,
         "tags": tags == null ? null : tags,
         "avatarURL": avatarUrl == null ? null : avatarUrl,
@@ -139,6 +139,6 @@ class CollectionRecordset {
         "user_ID": userId == null ? null : userId,
         "isCollected": isCollected == null ? null : isCollected,
         "like_State": likeState == null ? null : likeState,
-        "collectTime": collectTime == null ? null : collectTime.toIso8601String(),
+        "collectTime": collectTime == null ? null : collectTime!.toIso8601String(),
     };
 }

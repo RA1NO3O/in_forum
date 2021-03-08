@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/customStyles.dart';
@@ -19,14 +21,14 @@ class _RegPage extends State<RegPage> {
       phoneController = new TextEditingController(),
       emailController = new TextEditingController(),
       pwdController = new TextEditingController();
-  String nickname, bio, gender, location;
-  DateTime birthday;
+  String? nickname, bio, gender, location;
+  DateTime? birthday;
 
   Future<void> btnRegClick() async {
     bool regPassed = false;
     String errorCode = '0';
-    if (_formKey.currentState.validate()) {
-      LoginRecordset rs = await searchUser(userNameController.text);
+    if (_formKey.currentState!.validate()) {
+      LoginRecordset? rs = await searchUser(userNameController.text);
       if (rs == null) {
         rs = await searchUser(emailController.text);
         if (rs == null) {
@@ -97,17 +99,17 @@ class _RegPage extends State<RegPage> {
       );
       if (res.data == 'success.') {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        LoginRecordset recordset = await searchUser(userNameController.text);
-        prefs.setInt('userID', recordset.id);
+        LoginRecordset recordset = (await searchUser(userNameController.text))!;
+        prefs.setInt('userID', recordset.id!);
         prefs.setString('userName', userNameController.text);
         prefs.setBool('isLogin', true);
         prefs.setBool('isJustLogin', true);
-        LoginRecordset rs = await searchUser(userNameController.text);
+        LoginRecordset? rs = await searchUser(userNameController.text);
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (BuildContext context) => HomeScreen(
-                      userID: rs.id,
+                      userID: rs!.id,
                       userName: userNameController.text,
                       nickName: nickname,
                     )),
@@ -141,7 +143,7 @@ class _RegPage extends State<RegPage> {
                     EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
                 child: TextFormField(
                   maxLength: 10,
-                  validator: (value) => value.isEmpty ? '此字段为必填项.' : null,
+                  validator: (value) => value!.isEmpty ? '此字段为必填项.' : null,
                   keyboardType: TextInputType.name,
                   controller: userNameController,
                   decoration: InputDecoration(
@@ -187,7 +189,7 @@ class _RegPage extends State<RegPage> {
                     EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
                 child: TextFormField(
                   maxLength: 20,
-                  validator: (value) => value.isEmpty ? '此字段为必填项.' : null,
+                  validator: (value) => value!.isEmpty ? '此字段为必填项.' : null,
                   controller: pwdController,
                   obscureText: !passwordVisible,
                   textInputAction: TextInputAction.done,

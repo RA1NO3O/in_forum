@@ -6,12 +6,12 @@ import 'package:inforum/service/imageShareService.dart';
 import 'package:photo_view/photo_view.dart';
 
 class ImageViewer extends StatelessWidget {
-  final String imgURL;
-  final Widget loadingChild;
-  final Decoration backgroundDecoration;
+  final String? imgURL;
+  final Widget? loadingChild;
+  final Decoration? backgroundDecoration;
   final dynamic minScale;
   final dynamic maxScale;
-  final String heroTag;
+  final String? heroTag;
 
   const ImageViewer({
     this.loadingChild,
@@ -41,7 +41,7 @@ class ImageViewer extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(Icons.share_rounded),
-            onPressed: () => shareNetworkImage(imgURL),
+            onPressed: () => shareNetworkImage(imgURL!),
           )
         ],
       ),
@@ -53,11 +53,11 @@ class ImageViewer extends StatelessWidget {
           children: <Widget>[
             Center(
               child: PhotoView(
-                imageProvider: CachedNetworkImageProvider(imgURL),
-                backgroundDecoration: backgroundDecoration,
+                imageProvider: CachedNetworkImageProvider(imgURL!),
+                backgroundDecoration: backgroundDecoration as BoxDecoration?,
                 minScale: PhotoViewComputedScale.contained,
                 maxScale: PhotoViewComputedScale.covered,
-                heroAttributes: PhotoViewHeroAttributes(tag: heroTag),
+                heroAttributes: PhotoViewHeroAttributes(tag: heroTag!),
                 enableRotation: false, //禁止旋转
               ),
             ),

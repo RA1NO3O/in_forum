@@ -15,7 +15,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLogin =
-      prefs.getBool('isLogin') == null ? false : prefs.getBool('isLogin');
+      prefs.getBool('isLogin') == null ? false : prefs.getBool('isLogin')!;
 
   if (prefs.getBool('isLogin') == null) {
     prefs.setString('draft_title', '');
@@ -51,9 +51,9 @@ Future<void> main() async {
 
 //主界面
 class MainPage extends StatefulWidget {
-  final String title;
+  final String? title;
 
-  MainPage({Key key, this.title}) : super(key: key);
+  MainPage({Key? key, this.title}) : super(key: key);
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -103,7 +103,7 @@ class _MainPageState extends State<MainPage> {
                   title: Hero(
                     tag: 'title',
                     child: Text(
-                      widget.title,
+                      widget.title!,
                       style: Theme.of(context).primaryTextTheme.headline5,
                     ),
                   ),
@@ -159,7 +159,7 @@ class _MainPageState extends State<MainPage> {
 
   TextStyle titleTextStyle() => Theme.of(context)
       .primaryTextTheme
-      .caption
+      .caption!
       .copyWith(fontSize: 20, fontWeight: FontWeight.bold);
 
   Widget defaultPage() {
@@ -257,7 +257,7 @@ class AnimatedBackground extends StatelessWidget {
       control: CustomAnimationControl.MIRROR,
       tween: tween,
       duration: tween.duration,
-      builder: (context, child, value) => Container(
+      builder: (context, child, dynamic value) => Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -270,8 +270,8 @@ class AnimatedBackground extends StatelessWidget {
 
 //动画波
 class AnimatedWave extends StatelessWidget {
-  final double height;
-  final double speed;
+  final double? height;
+  final double? speed;
   final double offset;
 
   AnimatedWave({this.height, this.speed, this.offset = 0.0});
@@ -284,9 +284,9 @@ class AnimatedWave extends StatelessWidget {
         width: constraints.biggest.width,
         child: CustomAnimation(
           control: CustomAnimationControl.LOOP,
-          duration: Duration(milliseconds: (5000 / speed).round()),
+          duration: Duration(milliseconds: (5000 / speed!).round()),
           tween: Tween(begin: 0.0, end: 2 * pi),
-          builder: (context, child, value) => CustomPaint(
+          builder: (context, child, dynamic value) => CustomPaint(
             foregroundPainter: CurvePainter(value + offset),
           ),
         ),
@@ -297,7 +297,7 @@ class AnimatedWave extends StatelessWidget {
 
 //自定义波形绘制器
 class CurvePainter extends CustomPainter {
-  final double value;
+  final double? value;
 
   CurvePainter(this.value);
 
@@ -306,9 +306,9 @@ class CurvePainter extends CustomPainter {
     final white = Paint()..color = Colors.white.withAlpha(60);
     final path = Path();
 
-    final y1 = sin(value);
-    final y2 = sin(value + pi / 2);
-    final y3 = sin(value + pi);
+    final y1 = sin(value!);
+    final y2 = sin(value! + pi / 2);
+    final y3 = sin(value! + pi);
 
     final startPointY = size.height * (0.5 + 0.4 * y1);
     final controlPointY = size.height * (0.5 + 0.4 * y2);

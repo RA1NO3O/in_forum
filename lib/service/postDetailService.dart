@@ -13,10 +13,10 @@ PostDetailService postDetailServiceFromJson(String str) =>
 String postDetailServiceToJson(PostDetailService data) =>
     json.encode(data.toJson());
 
-Future<PostDetailRecordset> getPostDetail(int postID) async {
+Future<PostDetailRecordset?> getPostDetail(int? postID) async {
   Response res = await Dio().get('$apiServerAddress/getPostDetail/$postID');
   final PostDetailService pds = postDetailServiceFromJson(res.toString());
-  final PostDetailRecordset rs = pds.recordset.isEmpty ? null : pds.recordset[0];
+  final PostDetailRecordset? rs = pds.recordset!.isEmpty ? null : pds.recordset![0];
   return rs;
 }
 
@@ -28,10 +28,10 @@ class PostDetailService {
     this.rowsAffected,
   });
 
-  List<List<PostDetailRecordset>> recordsets;
-  List<PostDetailRecordset> recordset;
-  Output output;
-  List<int> rowsAffected;
+  List<List<PostDetailRecordset>>? recordsets;
+  List<PostDetailRecordset>? recordset;
+  Output? output;
+  List<int>? rowsAffected;
 
   factory PostDetailService.fromJson(Map<String, dynamic> json) =>
       PostDetailService(
@@ -52,22 +52,22 @@ class PostDetailService {
   Map<String, dynamic> toJson() => {
         "recordsets": recordsets == null
             ? null
-            : List<dynamic>.from(recordsets
+            : List<dynamic>.from(recordsets!
                 .map((x) => List<dynamic>.from(x.map((x) => x.toJson())))),
         "recordset": recordset == null
             ? null
-            : List<dynamic>.from(recordset.map((x) => x.toJson())),
-        "output": output == null ? null : output.toJson(),
+            : List<dynamic>.from(recordset!.map((x) => x.toJson())),
+        "output": output == null ? null : output!.toJson(),
         "rowsAffected": rowsAffected == null
             ? null
-            : List<dynamic>.from(rowsAffected.map((x) => x)),
+            : List<dynamic>.from(rowsAffected!.map((x) => x)),
       };
 }
 
 class Output {
   Output();
 
-  factory Output.fromJson(Map<String, dynamic> json) => Output();
+  factory Output.fromJson(Map<String, dynamic>? json) => Output();
 
   Map<String, dynamic> toJson() => {};
 }
@@ -90,20 +90,20 @@ class PostDetailRecordset {
     this.editorId,
   });
 
-  String avatarUrl;
-  String nickname;
-  String username;
-  String title;
-  String body;
-  String imageUrl;
-  String tags;
-  DateTime lastEditTime;
-  int postId;
-  int likeCount;
-  int dislikeCount;
-  int commentCount;
-  int collectCount;
-  int editorId;
+  String? avatarUrl;
+  String? nickname;
+  String? username;
+  String? title;
+  String? body;
+  String? imageUrl;
+  String? tags;
+  DateTime? lastEditTime;
+  int? postId;
+  int? likeCount;
+  int? dislikeCount;
+  int? commentCount;
+  int? collectCount;
+  int? editorId;
 
   factory PostDetailRecordset.fromJson(Map<String, dynamic> json) => PostDetailRecordset(
     avatarUrl: json["avatarURL"] == null ? null : json["avatarURL"],
@@ -130,7 +130,7 @@ class PostDetailRecordset {
     "body": body == null ? null : body,
     "imageURL": imageUrl == null ? null : imageUrl,
     "tags": tags == null ? null : tags,
-    "lastEditTime": lastEditTime == null ? null : lastEditTime.toIso8601String(),
+    "lastEditTime": lastEditTime == null ? null : lastEditTime!.toIso8601String(),
     "postID": postId == null ? null : postId,
     "likeCount": likeCount == null ? null : likeCount,
     "dislikeCount": dislikeCount == null ? null : dislikeCount,

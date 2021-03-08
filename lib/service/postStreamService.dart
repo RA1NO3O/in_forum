@@ -16,10 +16,10 @@ PostStreamService postStreamServiceFromJson(String str) =>
 String postStreamServiceToJson(PostStreamService data) =>
     json.encode(data.toJson());
 
-Future<List<PostListItem>> getPostStream(int userID) async {
+Future<List<PostListItem>> getPostStream(int? userID) async {
   Response res = await Dio().get('$apiServerAddress/getPosts/$userID');
   final PostStreamService pss = postStreamServiceFromJson(res.toString());
-  final List<PostRecordset> rs = pss.recordset.isEmpty ? [] : pss.recordset;
+  final List<PostRecordset> rs = pss.recordset!.isEmpty ? [] : pss.recordset!;
   for (int i = 0; i < rs.length; i++) {
     for (int j = i + 1; j < rs.length; j++) {
       if (rs[i].postId == rs[j].postId) {
@@ -31,11 +31,11 @@ Future<List<PostListItem>> getPostStream(int userID) async {
   return convertToPostWidgets(rs);
 }
 
-Future<List<PostListItem>> getPostsByID(int userID,int currentUserID) async {
+Future<List<PostListItem>> getPostsByID(int? userID,int? currentUserID) async {
   SharedPreferences sp = await SharedPreferences.getInstance();
   Response res = await Dio().get('$apiServerAddress/getPostsByUser/$userID?currentUserID=$currentUserID');
   final PostStreamService pss = postStreamServiceFromJson(res.toString());
-  final List<PostRecordset> rs = pss.recordset.isEmpty ? [] : pss.recordset;
+  final List<PostRecordset> rs = pss.recordset!.isEmpty ? [] : pss.recordset!;
   for (int i = 0; i < rs.length; i++) {
     for (int j = i + 1; j < rs.length; j++) {
       if (rs[i].postId == rs[j].postId) {
@@ -51,11 +51,11 @@ Future<List<PostListItem>> getPostsByID(int userID,int currentUserID) async {
   return convertToPostWidgets(rs);
 }
 
-Future<List<GalleryListItem>> getGalleryByUser(int userID,int currentUserID) async {
+Future<List<GalleryListItem>> getGalleryByUser(int? userID,int? currentUserID) async {
   SharedPreferences sp = await SharedPreferences.getInstance();
   Response res = await Dio().get('$apiServerAddress/getGalleryByUser/$userID?currentUserID=$currentUserID');
   final PostStreamService pss = postStreamServiceFromJson(res.toString());
-  final List<PostRecordset> rs = pss.recordset.isEmpty ? [] : pss.recordset;
+  final List<PostRecordset> rs = pss.recordset!.isEmpty ? [] : pss.recordset!;
   for (int i = 0; i < rs.length; i++) {
     for (int j = i + 1; j < rs.length; j++) {
       if (rs[i].postId == rs[j].postId) {
@@ -71,11 +71,11 @@ Future<List<GalleryListItem>> getGalleryByUser(int userID,int currentUserID) asy
   return convertToGalleryWidgets(rs);
 }
 
-Future<List<PostListItem>> getLikedPostsByUser(int userID,int currentUserID) async {
+Future<List<PostListItem>> getLikedPostsByUser(int? userID,int? currentUserID) async {
   SharedPreferences sp = await SharedPreferences.getInstance();
   Response res = await Dio().get('$apiServerAddress/getLikedPostsByUser/$userID?currentUserID=$currentUserID');
   final PostStreamService pss = postStreamServiceFromJson(res.toString());
-  final List<PostRecordset> rs = pss.recordset.isEmpty ? [] : pss.recordset;
+  final List<PostRecordset> rs = pss.recordset!.isEmpty ? [] : pss.recordset!;
   for (int i = 0; i < rs.length; i++) {
     for (int j = i + 1; j < rs.length; j++) {
       if (rs[i].postId == rs[j].postId) {
@@ -94,7 +94,7 @@ Future<List<PostListItem>> getLikedPostsByUser(int userID,int currentUserID) asy
 Future<List<PostListItem>> convertToPostWidgets(List<PostRecordset> rs) async {
   List<PostListItem> psis = [];
   rs.asMap().forEach((index, value) {
-    String t = value.tags;
+    String? t = value.tags;
     psis.add(PostListItem(
       postID: value.postId,
       editorID: value.editorId,
@@ -120,7 +120,7 @@ Future<List<PostListItem>> convertToPostWidgets(List<PostRecordset> rs) async {
 Future<List<GalleryListItem>> convertToGalleryWidgets(List<PostRecordset> rs) async {
   List<GalleryListItem> gl = [];
   rs.asMap().forEach((index, value) {
-    String t = value.tags;
+    String? t = value.tags;
     gl.add(GalleryListItem(
       postID: value.postId,
       titleText: value.title,
@@ -150,10 +150,10 @@ class PostStreamService {
     this.rowsAffected,
   });
 
-  List<List<PostRecordset>> recordsets;
-  List<PostRecordset> recordset;
-  Output output;
-  List<int> rowsAffected;
+  List<List<PostRecordset>>? recordsets;
+  List<PostRecordset>? recordset;
+  Output? output;
+  List<int>? rowsAffected;
 
   factory PostStreamService.fromJson(Map<String, dynamic> json) => PostStreamService(
     recordsets: json["recordsets"] == null ? null : List<List<PostRecordset>>.from(json["recordsets"].map((x) => List<PostRecordset>.from(x.map((x) => PostRecordset.fromJson(x))))),
@@ -163,17 +163,17 @@ class PostStreamService {
   );
 
   Map<String, dynamic> toJson() => {
-    "recordsets": recordsets == null ? null : List<dynamic>.from(recordsets.map((x) => List<dynamic>.from(x.map((x) => x.toJson())))),
-    "recordset": recordset == null ? null : List<dynamic>.from(recordset.map((x) => x.toJson())),
-    "output": output == null ? null : output.toJson(),
-    "rowsAffected": rowsAffected == null ? null : List<dynamic>.from(rowsAffected.map((x) => x)),
+    "recordsets": recordsets == null ? null : List<dynamic>.from(recordsets!.map((x) => List<dynamic>.from(x.map((x) => x.toJson())))),
+    "recordset": recordset == null ? null : List<dynamic>.from(recordset!.map((x) => x.toJson())),
+    "output": output == null ? null : output!.toJson(),
+    "rowsAffected": rowsAffected == null ? null : List<dynamic>.from(rowsAffected!.map((x) => x)),
   };
 }
 
 class Output {
   Output();
 
-  factory Output.fromJson(Map<String, dynamic> json) => Output(
+  factory Output.fromJson(Map<String, dynamic>? json) => Output(
   );
 
   Map<String, dynamic> toJson() => {
@@ -202,20 +202,20 @@ class PostRecordset {
     this.collectTime,
   });
 
-  int postId;
-  String title;
-  String bodyS;
-  String imageUrl;
-  DateTime lastEditTime;
-  String nickname;
-  String tags;
-  String avatarUrl;
-  int likeCount;
-  int dislikeCount;
-  int commentCount;
-  int collectCount;
-  int editorId;
-  int isEditor;
+  int? postId;
+  String? title;
+  String? bodyS;
+  String? imageUrl;
+  DateTime? lastEditTime;
+  String? nickname;
+  String? tags;
+  String? avatarUrl;
+  int? likeCount;
+  int? dislikeCount;
+  int? commentCount;
+  int? collectCount;
+  int? editorId;
+  int? isEditor;
   dynamic userId;
   dynamic isCollected;
   dynamic likeState;
@@ -247,7 +247,7 @@ class PostRecordset {
     "title": title == null ? null : title,
     "body_S": bodyS == null ? null : bodyS,
     "imageURL": imageUrl == null ? null : imageUrl,
-    "lastEditTime": lastEditTime == null ? null : lastEditTime.toIso8601String(),
+    "lastEditTime": lastEditTime == null ? null : lastEditTime!.toIso8601String(),
     "nickname": nickname == null ? null : nickname,
     "tags": tags == null ? null : tags,
     "avatarURL": avatarUrl == null ? null : avatarUrl,

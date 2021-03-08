@@ -13,29 +13,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'customStyles.dart';
 
 class PostListItem extends StatefulWidget {
-  final int postID;
-  final int editorID;
-  final String titleText;
+  final int? postID;
+  final int? editorID;
+  final String? titleText;
   @required
-  final String contentText;
-  final int likeState;
-  final int likeCount;
-  final int dislikeCount;
-  final int commentCount;
-  final int collectCount;
-  final String imgURL;
-  final bool isCollect;
-  final String authorName;
-  final String imgAuthor;
+  final String? contentText;
+  final int? likeState;
+  final int? likeCount;
+  final int? dislikeCount;
+  final int? commentCount;
+  final int? collectCount;
+  final String? imgURL;
+  final bool? isCollect;
+  final String? authorName;
+  final String? imgAuthor;
   final bool isAuthor;
   final String time;
-  final List<String> tags;
-  final int index;
+  final List<String>? tags;
+  final int? index;
 
   const PostListItem({
-    Key key,
-    @required this.titleText,
-    @required this.contentText,
+    Key? key,
+    required this.titleText,
+    required this.contentText,
     this.likeCount,
     this.dislikeCount,
     this.commentCount,
@@ -44,13 +44,13 @@ class PostListItem extends StatefulWidget {
     this.likeState,
     this.isCollect,
     this.imgAuthor,
-    @required this.authorName,
-    @required this.isAuthor,
+    required this.authorName,
+    required this.isAuthor,
     this.postID,
-    @required this.time,
+    required this.time,
     this.tags,
     this.index,
-    @required this.editorID,
+    required this.editorID,
   }) : super(key: key);
 
   @override
@@ -58,19 +58,19 @@ class PostListItem extends StatefulWidget {
 }
 
 class _PostListItem extends State<PostListItem> {
-  TextStyle v;
-  bool isCollect;
-  int likeState; //0缺省,1为点赞,2为踩
-  int collectCount;
-  int likeCount;
-  int dislikeCount;
-  int commentCount;
-  List<String> tagStrings;
-  List<Widget> tagWidgets;
+  TextStyle? v;
+  bool isCollect=false;
+  int likeState=0; //0缺省,1为点赞,2为踩
+  int collectCount=0;
+  int likeCount=0;
+  int dislikeCount=0;
+  int commentCount=0;
+  List<String>? tagStrings;
+  List<Widget>? tagWidgets;
   String imgTag = getRandom(6);
 
   // ignore: unused_field
-  String _imagePath;
+  String? _imagePath;
 
   @override
   void initState() {
@@ -80,7 +80,7 @@ class _PostListItem extends State<PostListItem> {
     likeCount = widget.likeCount ?? 0;
     dislikeCount = widget.dislikeCount ?? 0;
     commentCount = widget.commentCount ?? 0;
-    isCollect = widget.isCollect ?? 0;
+    isCollect = widget.isCollect ?? false;
     super.initState();
   }
 
@@ -88,7 +88,7 @@ class _PostListItem extends State<PostListItem> {
     tagWidgets = [];
     tagStrings = widget.tags;
     if (tagStrings != null) {
-      tagWidgets.addAll(tagStrings
+      tagWidgets!.addAll(tagStrings!
           .map((s) => Container(
                 height: 32,
                 child: Chip(
@@ -169,14 +169,14 @@ class _PostListItem extends State<PostListItem> {
                                           EdgeInsets.only(right: 5),
                                           child: CircleAvatar(
                                               radius: 15,
-                                              backgroundImage: widget
+                                              backgroundImage: (widget
                                                   .imgAuthor !=
                                                   null
                                                   ? CachedNetworkImageProvider(
-                                                  widget.imgAuthor)
+                                                  widget.imgAuthor!)
                                                   : AssetImage(
-                                                  'images/default_avatar.png'))),
-                                      Text(widget.authorName, style: v),
+                                                  'images/default_avatar.png')) as ImageProvider<Object>?)),
+                                      Text(widget.authorName!, style: v),
                                     ],
                                   ),
                                 ),
@@ -198,7 +198,7 @@ class _PostListItem extends State<PostListItem> {
                             alignment: Alignment.topLeft,
                             padding: EdgeInsets.all(5),
                             child: Text(
-                              widget.titleText,
+                              widget.titleText!,
                               maxLines: 2,
                               style: widget.postID != null
                                   ? titleFontStyle
@@ -213,7 +213,7 @@ class _PostListItem extends State<PostListItem> {
                             alignment: Alignment.topLeft,
                             padding: EdgeInsets.all(5),
                             child: Text(
-                              widget.contentText,
+                              widget.contentText!,
                               maxLines: 5,
                               style: widget.postID != null
                                   ? new TextStyle(fontSize: 16)
@@ -240,7 +240,7 @@ class _PostListItem extends State<PostListItem> {
                           height: 200,
                           fit: BoxFit.cover,
                           image: CachedNetworkImageProvider(
-                              widget.imgURL),
+                              widget.imgURL!),
                           child: InkWell(
                             onTap: () {
                               Navigator.of(context).push(
@@ -266,7 +266,7 @@ class _PostListItem extends State<PostListItem> {
                           ? Wrap(
                         spacing: 5,
                         runSpacing: 1,
-                        children: tagWidgets,
+                        children: tagWidgets!,
                       )
                           : null),
                   Flex(direction: Axis.horizontal, children: [

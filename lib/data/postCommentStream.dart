@@ -1,12 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:inforum/component/commentListItem.dart';
 import 'package:inforum/service/postCommentService.dart';
 
 List<CommentListItem> pcis = [];
-Future<List<Widget>> getComment(int postID, int userID) async {
+Future<List<Widget>> getComment(int? postID, int? userID) async {
   pcis.clear();
 
-  List<CommentRecordset> pcl = await getPostComment(postID, userID);
+  List<CommentRecordset> pcl = (await getPostComment(postID, userID))!;
   pcl.forEach((rs) {
     pcis.add(CommentListItem(
       commenterAvatarURL: rs.avatarUrl,
@@ -22,6 +24,6 @@ Future<List<Widget>> getComment(int postID, int userID) async {
       editorID: rs.editorId,
     ));
   });
-  pcis.sort((a, b) => b.postID.compareTo(a.postID)); //按ID排序,ID数字越大越新
+  pcis.sort((a, b) => b.postID!.compareTo(a.postID!)); //按ID排序,ID数字越大越新
   return pcis;
 }

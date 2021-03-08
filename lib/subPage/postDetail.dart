@@ -19,25 +19,25 @@ import 'package:inforum/subPage/profilePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PostDetailPage extends StatefulWidget {
-  final int postID;
-  final int editorID;
-  final String titleText;
-  final String contentShortText;
-  final int likeCount;
-  final int dislikeCount;
-  final int likeState;
-  final int commentCount;
-  final String imgURL;
-  final bool isCollect;
-  final String authorName;
-  final String imgAuthor;
+  final int? postID;
+  final int? editorID;
+  final String? titleText;
+  final String? contentShortText;
+  final int? likeCount;
+  final int? dislikeCount;
+  final int? likeState;
+  final int? commentCount;
+  final String? imgURL;
+  final bool? isCollect;
+  final String? authorName;
+  final String? imgAuthor;
   final bool isAuthor;
-  final List<String> tags;
-  final String time;
-  final String heroTag;
+  final List<String>? tags;
+  final String? time;
+  final String? heroTag;
 
   const PostDetailPage({
-    Key key,
+    Key? key,
     this.titleText,
     this.likeCount,
     this.dislikeCount,
@@ -45,15 +45,15 @@ class PostDetailPage extends StatefulWidget {
     this.imgURL,
     this.isCollect,
     this.likeState,
-    @required this.authorName,
+    required this.authorName,
     this.imgAuthor,
-    @required this.isAuthor,
-    @required this.postID,
+    required this.isAuthor,
+    required this.postID,
     this.tags,
     this.time,
     this.heroTag,
     this.contentShortText,
-    @required this.editorID,
+    required this.editorID,
   }) : super(key: key);
 
   @override
@@ -61,27 +61,27 @@ class PostDetailPage extends StatefulWidget {
 }
 
 class _PostDetailPageState extends State<PostDetailPage> {
-  String _title;
-  String _fullText;
-  List<String> _tags;
-  bool isCollect;
-  String _imgURL;
-  int _editorID;
+  String? _title;
+  String? _fullText;
+  List<String>? _tags;
+  bool? isCollect;
+  String? _imgURL;
+  int _editorID = 0;
   int likeState = 0; //0缺省,1为点赞,2为踩
-  int likeCount;
-  int dislikeCount;
-  int commentCount;
-  SharedPreferences sp;
-  String authorUserName = '';
-  bool isAuthor;
-  List<String> tagStrings;
-  List<Widget> tagWidgets;
+  int likeCount = 0;
+  int dislikeCount = 0;
+  int commentCount = 0;
+  late SharedPreferences sp;
+  String? authorUserName = '';
+  late bool isAuthor;
+  List<String>? tagStrings;
+  List<Widget>? tagWidgets;
   List<Widget> commentList = [];
   bool loadState = false;
-  TextEditingController _commentController;
-  DateTime dt;
-  String _time;
-  String _avatarHeroTag;
+  late TextEditingController _commentController;
+  DateTime? dt;
+  String? _time;
+  String? _avatarHeroTag;
 
   @override
   void initState() {
@@ -89,10 +89,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
     _time = widget.time;
     isAuthor = widget.isAuthor;
     isCollect = widget.isCollect;
-    likeCount = widget.likeCount;
-    dislikeCount = widget.dislikeCount;
-    likeState = widget.likeState;
-    commentCount = widget.commentCount;
+    likeCount = widget.likeCount!;
+    dislikeCount = widget.dislikeCount!;
+    likeState = widget.likeState!;
+    commentCount = widget.commentCount!;
     _commentController = new TextEditingController();
     _refresh();
     super.initState();
@@ -145,9 +145,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 )
               : Container(),
           new IconButton(
-            icon: isCollect ? Icon(Icons.star) : Icon(Icons.star_border),
+            icon: isCollect! ? Icon(Icons.star) : Icon(Icons.star_border),
             onPressed: () => _starButtonClick(),
-            tooltip: isCollect ? '取消收藏' : '收藏',
+            tooltip: isCollect! ? '取消收藏' : '收藏',
           )
         ],
       ),
@@ -176,10 +176,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
                               clipBehavior: Clip.antiAlias,
                               color: Colors.transparent,
                               child: Ink.image(
-                                image: widget.imgAuthor != null
-                                    ? CachedNetworkImageProvider(
-                                        widget.imgAuthor)
-                                    : AssetImage('images/default_avatar.png'),
+                                image: (widget.imgAuthor != null
+                                        ? CachedNetworkImageProvider(
+                                            widget.imgAuthor!)
+                                        : AssetImage(
+                                            'images/default_avatar.png'))
+                                    as ImageProvider<Object>,
                                 fit: BoxFit.contain,
                                 width: 80,
                                 height: 80,
@@ -197,7 +199,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                 ),
                               ),
                             ),
-                            tag: _avatarHeroTag,
+                            tag: _avatarHeroTag!,
                           ),
                           Flex(
                             direction: Axis.vertical,
@@ -209,7 +211,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                   margin: EdgeInsets.only(top: 10, left: 10),
                                   alignment: Alignment.bottomLeft,
                                   child: Text(
-                                    widget.authorName,
+                                    widget.authorName!,
                                     style: new TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold),
@@ -263,7 +265,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                 ),
                               ),
                             ],
-                            onSelected: (result) {
+                            onSelected: (dynamic result) {
                               switch (result) {
                                 case 'forward':
                                   break;
@@ -281,7 +283,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       margin: EdgeInsets.only(top: 10, left: 25, right: 25),
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        _title ?? widget.titleText,
+                        _title ?? widget.titleText!,
                         style: titleFontStyle,
                         textAlign: TextAlign.left,
                       ),
@@ -289,7 +291,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                     new Container(
                         margin: EdgeInsets.only(top: 10, left: 25, right: 25),
                         child: Text(
-                          _fullText ?? widget.contentShortText,
+                          _fullText ?? widget.contentShortText!,
                           style: new TextStyle(fontSize: 18),
                         )),
                     new Container(
@@ -304,7 +306,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                           ? Wrap(
                               spacing: 5,
                               runSpacing: 1,
-                              children: tagWidgets,
+                              children: tagWidgets!,
                             )
                           : null,
                     ),
@@ -322,8 +324,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                   width: widget.imgURL != null ? 400 : 0,
                                   height: widget.imgURL != null ? 200 : 0,
                                   fit: BoxFit.cover,
-                                  image:
-                                      CachedNetworkImageProvider(widget.imgURL),
+                                  image: CachedNetworkImageProvider(
+                                      widget.imgURL!),
                                   child: InkWell(
                                     onTap: () {
                                       Navigator.of(context).push(
@@ -338,13 +340,13 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                   ),
                                 ),
                               ),
-                              tag: widget.heroTag,
+                              tag: widget.heroTag!,
                             )
                           : null,
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                      child: Text(convertBasicTimeFormat(_time)),
+                      child: Text(convertBasicTimeFormat(_time!)),
                     ),
                     Divider(thickness: 2),
                     Container(
@@ -381,7 +383,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         Expanded(
                           flex: 0,
                           child: ActionButton(
-                            fun: () => shareNetworkImage(widget.imgURL),
+                            fun: () => shareNetworkImage(widget.imgURL!),
                             ico: Icon(Icons.share_outlined),
                           ),
                         ),
@@ -523,7 +525,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       onPressed: () async {
                         SharedPreferences prefs =
                             await SharedPreferences.getInstance();
-                        int editorID = prefs.getInt('userID');
+                        int? editorID = prefs.getInt('userID');
                         Response res = await Dio().post(
                             '$apiServerAddress/newComment/',
                             options: new Options(
@@ -567,7 +569,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         });
     if (res.data == 'success.') {
       setState(() {
-        isCollect = !isCollect;
+        isCollect = !isCollect!;
       });
     }
   }
@@ -642,7 +644,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     tagWidgets = [];
     tagStrings = widget.tags;
     if (tagStrings != null) {
-      tagWidgets.addAll(tagStrings
+      tagWidgets!.addAll(tagStrings!
           .map((e) => Container(
                 height: 32,
                 child: Chip(
@@ -663,7 +665,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   Future<void> _refresh() async {
     sp = await SharedPreferences.getInstance();
     commentList.clear();
-    PostDetailRecordset rs = await getPostDetail(widget.postID);
+    PostDetailRecordset? rs = await getPostDetail(widget.postID);
     if (rs != null) {
       setState(() {
         _title = rs.title;
@@ -671,11 +673,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
         authorUserName = rs.username;
         _imgURL = rs.imageUrl;
         _time = rs.lastEditTime.toString();
-        _tags = rs.tags != null ? rs.tags.split(',') : null;
-        _editorID = rs.editorId;
+        _tags = rs.tags != null ? rs.tags!.split(',') : null;
+        _editorID = rs.editorId!;
       });
     }
-    var _list = await getComment(widget.postID, sp.getInt('userID')) ?? [];
+    var _list = await getComment(widget.postID, sp.getInt('userID'));
     setState(() {
       commentList.addAll(_list);
       loadState = true;

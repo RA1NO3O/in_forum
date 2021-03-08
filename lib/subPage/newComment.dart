@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -10,19 +11,19 @@ import 'package:inforum/subPage/profilePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NewCommentScreen extends StatefulWidget {
-  final int targetUserID;
-  final String contentText;
-  final int targetPostID;
-  final String imgURL;
-  final String targetUserName;
+  final int? targetUserID;
+  final String? contentText;
+  final int? targetPostID;
+  final String? imgURL;
+  final String? targetUserName;
 
   const NewCommentScreen(
-      {Key key,
+      {Key? key,
       this.contentText,
       this.imgURL,
-      @required this.targetPostID,
-      @required this.targetUserName,
-      @required this.targetUserID})
+      required this.targetPostID,
+      required this.targetUserName,
+      required this.targetUserID})
       : super(key: key);
 
   @override
@@ -31,8 +32,8 @@ class NewCommentScreen extends StatefulWidget {
 
 class _NewCommentScreenState extends State<NewCommentScreen> {
   final commentController = new TextEditingController();
-  String _localImagePath;
-  String _networkImageLink;
+  String? _localImagePath;
+  String? _networkImageLink;
   bool isNull = true;
 
   @override
@@ -46,7 +47,7 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
         }
       });
     });
-    commentController.text = widget.contentText;
+    commentController.text = widget.contentText!;
     if (widget.imgURL != null) {
       _networkImageLink = widget.imgURL;
     }
@@ -64,15 +65,15 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
             icon: Icon(Icons.send_rounded),
             onPressed: !isNull
                 ? () async {
-                    String uploadedImage;
+                    String? uploadedImage;
                     if (_localImagePath != null) {
-                      uploadedImage = await uploadFile(File(_localImagePath));
+                      uploadedImage = await uploadFile(File(_localImagePath!));
                     } else if (_networkImageLink != null) {
                       uploadedImage = _networkImageLink;
                     }
                     SharedPreferences prefs =
                         await SharedPreferences.getInstance();
-                    int editorID = prefs.getInt('userID');
+                    int? editorID = prefs.getInt('userID');
                     Response res = await Dio().post(
                         '$apiServerAddress/newComment/',
                         options: new Options(
@@ -171,11 +172,11 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
                                 BoxConstraints(maxHeight: 400, maxWidth: 400),
                             child: _localImagePath != null
                                 ? Image.file(
-                                    File(_localImagePath),
+                                    File(_localImagePath!),
                                     fit: BoxFit.cover,
                                   )
                                 : Image.network(
-                                    _networkImageLink,
+                                    _networkImageLink!,
                                     fit: BoxFit.cover,
                                   ),
                           ),
@@ -230,14 +231,13 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
   }
 
   Future getImage() async {
-    FilePickerResult picker = await FilePicker.platform.pickFiles(type: FileType.image);
+    FilePickerResult picker = await (FilePicker.platform.pickFiles(type: FileType.image) as FutureOr<FilePickerResult>);
     PlatformFile file = picker.files.first;
     setState(() {
-      if (file != null) {
+
         setState(() {
           _localImagePath = file.path;
         });
-      }
     });
   }
 

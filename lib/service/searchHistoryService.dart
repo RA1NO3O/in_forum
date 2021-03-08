@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-SharedPreferences sp;
+late SharedPreferences sp;
 
 _init() async {
   sp = await SharedPreferences.getInstance();
@@ -11,11 +11,9 @@ Future<List<Widget>> getSearchHistory() async {
   _init();
   List<Widget> widgets = [];
   List<String> h = sp.getStringList('searchHistory')??[];
-  if (h != null) {
     h.forEach((value) {
       widgets.add(ListTile(title: Text(value), onTap: () {}));
     });
-  }
   return widgets;
 }
 

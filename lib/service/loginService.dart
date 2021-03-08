@@ -11,21 +11,21 @@ LoginService loginServiceFromJson(String str) =>
 
 String loginServiceToJson(LoginService data) => json.encode(data.toJson());
 
-Future<LoginRecordset> tryLogin(String userName, String password) async {
+Future<LoginRecordset?> tryLogin(String userName, String password) async {
   Response res = await Dio().get('$apiServerAddress/login'
       '?username=$userName&password=$password');
   final LoginService loginService = loginServiceFromJson(res.toString());
-  final LoginRecordset rs =
-      loginService.recordset.isEmpty ? null : loginService.recordset[0];
+  final LoginRecordset? rs =
+      loginService.recordset!.isEmpty ? null : loginService.recordset![0];
   return rs;
 }
 
-Future<LoginRecordset> searchUser(String userName) async {
+Future<LoginRecordset?> searchUser(String? userName) async {
   Response res = await Dio().get('$apiServerAddress/searchUser'
       '?userName=$userName');
   final LoginService loginService = loginServiceFromJson(res.toString());
-  final LoginRecordset rs =
-      loginService.recordset.isEmpty ? null : loginService.recordset[0];
+  final LoginRecordset? rs =
+      loginService.recordset!.isEmpty ? null : loginService.recordset![0];
   return rs;
 }
 
@@ -37,10 +37,10 @@ class LoginService {
     this.rowsAffected,
   });
 
-  List<List<LoginRecordset>> recordsets;
-  List<LoginRecordset> recordset;
-  Output output;
-  List<int> rowsAffected;
+  List<List<LoginRecordset>>? recordsets;
+  List<LoginRecordset>? recordset;
+  Output? output;
+  List<int>? rowsAffected;
 
   factory LoginService.fromJson(Map<String, dynamic> json) => LoginService(
         recordsets: json["recordsets"] == null
@@ -60,22 +60,22 @@ class LoginService {
   Map<String, dynamic> toJson() => {
         "recordsets": recordsets == null
             ? null
-            : List<dynamic>.from(recordsets
+            : List<dynamic>.from(recordsets!
                 .map((x) => List<dynamic>.from(x.map((x) => x.toJson())))),
         "recordset": recordset == null
             ? null
-            : List<dynamic>.from(recordset.map((x) => x.toJson())),
-        "output": output == null ? null : output.toJson(),
+            : List<dynamic>.from(recordset!.map((x) => x.toJson())),
+        "output": output == null ? null : output!.toJson(),
         "rowsAffected": rowsAffected == null
             ? null
-            : List<dynamic>.from(rowsAffected.map((x) => x)),
+            : List<dynamic>.from(rowsAffected!.map((x) => x)),
       };
 }
 
 class Output {
   Output();
 
-  factory Output.fromJson(Map<String, dynamic> json) => Output();
+  factory Output.fromJson(Map<String, dynamic>? json) => Output();
 
   Map<String, dynamic> toJson() => {};
 }
@@ -86,8 +86,8 @@ class LoginRecordset {
     this.username,
   });
 
-  int id;
-  String username;
+  int? id;
+  String? username;
 
   factory LoginRecordset.fromJson(Map<String, dynamic> json) => LoginRecordset(
         id: json["id"] == null ? null : json["id"],

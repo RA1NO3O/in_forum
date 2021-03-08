@@ -18,15 +18,15 @@ import 'component/customStyles.dart';
 import 'main.dart';
 
 class HomeScreen extends StatefulWidget {
-  final int userID;
-  final String userName;
-  final String nickName;
+  final int? userID;
+  final String? userName;
+  final String? nickName;
 
   const HomeScreen({
-    Key key,
-    @required this.userID,
-    @required this.userName,
-    @required this.nickName,
+    Key? key,
+    required this.userID,
+    required this.userName,
+    required this.nickName,
   }) : super(key: key);
 
   @override
@@ -37,12 +37,12 @@ class HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   Color _currentColor = Colors.blue;
   IconData _actionIcon = Icons.post_add;
-  PageController _pageController;
-  ScrollController _scrollController;
-  SharedPreferences sp;
-  static ScaffoldMessengerState scaffold;
-  String _hintText;
-  String _avatarURL;
+  PageController? _pageController;
+  ScrollController? _scrollController;
+  late SharedPreferences sp;
+  static late ScaffoldMessengerState scaffold;
+  String? _hintText;
+  String? _avatarURL;
   String _followerCount = '0';
   String _followingCount = '0';
   String _avatarHeroTag = getRandom(6);
@@ -61,12 +61,12 @@ class HomeScreenState extends State<HomeScreen> {
     setState(() {
       _avatarURL = sp.getString('avatarURL');
 
-      _followerCount = rs.followerCount.toString();
+      _followerCount = rs!.followerCount.toString();
       _followingCount = rs.followingCount.toString();
     });
 
-    WidgetsBinding.instance.addPostFrameCallback(
-        (_) => scaffold.showSnackBar(welcomeSnackBar(widget.userName)));
+    WidgetsBinding.instance!.addPostFrameCallback(
+        (_) => scaffold.showSnackBar(welcomeSnackBar(widget.userName!)));
   }
 
   @override
@@ -138,7 +138,7 @@ class HomeScreenState extends State<HomeScreen> {
                 title: InkWell(
                   onDoubleTap: () {
                     setState(() {
-                      _scrollController.animateTo(.0,
+                      _scrollController!.animateTo(.0,
                           duration: Duration(milliseconds: 300),
                           curve: Curves.ease);
                     });
@@ -192,7 +192,7 @@ class HomeScreenState extends State<HomeScreen> {
         onTap: (index) {
           setState(() {
             _currentIndex = index;
-            _pageController.jumpToPage(index);
+            _pageController!.jumpToPage(index);
             pageChanged();
           });
         },
@@ -265,9 +265,9 @@ class HomeScreenState extends State<HomeScreen> {
                       clipBehavior: Clip.hardEdge,
                       color: Colors.transparent,
                       child: Ink.image(
-                        image: _avatarURL != null
-                            ? CachedNetworkImageProvider(_avatarURL)
-                            : AssetImage('images/default_avatar.png'),
+                        image: (_avatarURL != null
+                            ? CachedNetworkImageProvider(_avatarURL!)
+                            : AssetImage('images/default_avatar.png')) as ImageProvider<Object>,
                         fit: BoxFit.cover,
                         width: 85,
                         height: 85,
@@ -291,7 +291,7 @@ class HomeScreenState extends State<HomeScreen> {
                     alignment: Alignment.center,
                     margin: EdgeInsets.only(top: 15),
                     child: Text(
-                      widget.userID == null ? 'Unknown' : widget.nickName,
+                      widget.userID == null ? 'Unknown' : widget.nickName!,
                       style: new TextStyle(fontSize: 25),
                     ),
                   ),
@@ -385,12 +385,12 @@ class HomeScreenState extends State<HomeScreen> {
 
   TextStyle titleTextStyle() => Theme.of(context)
       .primaryTextTheme
-      .caption
+      .caption!
       .copyWith(fontSize: 20, fontWeight: FontWeight.bold);
 
   Future<bool> logOutDialog() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    bool result = await showDialog<bool>(
+    bool? result = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -432,7 +432,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    _pageController.dispose();
+    _pageController!.dispose();
     super.dispose();
   }
 }

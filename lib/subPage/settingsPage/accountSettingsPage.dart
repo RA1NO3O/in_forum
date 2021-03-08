@@ -16,11 +16,11 @@ class AccountSettingsPage extends StatefulWidget {
 
 class _AccountSettingsPage extends State<AccountSettingsPage> {
   GlobalKey<FormState> _fk = GlobalKey<FormState>();
-  SharedPreferences sp;
+  late SharedPreferences sp;
   var userID;
-  String userName = 'unknown';
-  String nickName = 'unknown';
-  String avatarURL;
+  String? userName = 'unknown';
+  String? nickName = 'unknown';
+  String? avatarURL;
   TextEditingController userNameController = new TextEditingController();
 
   @override
@@ -46,9 +46,9 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                     leading: Icon(Icons.account_box_rounded),
                     shape: roundedRectangleBorder,
                     title: Text('用户名'),
-                    subtitle: Text(userName),
+                    subtitle: Text(userName!),
                     onTap: () async {
-                      userNameController.text = userName;
+                      userNameController.text = userName!;
                       final result = await showDialog(
                         context: context,
                         builder: (bc) => StatefulDialog(
@@ -79,7 +79,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                           actions: [
                             TextButton.icon(
                                 onPressed: () async {
-                                  if (_fk.currentState.validate()) {
+                                  if (_fk.currentState!.validate()) {
                                     bool r = await tryEditUserName(
                                         userNameController.text);
                                     if (r) {

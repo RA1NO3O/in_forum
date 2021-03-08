@@ -1,12 +1,14 @@
+import 'dart:async';
+
 import 'package:inforum/component/postListItem.dart';
 import 'package:inforum/service/postCollectionService.dart';
 
 List<PostListItem> pcls = [];
-Future<List<PostListItem>> getCollectionList(int userID) async {
+Future<List<PostListItem>> getCollectionList(int? userID) async {
   pcls.clear();
-  List<CollectionRecordset> pcl = await getPostCollection(userID);
+  List<CollectionRecordset> pcl = await (getPostCollection(userID) as FutureOr<List<CollectionRecordset>>);
   pcl.forEach((rs) {
-    String t = rs.tags;
+    String? t = rs.tags;
     pcls.add(PostListItem(
       editorID: rs.editorId,
       postID: rs.postId,

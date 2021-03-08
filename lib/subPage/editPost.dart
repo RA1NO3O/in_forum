@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -10,16 +11,16 @@ import 'package:inforum/service/uploadPictureService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditPostScreen extends StatefulWidget {
-  final String titleText;
-  final String contentText;
-  final List<String> tags;
-  final int mode; //0为新建,1为编辑
-  final int postID;
-  final String imgURL;
-  final String heroTag;
+  final String? titleText;
+  final String? contentText;
+  final List<String>? tags;
+  final int? mode; //0为新建,1为编辑
+  final int? postID;
+  final String? imgURL;
+  final String? heroTag;
 
   const EditPostScreen(
-      {Key key,
+      {Key? key,
       this.titleText,
       this.contentText,
       this.mode,
@@ -34,18 +35,18 @@ class EditPostScreen extends StatefulWidget {
 }
 
 class _EditPostScreenState extends State<EditPostScreen> {
-  SharedPreferences sp;
+  late SharedPreferences sp;
   final titleController = new TextEditingController();
   final contentController = new TextEditingController();
   var tags = [];
-  var tagChips;
+  late var tagChips;
   bool saved = false;
   bool edited = false;
-  String draftTitle;
-  String draftContent;
-  List<String> draftTags;
-  String _localImagePath;
-  String _networkImageLink;
+  String? draftTitle;
+  String? draftContent;
+  List<String>? draftTags;
+  String? _localImagePath;
+  String? _networkImageLink;
 
   @override
   void initState() {
@@ -53,10 +54,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
       getDraft();
     }
     if (widget.mode == 1) {
-      titleController.text = widget.titleText;
-      contentController.text = widget.contentText;
+      titleController.text = widget.titleText!;
+      contentController.text = widget.contentText!;
       if (widget.tags != null) {
-        tags.addAll(widget.tags);
+        tags.addAll(widget.tags!);
       }
       if (widget.imgURL != null) {
         _networkImageLink = widget.imgURL;
@@ -87,25 +88,23 @@ class _EditPostScreenState extends State<EditPostScreen> {
         },
       ),
     ];
-    if (tags != null) {
-      tagChips.addAll(tags
-          .map((s) => Container(
-                height: 32,
-                child: InputChip(
-                  label: Text('$s'),
-                  avatar: Icon(Icons.tag),
-                  onDeleted: () {
-                    setState(
-                      () {
-                        tags.remove('$s');
-                        refreshTagList();
-                      },
-                    );
-                  },
-                ),
-              ))
-          .toList());
-    }
+    tagChips.addAll(tags
+        .map((s) => Container(
+              height: 32,
+              child: InputChip(
+                label: Text('$s'),
+                avatar: Icon(Icons.tag),
+                onDeleted: () {
+                  setState(
+                    () {
+                      tags.remove('$s');
+                      refreshTagList();
+                    },
+                  );
+                },
+              ),
+            ))
+        .toList());
   }
 
   Future<void> getDraft() async {
@@ -113,8 +112,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
     draftTitle = sp.getString('draft_title');
     draftContent = sp.getString('draft_content');
     draftTags = sp.getStringList('draft_tags');
-    titleController.text = draftTitle;
-    contentController.text = draftContent;
+    titleController.text = draftTitle!;
+    contentController.text = draftContent!;
     tags = draftTags ?? [];
     refreshTagList();
   }
@@ -134,7 +133,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                         icon: Icon(Icons.save_rounded),
                         onPressed: () {
                           save(titleController.text, contentController.text,
-                              tags);
+                              tags as List<String>);
                           ScaffoldMessenger.of(bc)
                               .showSnackBar(doneSnackBar('已存为草稿.'));
                           saved = true;
@@ -151,17 +150,17 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   onPressed: titleController.text.trim().isNotEmpty &&
                           contentController.text.trim().isNotEmpty
                       ? () async {
-                          String uploadedImage;
+                          String? uploadedImage;
                           if (_localImagePath != null) {
                             uploadedImage =
-                                await uploadFile(File(_localImagePath));
+                                await uploadFile(File(_localImagePath!));
                           } else if (_networkImageLink != null) {
                             uploadedImage = _networkImageLink;
                           }
                           if (widget.mode == 0) {
                             SharedPreferences prefs =
                                 await SharedPreferences.getInstance();
-                            int editorID = prefs.getInt('userID');
+                            int? editorID = prefs.getInt('userID');
                             Response res = await Dio().post(
                                 '$apiServerAddress/newPost/',
                                 options: new Options(
@@ -280,15 +279,15 @@ class _EditPostScreenState extends State<EditPostScreen> {
                                     maxHeight: 400, maxWidth: 400),
                                 child: _localImagePath != null
                                     ? Image.file(
-                                        File(_localImagePath),
+                                        File(_localImagePath!),
                                         fit: BoxFit.cover,
                                       )
                                     : Hero(
                                         child: Image.network(
-                                          _networkImageLink,
+                                          _networkImageLink!,
                                           fit: BoxFit.cover,
                                         ),
-                                        tag: widget.heroTag??'',
+                                        tag: widget.heroTag ?? '',
                                       ),
                               ),
                             ),
@@ -413,7 +412,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
     if (saved || (!edited)) {
       return Future<bool>.value(true);
     }
-    bool result = await showDialog<bool>(
+    bool? result = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
               title: Column(
@@ -436,7 +435,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
                       : Icon(Icons.arrow_back_rounded),
                   label: widget.mode == 0 ? Text('保存') : Text('返回'),
                   onPressed: () {
-                    save(titleController.text, contentController.text, tags);
+                    save(titleController.text, contentController.text,
+                        tags as List<String>);
                     Navigator.pop(context, true);
                   },
                 ),
@@ -454,7 +454,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                         await SharedPreferences.getInstance();
                     sp.setString('draft_title', '');
                     sp.setString('draft_content', '');
-                    sp.setStringList('draft_tags', null);
+                    sp.setStringList('draft_tags', []);
                   },
                 ),
               ],
@@ -467,13 +467,12 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   Future getImage() async {
     // final picker = ImagePicker();
-    FilePickerResult picker = await FilePicker.platform.pickFiles(type: FileType.image);
+    FilePickerResult picker = await (FilePicker.platform
+        .pickFiles(type: FileType.image) as FutureOr<FilePickerResult>);
     // final file = await picker.getImage(source: ImageSource.gallery);
     PlatformFile file = picker.files.first;
     setState(() {
-      if (file != null) {
-        _localImagePath = file.path;
-      }
+      _localImagePath = file.path;
     });
   }
 

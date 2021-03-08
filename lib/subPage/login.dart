@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:inforum/component/customStyles.dart';
@@ -7,10 +9,10 @@ import 'package:inforum/service/profileService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
-  final String userName;
-  final String password;
+  final String? userName;
+  final String? password;
 
-  const LoginPage({Key key, this.userName, this.password}) : super(key: key);
+  const LoginPage({Key? key, this.userName, this.password}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -173,30 +175,34 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (isUserFound) {
-      final LoginRS.LoginRecordset rs =
+      final LoginRS.LoginRecordset? rs =
           await LoginRS.tryLogin(userNameController.text, pwdController.text);
 
       if (rs != null) {
-        user['id'] = rs.id;
-        var rs2 = await getProfile(rs.id);
+        ProfileRecordset? rs2 = await getProfile(rs.id);
+        String _nickName=rs2?.nickname??'';
+        String _userName=rs2?.username??'';
+        String _avatarURL=rs2?.avatarUrl??'';
+        String _bannerURL=rs2?.avatarUrl??'';
+        String _bio=rs2?.bio??'';
+        String _location = rs2?.location??'';
+
         //写入登录状态
         SharedPreferences prefs = await SharedPreferences.getInstance();
-
-        prefs.setInt('userID', rs.id);
-        prefs.setString('userName', rs2.username);
-        prefs.setString('nickName', rs2.nickname);
-        prefs.setString('avatarURL', rs2.avatarUrl);
-        prefs.setString('bannerURL', rs2.bannerUrl);
-        prefs.setString('bio', rs2.bio);
-        prefs.setString('location', rs2.location);
-
+        prefs.setInt('userID', rs.id!);
+        prefs.setString('userName', _userName);
+        prefs.setString('nickName', _nickName);
+        prefs.setString('avatarURL', _avatarURL);
+        prefs.setString('bannerURL', _bannerURL);
+        prefs.setString('bio', _bio);
+        prefs.setString('location', _location);
         prefs.setBool('isLogin', true);
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) {
           return HomeScreen(
             userID: rs.id,
-            userName: rs2.username,
-            nickName: rs2.nickname,
+            userName: rs.username,
+            nickName: _nickName,
           );
         }));
         userNameController.removeListener(idListener);
@@ -213,7 +219,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     } else {
       try {
-        final LoginRS.LoginRecordset rs =
+        final LoginRS.LoginRecordset? rs =
             await LoginRS.searchUser(userNameController.text);
 
         if (rs != null) {

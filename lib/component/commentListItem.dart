@@ -14,31 +14,31 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'imageViewer.dart';
 
 class CommentListItem extends StatefulWidget {
-  final int postID;
-  final String commenterAvatarURL;
-  final String commenterName;
+  final int? postID;
+  final String? commenterAvatarURL;
+  final String? commenterName;
   final String commentTime;
-  final String content;
-  final String commentTarget;
-  final int editorID;
-  final int likeState;
-  final int likeCount;
-  final String imgURL;
-  final bool isAuthor;
+  final String? content;
+  final String? commentTarget;
+  final int? editorID;
+  final int? likeState;
+  final int? likeCount;
+  final String? imgURL;
+  final bool? isAuthor;
 
   const CommentListItem({
-    Key key,
-    @required this.postID,
+    Key? key,
+    required this.postID,
     this.commenterAvatarURL,
-    @required this.commenterName,
-    @required this.commentTime,
-    @required this.content,
-    @required this.commentTarget,
+    required this.commenterName,
+    required this.commentTime,
+    required this.content,
+    required this.commentTarget,
     this.likeState,
     this.likeCount,
     this.imgURL,
     this.isAuthor,
-    @required this.editorID,
+    required this.editorID,
   }) : super(key: key);
 
   @override
@@ -46,9 +46,9 @@ class CommentListItem extends StatefulWidget {
 }
 
 class _CommentListItem extends State<CommentListItem> {
-  String _imgURL;
-  int likeState; //0缺省,1为点赞,2为踩
-  int likeCount;
+  String? _imgURL;
+  int likeState=0; //0缺省,1为点赞,2为踩
+  int likeCount=0;
   String _imgTag = getRandom(6);
   String _avatarHeroTag = getRandom(6);
 
@@ -79,10 +79,10 @@ class _CommentListItem extends State<CommentListItem> {
                         clipBehavior: Clip.hardEdge,
                         color: Colors.transparent,
                         child: Ink.image(
-                          image: widget.commenterAvatarURL != null
+                          image: (widget.commenterAvatarURL != null
                               ? CachedNetworkImageProvider(
-                                  widget.commenterAvatarURL)
-                              : AssetImage('images/default_avatar.png'),
+                                  widget.commenterAvatarURL!)
+                              : AssetImage('images/default_avatar.png')) as ImageProvider<Object>,
                           fit: BoxFit.contain,
                           width: 50,
                           height: 50,
@@ -107,7 +107,7 @@ class _CommentListItem extends State<CommentListItem> {
                         Container(
                           margin: EdgeInsets.only(left: 15),
                           child: Text(
-                            widget.commenterName,
+                            widget.commenterName!,
                             style: new TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
@@ -128,7 +128,7 @@ class _CommentListItem extends State<CommentListItem> {
                     Builder(
                       builder: (bc) => PopupMenuButton(
                         // icon: Icon(Icons.keyboard_arrow_down_rounded),
-                        itemBuilder: widget.isAuthor
+                        itemBuilder: widget.isAuthor!
                             ? (bc) => <PopupMenuEntry>[
                                   PopupMenuItem(
                                     value: 'edit',
@@ -169,7 +169,7 @@ class _CommentListItem extends State<CommentListItem> {
                                     ),
                                   ),
                                 ],
-                        onSelected: (result) {
+                        onSelected: (dynamic result) {
                           switch (result) {
                             case 'delete':
                               if (_deleteConfirmDialog() == '0') {
@@ -192,7 +192,7 @@ class _CommentListItem extends State<CommentListItem> {
                           '回复给 ',
                         ),
                         Text(
-                          widget.commentTarget,
+                          widget.commentTarget!,
                           style: new TextStyle(color: Colors.blue),
                         )
                       ],
@@ -201,7 +201,7 @@ class _CommentListItem extends State<CommentListItem> {
                   alignment: Alignment.centerLeft,
                   margin: EdgeInsets.only(bottom: 5, left: 5, top: 5),
                   child: Text(
-                    widget.content,
+                    widget.content!,
                     style: new TextStyle(fontSize: 18),
                   ),
                 ),
@@ -218,7 +218,7 @@ class _CommentListItem extends State<CommentListItem> {
                             child: Ink.image(
                               fit: BoxFit.cover,
                               height: widget.imgURL != null ? 200 : 0,
-                              image: CachedNetworkImageProvider(_imgURL),
+                              image: CachedNetworkImageProvider(_imgURL!),
                               child: InkWell(
                                 onTap: () {
                                   Navigator.of(context).push(

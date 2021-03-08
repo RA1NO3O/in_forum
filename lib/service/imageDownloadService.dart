@@ -17,7 +17,7 @@ class AppUtil {
   /// 保存图片到相册
   ///
   /// 默认为下载网络图片，如需下载资源图片，需要指定 [isAsset] 为 `true`。
-  static Future<String> saveImage(String imageUrl,
+  static Future<String?> saveImage(String? imageUrl,
       {bool isAsset: false}) async {
     try {
       if (imageUrl == null) throw '保存失败，图片不存在！';
@@ -42,8 +42,8 @@ class AppUtil {
         /// 保存网络图片
         CachedNetworkImage image = CachedNetworkImage(imageUrl: imageUrl);
         DefaultCacheManager manager =
-            image.cacheManager ?? DefaultCacheManager();
-        Map<String, String> headers = image.httpHeaders;
+            image.cacheManager as DefaultCacheManager? ?? DefaultCacheManager();
+        Map<String, String>? headers = image.httpHeaders;
         file = await manager.getSingleFile(
           image.imageUrl,
           headers: headers,
@@ -55,7 +55,6 @@ class AppUtil {
       final dir = await getApplicationDocumentsDirectory();
       print(dir.path);
       final result = await File('${dir.path}/${getRandom(8)}.png').writeAsBytes(imageBytes);
-      if (result == null) throw '图片保存失败';
       return result.path;
     } catch (e) {
       print(e.toString());

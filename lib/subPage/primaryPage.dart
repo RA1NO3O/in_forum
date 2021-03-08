@@ -5,10 +5,10 @@ import 'package:inforum/component/postListItem.dart';
 import 'package:inforum/service/postStreamService.dart';
 
 class PrimaryPage extends StatefulWidget {
-  final int userID;
-  final ScrollController scrollController;
+  final int? userID;
+  final ScrollController? scrollController;
 
-  const PrimaryPage({Key key, this.userID, this.scrollController})
+  const PrimaryPage({Key? key, this.userID, this.scrollController})
       : super(key: key);
 
   @override
@@ -18,7 +18,7 @@ class PrimaryPage extends StatefulWidget {
 class PrimaryPageState extends State<PrimaryPage> {
   List<PostListItem> streamList = [];
   bool loadState = false;
-  ScaffoldState scaffold;
+  ScaffoldState? scaffold;
 
   @override
   void initState() {

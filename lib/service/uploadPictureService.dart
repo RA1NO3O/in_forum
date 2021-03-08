@@ -21,10 +21,10 @@ class UploadOss {
   /// @param onSendProgress 上传的进度事件
 
   static Future<String> upload(
-      {File file,
+      {required File file,
       String rootDir = 'images',
-      String fileType,
-      Function onSendProgress}) async {
+      String? fileType,
+      Function? onSendProgress}) async {
     String policyText =
         '{"expiration": "$expiration","conditions": [{"bucket": "$bucket" },["content-length-range", 0, 1048576000]]}';
 
@@ -37,7 +37,7 @@ class UploadOss {
     //创建dio对象
     Dio dio = new Dio(options);
     // 生成oss的路径和文件名
-    String pathName;
+    String? pathName;
     if (getFileType(file.path) == 'HEIC' || getFileType(file.path) == 'heic') {
 
     } else {
@@ -64,7 +64,7 @@ class UploadOss {
       // 成功后返回文件访问路径
       return '$url/$pathName';
     } catch (e) {
-      throw (e.message);
+      throw (e);
     }
   }
 
@@ -72,11 +72,10 @@ class UploadOss {
   * 根据图片本地路径获取图片名称
   * */
   static String getImageNameByPath(String filePath) {
-    // ignore: null_aware_before_operator
-    return filePath?.substring(
+    return filePath.substring(
         // ignore: null_aware_before_operator
-        filePath?.lastIndexOf("/") + 1,
-        filePath?.length);
+        filePath.lastIndexOf("/") + 1,
+        filePath.length);
   }
 
   /// 获取文件类型

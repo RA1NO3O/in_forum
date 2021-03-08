@@ -5,25 +5,25 @@ import 'package:inforum/service/randomGenerator.dart';
 import 'imageViewer.dart';
 
 class GalleryListItem extends StatefulWidget {
-  final String imgURL;
-  final int postID;
-  final String titleText;
-  final String contentText;
-  final int likeCount;
-  final int dislikeCount;
-  final int likeState;
-  final int commentCount;
-  final int collectCount;
-  final bool isCollect;
-  final String authorName;
-  final String imgAuthor;
-  final String time;
-  final List<String> tags;
-  final int index;
-  final bool isAuthor;
+  final String? imgURL;
+  final int? postID;
+  final String? titleText;
+  final String? contentText;
+  final int? likeCount;
+  final int? dislikeCount;
+  final int? likeState;
+  final int? commentCount;
+  final int? collectCount;
+  final bool? isCollect;
+  final String? authorName;
+  final String? imgAuthor;
+  final String? time;
+  final List<String>? tags;
+  final int? index;
+  final bool? isAuthor;
 
   const GalleryListItem(
-      {Key key,
+      {Key? key,
       this.imgURL,
       this.postID,
       this.titleText,
@@ -58,8 +58,8 @@ class _GalleryListItemState extends State<GalleryListItem> {
               color: Colors.transparent,
               child: Ink.image(
                 image: widget.imgURL != null
-                    ? CachedNetworkImageProvider(widget.imgURL)
-                    : Center(child: Icon(Icons.broken_image_rounded)),
+                    ? CachedNetworkImageProvider(widget.imgURL!)
+                    : Center(child: Icon(Icons.broken_image_rounded)) as ImageProvider<Object>,
                 fit: BoxFit.cover,
                 width: 100,
                 height: 100,

@@ -11,14 +11,14 @@ import 'package:inforum/service/profileService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
-  final int userID;
-  final String avatarURL;
-  final String avatarHeroTag;
+  final int? userID;
+  final String? avatarURL;
+  final String? avatarHeroTag;
 
   const ProfilePage(
-      {Key key,
-      @required this.userID,
-      @required this.avatarHeroTag,
+      {Key? key,
+      required this.userID,
+      required this.avatarHeroTag,
       this.avatarURL})
       : super(key: key);
 
@@ -30,18 +30,18 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePage extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
-  TabController _tabController;
-  String _userName = '';
-  String _nickName = '';
-  String _birthday;
-  String _bio = '';
-  String _location = '';
-  String _avatarURL;
-  String _avatarHeroTag;
-  String _bannerURL;
+  TabController? _tabController;
+  String? _userName = '';
+  String? _nickName = '';
+  String? _birthday;
+  String? _bio = '';
+  String? _location = '';
+  String? _avatarURL;
+  String? _avatarHeroTag;
+  String? _bannerURL;
   String _followerCount = '0';
   String _followingCount = '0';
-  String _joinTime;
+  String? _joinTime;
   List<PostListItem> _postListItems = [];
   List<GalleryListItem> _galleryListItems = [];
   List<PostListItem> _likedPostItems = [];
@@ -81,7 +81,7 @@ class _ProfilePage extends State<ProfilePage>
         _birthday = sp.getString('birthday');
         _joinTime = sp.getString('joinTime');
       }
-      _userName = rs.username ?? 'unknown';
+      _userName = rs!.username ?? 'unknown';
       _nickName = rs.nickname ?? 'unknown';
       _birthday = rs.birthday.toString();
       _bio = rs.bio ?? '此用户没有填写个人简介';
@@ -94,14 +94,14 @@ class _ProfilePage extends State<ProfilePage>
       _loadState = false;
     });
     if (widget.userID == sp.getInt('userID')) {
-      sp.setString('userName', _userName);
-      sp.setString('nickName', _nickName);
-      sp.setString('avatarURL', _avatarURL);
-      sp.setString('bannerURL', _bannerURL);
-      sp.setString('bio', _bio);
-      sp.setString('location', _location);
-      sp.setString('birthday', _birthday);
-      sp.setString('joinTime', _joinTime);
+      sp.setString('userName', _userName!);
+      sp.setString('nickName', _nickName!);
+      sp.setString('avatarURL', _avatarURL!);
+      sp.setString('bannerURL', _bannerURL!);
+      sp.setString('bio', _bio!);
+      sp.setString('location', _location!);
+      sp.setString('birthday', _birthday!);
+      sp.setString('joinTime', _joinTime!);
     }
   }
 
@@ -133,7 +133,7 @@ class _ProfilePage extends State<ProfilePage>
                               ? CachedNetworkImage(
                                   errorWidget: (context, url, error) =>
                                       Icon(Icons.broken_image_rounded),
-                                  imageUrl: _bannerURL,
+                                  imageUrl: _bannerURL!,
                                   fit: BoxFit.cover,
                                   height: 150,
                                 )
@@ -157,7 +157,7 @@ class _ProfilePage extends State<ProfilePage>
                                         top: 10, left: 90, right: 10),
                                     child: Row(
                                       children: [
-                                        Text(_nickName, style: titleFontStyle),
+                                        Text(_nickName!, style: titleFontStyle),
                                         Text('  @$_userName'),
                                       ],
                                     )),
@@ -165,16 +165,16 @@ class _ProfilePage extends State<ProfilePage>
                                   margin: EdgeInsets.only(
                                       top: 10, bottom: 10, right: 10),
                                   alignment: Alignment.topLeft,
-                                  child: Text(_bio, maxLines: 3),
+                                  child: Text(_bio!, maxLines: 3),
                                 ),
                                 Row(
                                   children: [
                                     Icon(Icons.cake_rounded),
                                     Text(
-                                        '  ${_birthday != null ? convertBasicDateFormat(_birthday) : ''}   '),
+                                        '  ${_birthday != null ? convertBasicDateFormat(_birthday!) : ''}   '),
                                     Icon(Icons.date_range_rounded),
                                     Text(
-                                        '  ${_birthday != null ? convertBasicDateFormat(_joinTime) : ''} 加入'),
+                                        '  ${_birthday != null ? convertBasicDateFormat(_joinTime!) : ''} 加入'),
                                   ],
                                 ),
                                 Container(
@@ -218,9 +218,9 @@ class _ProfilePage extends State<ProfilePage>
                           clipBehavior: Clip.antiAlias,
                           color: Colors.transparent,
                           child: Ink.image(
-                            image: _avatarURL != null
-                                ? CachedNetworkImageProvider(_avatarURL)
-                                : AssetImage('images/default_avatar.png'),
+                            image: (_avatarURL != null
+                                ? CachedNetworkImageProvider(_avatarURL!)
+                                : AssetImage('images/default_avatar.png')) as ImageProvider<Object>,
                             fit: BoxFit.contain,
                             width: 80,
                             height: 80,
@@ -239,7 +239,7 @@ class _ProfilePage extends State<ProfilePage>
                             ),
                           ),
                         ),
-                        tag: _avatarHeroTag,
+                        tag: _avatarHeroTag!,
                       ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(80),

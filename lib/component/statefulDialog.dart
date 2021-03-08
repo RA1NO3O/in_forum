@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class StatefulDialog extends StatefulWidget {
-  final Widget title;
-  final Widget content;
-  final List<Widget> actions;
+  final Widget? title;
+  final Widget? content;
+  final List<Widget>? actions;
 
-  const StatefulDialog({Key key, this.actions, this.title, this.content})
+  const StatefulDialog({Key? key, this.actions, this.title, this.content})
       : super(key: key);
 
   @override

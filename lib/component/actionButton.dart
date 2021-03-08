@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class ActionButton extends StatefulWidget {
-  final Icon ico;
-  final Function fun;
-  final String txt;
+  final Icon? ico;
+  final Function? fun;
+  final String? txt;
 
-  const ActionButton({Key key, this.ico, this.fun, this.txt}) : super(key: key);
+  const ActionButton({Key? key, this.ico, this.fun, this.txt}) : super(key: key);
 
   @override
   _ActionButton createState() => _ActionButton();
@@ -17,8 +17,8 @@ class _ActionButton extends State<ActionButton> {
     return Flex(
       direction: Axis.horizontal,
       children: [
-        IconButton(icon: widget.ico, onPressed: widget.fun),
-        widget.txt!=null?Text(widget.txt):Container()
+        IconButton(icon: widget.ico!, onPressed: widget.fun as void Function()?),
+        widget.txt!=null?Text(widget.txt!):Container()
       ],
     );
   }

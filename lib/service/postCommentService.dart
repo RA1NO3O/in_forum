@@ -13,11 +13,11 @@ PostCommentService postCommentServiceFromJson(String str) =>
 String postCommentServiceToJson(PostCommentService data) =>
     json.encode(data.toJson());
 
-Future<List<CommentRecordset>> getPostComment(int postID, int userID) async {
+Future<List<CommentRecordset>?> getPostComment(int? postID, int? userID) async {
   Response res =
       await Dio().get('$apiServerAddress/getComment/$postID?userID=$userID');
   final PostCommentService pcs = postCommentServiceFromJson(res.toString());
-  final List<CommentRecordset> rs = pcs.recordset.isEmpty ? [] : pcs.recordset;
+  final List<CommentRecordset>? rs = pcs.recordset!.isEmpty ? [] : pcs.recordset;
   return rs;
 }
 
@@ -29,10 +29,10 @@ class PostCommentService {
     this.rowsAffected,
   });
 
-  List<List<CommentRecordset>> recordsets;
-  List<CommentRecordset> recordset;
-  Output output;
-  List<int> rowsAffected;
+  List<List<CommentRecordset>>? recordsets;
+  List<CommentRecordset>? recordset;
+  Output? output;
+  List<int>? rowsAffected;
 
   factory PostCommentService.fromJson(Map<String, dynamic> json) =>
       PostCommentService(
@@ -53,22 +53,22 @@ class PostCommentService {
   Map<String, dynamic> toJson() => {
         "recordsets": recordsets == null
             ? null
-            : List<dynamic>.from(recordsets
+            : List<dynamic>.from(recordsets!
                 .map((x) => List<dynamic>.from(x.map((x) => x.toJson())))),
         "recordset": recordset == null
             ? null
-            : List<dynamic>.from(recordset.map((x) => x.toJson())),
-        "output": output == null ? null : output.toJson(),
+            : List<dynamic>.from(recordset!.map((x) => x.toJson())),
+        "output": output == null ? null : output!.toJson(),
         "rowsAffected": rowsAffected == null
             ? null
-            : List<dynamic>.from(rowsAffected.map((x) => x)),
+            : List<dynamic>.from(rowsAffected!.map((x) => x)),
       };
 }
 
 class Output {
   Output();
 
-  factory Output.fromJson(Map<String, dynamic> json) => Output();
+  factory Output.fromJson(Map<String, dynamic>? json) => Output();
 
   Map<String, dynamic> toJson() => {};
 }
@@ -90,19 +90,19 @@ class CommentRecordset {
     this.isEditor,
   });
 
-  int postId;
-  String body;
+  int? postId;
+  String? body;
   dynamic imageUrl;
-  DateTime lastEditTime;
-  String username;
-  String avatarUrl;
-  String nickname;
-  int targetCommentPostId;
-  int likeCount;
-  int editorId;
+  DateTime? lastEditTime;
+  String? username;
+  String? avatarUrl;
+  String? nickname;
+  int? targetCommentPostId;
+  int? likeCount;
+  int? editorId;
   dynamic likeState;
   dynamic userId;
-  int isEditor;
+  int? isEditor;
 
   factory CommentRecordset.fromJson(Map<String, dynamic> json) => CommentRecordset(
         postId: json["postID"] == null ? null : json["postID"],
@@ -129,7 +129,7 @@ class CommentRecordset {
         "body": body == null ? null : body,
         "imageURL": imageUrl,
         "lastEditTime":
-            lastEditTime == null ? null : lastEditTime.toIso8601String(),
+            lastEditTime == null ? null : lastEditTime!.toIso8601String(),
         "username": username == null ? null : username,
         "avatarURL": avatarUrl == null ? null : avatarUrl,
         "nickname": nickname == null ? null : nickname,

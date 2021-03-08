@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:inforum/service/searchHistoryService.dart';
@@ -20,14 +21,14 @@ class _SearchPage extends State<SearchPage> {
   }
 }
 
-class CustomSearchDelegate extends SearchDelegate<String> {
+class CustomSearchDelegate extends SearchDelegate<String?> {
   List<Widget> sh = [];
 
   @override
   ThemeData appBarTheme(BuildContext context) {
-    assert(context != null);
+    assert(true);
     final ThemeData theme = Theme.of(context);
-    assert(theme != null);
+    assert(true);
     return theme;
   }
 
@@ -78,7 +79,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   }
 
   Future<void> getHistory(BuildContext context) async {
-    List<Widget> searchHistory = await getSearchHistory() ?? [];
+    List<Widget> searchHistory = await getSearchHistory();
     sh = [
       Flex(
         direction: Axis.horizontal,
@@ -94,8 +95,8 @@ class CustomSearchDelegate extends SearchDelegate<String> {
             flex: 0,
             child: TextButton(
               onPressed: () async {
-                bool r = false;
-                r = await showDialog(
+                bool? r = false;
+                r = await (showDialog(
                   context: context,
                   builder: (bc) => AlertDialog(
                     title: Column(
@@ -127,7 +128,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                       ),
                     ],
                   ),
-                );
+                ) as FutureOr<bool>);
                 if (r) {
                   clearSearchHistory();
                   query = '';
