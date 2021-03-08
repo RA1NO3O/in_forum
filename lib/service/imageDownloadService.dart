@@ -1,22 +1,17 @@
 /// 使用 File api
 import 'dart:io';
-
 /// 使用 Uint8List 数据类型
 import 'dart:typed_data';
-
 import 'package:flutter/services.dart';
-
 /// 使用 DefaultCacheManager 类（可能无法自动引入，需要手动引入）
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-
+import 'package:inforum/service/randomGenerator.dart';
+import 'package:path_provider/path_provider.dart';
 /// 授权管理
 import 'package:permission_handler/permission_handler.dart';
-
 /// 图片缓存管理
 import 'package:cached_network_image/cached_network_image.dart';
 
-/// 保存文件或图片到本地
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 class AppUtil {
   /// 保存图片到相册
@@ -38,7 +33,7 @@ class AppUtil {
 
       /// 保存的图片数据
       Uint8List imageBytes;
-
+      File file;
       if (isAsset == true) {
         /// 保存资源图片
         ByteData bytes = await rootBundle.load(imageUrl);
@@ -49,7 +44,7 @@ class AppUtil {
         DefaultCacheManager manager =
             image.cacheManager ?? DefaultCacheManager();
         Map<String, String> headers = image.httpHeaders;
-        File file = await manager.getSingleFile(
+        file = await manager.getSingleFile(
           image.imageUrl,
           headers: headers,
         );
@@ -57,10 +52,11 @@ class AppUtil {
       }
 
       /// 保存图片
-      final result = await ImageGallerySaver.saveImage(imageBytes);
-
-      if (result == null || result == '') throw '图片保存失败';
-      return result['filePath'];
+      final dir = await getApplicationDocumentsDirectory();
+      print(dir.path);
+      final result = await File('${dir.path}/${getRandom(8)}.png').writeAsBytes(imageBytes);
+      if (result == null) throw '图片保存失败';
+      return result.path;
     } catch (e) {
       print(e.toString());
     }

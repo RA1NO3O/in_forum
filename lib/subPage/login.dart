@@ -59,7 +59,6 @@ class _LoginPageState extends State<LoginPage> {
     return Builder(builder: (BuildContext bc) {
       return Container(
         alignment: Alignment.center,
-        width: 350,
         height: 350,
         child: Column(
           children: [

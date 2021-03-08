@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/uploadPictureService.dart';
@@ -288,7 +288,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                                           _networkImageLink,
                                           fit: BoxFit.cover,
                                         ),
-                                        tag: widget.heroTag,
+                                        tag: widget.heroTag??'',
                                       ),
                               ),
                             ),
@@ -466,11 +466,13 @@ class _EditPostScreenState extends State<EditPostScreen> {
   }
 
   Future getImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    // final picker = ImagePicker();
+    FilePickerResult picker = await FilePicker.platform.pickFiles(type: FileType.image);
+    // final file = await picker.getImage(source: ImageSource.gallery);
+    PlatformFile file = picker.files.first;
     setState(() {
-      if (pickedFile != null) {
-        _localImagePath = pickedFile.path;
+      if (file != null) {
+        _localImagePath = file.path;
       }
     });
   }

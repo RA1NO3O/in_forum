@@ -56,6 +56,7 @@ class UploadOss {
       'file': MultipartFile.fromFileSync(file.path),
     });
 
+    // ignore: unused_local_variable
     Response response;
     try {
       // 发送请求

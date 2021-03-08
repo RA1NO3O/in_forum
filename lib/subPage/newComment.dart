@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/uploadPictureService.dart';
 import 'package:inforum/subPage/profilePage.dart';
@@ -230,12 +230,12 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
   }
 
   Future getImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    FilePickerResult picker = await FilePicker.platform.pickFiles(type: FileType.image);
+    PlatformFile file = picker.files.first;
     setState(() {
-      if (pickedFile != null) {
+      if (file != null) {
         setState(() {
-          _localImagePath = pickedFile.path;
+          _localImagePath = file.path;
         });
       }
     });

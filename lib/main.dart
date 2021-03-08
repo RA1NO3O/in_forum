@@ -20,7 +20,7 @@ Future<void> main() async {
   if (prefs.getBool('isLogin') == null) {
     prefs.setString('draft_title', '');
     prefs.setString('draft_content', '');
-    prefs.setStringList('draft_tags', null);
+    prefs.setStringList('draft_tags', []);
   }
 
   runApp(MaterialApp(
@@ -165,13 +165,12 @@ class _MainPageState extends State<MainPage> {
   Widget defaultPage() {
     return Container(
       height: 350,
-      width: 350,
       child: Column(
         children: [
           Container(
             margin: EdgeInsets.only(top: 40, bottom: 100),
             child: Text(
-              '来体验一下全新的论坛app\n',
+              '这是全新的跨平台论坛App!\n',
               style: new TextStyle(fontSize: 22),
               textAlign: TextAlign.left,
             ),
@@ -230,35 +229,41 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
+enum AniProps { width, height, color, color2 }
+
 //动画渐变背景
 class AnimatedBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // ignore: deprecated_member_use
-    final tween = MultiTrackTween([
-      // ignore: deprecated_member_use
-      Track("color1").add(Duration(seconds: 5),
-          ColorTween(begin: Colors.red, end: Colors.green.shade600)),
-      // ignore: deprecated_member_use
-      Track("color2").add(Duration(seconds: 5),
-          ColorTween(begin: Colors.purple, end: Colors.blue.shade600))
-    ]);
+    var tween = TimelineTween<AniProps>()
+      ..addScene(
+              begin: Duration(milliseconds: 0),
+              duration: Duration(seconds: 5))
+          .animate(AniProps.color,
+              tween: ColorTween(
+                begin: Colors.red,
+                end: Colors.green.shade600,
+              ))
+      ..addScene(
+              begin: Duration(milliseconds: 0),
+              end: Duration(seconds: 5))
+          .animate(AniProps.color2,
+              tween: ColorTween(
+                begin: Colors.purple,
+                end: Colors.blue.shade600,
+              ));
 
-    // ignore: deprecated_member_use
-    return ControlledAnimation(
-      // ignore: deprecated_member_use
-      playback: Playback.MIRROR,
+    return CustomAnimation(
+      control: CustomAnimationControl.MIRROR,
       tween: tween,
       duration: tween.duration,
-      builder: (context, animation) {
-        return Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [animation["color1"], animation["color2"]])),
-        );
-      },
+      builder: (context, child, value) => Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors:[value.get(AniProps.color),value.get(AniProps.color2)])),
+      ),
     );
   }
 }
@@ -277,17 +282,14 @@ class AnimatedWave extends StatelessWidget {
       return Container(
         height: height,
         width: constraints.biggest.width,
-        // ignore: deprecated_member_use
-        child: ControlledAnimation(
-            // ignore: deprecated_member_use
-            playback: Playback.LOOP,
-            duration: Duration(milliseconds: (5000 / speed).round()),
-            tween: Tween(begin: 0.0, end: 2 * pi),
-            builder: (context, value) {
-              return CustomPaint(
-                foregroundPainter: CurvePainter(value + offset),
-              );
-            }),
+        child: CustomAnimation(
+          control: CustomAnimationControl.LOOP,
+          duration: Duration(milliseconds: (5000 / speed).round()),
+          tween: Tween(begin: 0.0, end: 2 * pi),
+          builder: (context, child, value) => CustomPaint(
+            foregroundPainter: CurvePainter(value + offset),
+          ),
+        ),
       );
     });
   }

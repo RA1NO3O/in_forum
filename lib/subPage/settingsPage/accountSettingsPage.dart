@@ -114,7 +114,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                     shape: roundedRectangleBorder,
                     title: Text('个人资料'),
                     subtitle: Text('修改可供他人查看的个人资料'),
-                    //TODO:修改昵称
+                    //TODO:修改个人资料
                     onTap: () {},
                   ),
                 ),

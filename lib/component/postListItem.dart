@@ -150,6 +150,7 @@ class _PostListItem extends State<PostListItem> {
                         if (result == '0') {
                           ScaffoldMessenger.of(bc)
                               .showSnackBar(doneSnackBar('帖子已删除.'));
+
                         }
                       },
                       child: Column(

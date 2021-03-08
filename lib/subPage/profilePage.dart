@@ -42,7 +42,6 @@ class _ProfilePage extends State<ProfilePage>
   String _followerCount = '0';
   String _followingCount = '0';
   String _joinTime;
-  int _length1 = 0;
   List<PostListItem> _postListItems = [];
   List<GalleryListItem> _galleryListItems = [];
   List<PostListItem> _likedPostItems = [];
@@ -72,7 +71,6 @@ class _ProfilePage extends State<ProfilePage>
     _likedPostItems
         .addAll(await getLikedPostsByUser(widget.userID, sp.getInt('userID')));
     setState(() {
-      _length1 = _postListItems.length;
       if (widget.userID == sp.getInt('userID')) {
         _userName = sp.getString('userName');
         _nickName = sp.getString('nickName');
