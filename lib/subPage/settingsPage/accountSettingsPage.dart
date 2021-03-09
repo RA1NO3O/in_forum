@@ -5,6 +5,7 @@ import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/component/statefulDialog.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/loginService.dart';
+import 'package:inforum/subPage/settingsPage/editProfile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountSettingsPage extends StatefulWidget {
@@ -69,6 +70,9 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                                           userNameController.text.isEmpty
                                       ? '请使用新的用户名.'
                                       : null,
+                              onEditingComplete: () async {
+                                await onUserNameEditDone(bc);
+                              },
                               controller: userNameController,
                               decoration: InputDecoration(
                                   border: OutlineInputBorder(
@@ -79,15 +83,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                           actions: [
                             TextButton.icon(
                                 onPressed: () async {
-                                  if (_fk.currentState!.validate()) {
-                                    bool r = await tryEditUserName(
-                                        userNameController.text);
-                                    if (r) {
-                                      Navigator.pop(bc, '0');
-                                    } else {
-                                      Navigator.pop(bc, '1');
-                                    }
-                                  }
+                                  await onUserNameEditDone(bc);
                                 },
                                 icon: Icon(Icons.done),
                                 label: Text('完成'))
@@ -97,12 +93,12 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                       switch (result) {
                         case '0':
                           ScaffoldMessenger.of(bc)
-                              .showSnackBar(errorSnackBar('  用户名已修改.\n'
+                              .showSnackBar(doneSnackBar('用户名已修改.\n'
                                   '  今后,请使用修改后的用户名进行登录.'));
                           break;
                         case '1':
                           ScaffoldMessenger.of(bc)
-                              .showSnackBar(errorSnackBar('  修改失败,\n'
+                              .showSnackBar(errorSnackBar('修改失败,\n'
                                   '  该用户名可能已存在.'));
                       }
                     },
@@ -114,8 +110,18 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                     shape: roundedRectangleBorder,
                     title: Text('个人资料'),
                     subtitle: Text('修改可供他人查看的个人资料'),
-                    //TODO:修改个人资料
-                    onTap: () {},
+                    onTap: () async {
+                      var result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (bc) => EditProfilePage(
+                                    userID: userID,
+                                  )));
+                      if (result == 0) {
+                        ScaffoldMessenger.of(bc)
+                            .showSnackBar(doneSnackBar('个人资料已修改.'));
+                      }
+                    },
                   ),
                 ),
                 Container(
@@ -149,9 +155,21 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
     );
   }
 
+  onUserNameEditDone(BuildContext bc) async {
+    if (_fk.currentState!.validate()) {
+      bool r = await tryEditUserName(userNameController.text);
+      if (r) {
+        Navigator.pop(bc, '0');
+      } else {
+        Navigator.pop(bc, '1');
+      }
+    }
+  }
+
   void getUserInfo() async {
     sp = await SharedPreferences.getInstance();
     setState(() {
+      userID = sp.getInt('userID');
       userName = sp.getString('userName');
       nickName = sp.getString('nickName');
       avatarURL = sp.getString('avatarURL');

@@ -6,7 +6,7 @@ import 'package:inforum/service/postCollectionService.dart';
 List<PostListItem> pcls = [];
 Future<List<PostListItem>> getCollectionList(int? userID) async {
   pcls.clear();
-  List<CollectionRecordset> pcl = await (getPostCollection(userID) as FutureOr<List<CollectionRecordset>>);
+  List<CollectionRecordset> pcl = (await getPostCollection(userID))! ;
   pcl.forEach((rs) {
     String? t = rs.tags;
     pcls.add(PostListItem(

@@ -12,5 +12,10 @@ shareNetworkImage(String imgURL) async {
   final p = Directory(tempDir.path + '/tempImage.png');
   final imageFile = File(p.path);
   await imageFile.writeAsBytes(finalPngBytes);
-  Share.shareFiles([imageFile.path]);
+  if(!Platform.isWindows){
+    Share.shareFiles([imageFile.path]);
+  }else{
+    throw('Desktop platform doesn\'t support share right now.');
+  }
+
 }

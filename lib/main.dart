@@ -104,7 +104,7 @@ class _MainPageState extends State<MainPage> {
                     tag: 'title',
                     child: Text(
                       widget.title!,
-                      style: Theme.of(context).primaryTextTheme.headline5,
+                      style: Theme.of(context).primaryTextTheme.headline6,
                     ),
                   ),
                   leading: state != 0

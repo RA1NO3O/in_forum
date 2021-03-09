@@ -18,7 +18,7 @@ SnackBar errorSnackBar(String r) {
           margin: EdgeInsets.only(right: 10),
           child: Icon(Icons.close_rounded),
         ),
-        Text(r),
+        Text('  $r'),
       ],
     ),
     backgroundColor: Colors.redAccent,
@@ -29,7 +29,7 @@ SnackBar welcomeSnackBar(String r) {
   return SnackBar(
     content: Row(
       children: [
-        Text('👏欢迎, ' + r),
+        Text('👏欢迎, $r'),
       ],
     ),
     backgroundColor: Colors.greenAccent,
@@ -41,7 +41,7 @@ SnackBar doneSnackBar(String r) {
     content: Row(
       children: [
         Icon(Icons.done_rounded),
-        Text(r),
+        Text('  $r'),
       ],
     ),
     backgroundColor: Colors.blue,

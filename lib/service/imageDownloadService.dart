@@ -1,17 +1,20 @@
 /// 使用 File api
 import 'dart:io';
+
 /// 使用 Uint8List 数据类型
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
+
 /// 使用 DefaultCacheManager 类（可能无法自动引入，需要手动引入）
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:inforum/service/randomGenerator.dart';
 import 'package:path_provider/path_provider.dart';
+
 /// 授权管理
 import 'package:permission_handler/permission_handler.dart';
+
 /// 图片缓存管理
 import 'package:cached_network_image/cached_network_image.dart';
-
 
 class AppUtil {
   /// 保存图片到相册
@@ -24,10 +27,12 @@ class AppUtil {
 
       /// 权限检测
       PermissionStatus storageStatus = await Permission.storage.status;
-      if (storageStatus != PermissionStatus.granted) {
-        storageStatus = await Permission.storage.request();
+      if ((!Platform.isWindows) || (!Platform.isLinux) || (!Platform.isMacOS)) {
         if (storageStatus != PermissionStatus.granted) {
-          throw '无法存储图片，请先授权！';
+          storageStatus = await Permission.storage.request();
+          if (storageStatus != PermissionStatus.granted) {
+            throw '无法存储图片，请先授权！';
+          }
         }
       }
 
@@ -54,7 +59,8 @@ class AppUtil {
       /// 保存图片
       final dir = await getApplicationDocumentsDirectory();
       print(dir.path);
-      final result = await File('${dir.path}/${getRandom(8)}.png').writeAsBytes(imageBytes);
+      final result = await File('${dir.path}/${getRandom(8)}.png')
+          .writeAsBytes(imageBytes);
       return result.path;
     } catch (e) {
       print(e.toString());

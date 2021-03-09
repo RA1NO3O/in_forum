@@ -36,7 +36,7 @@ class ImageViewer extends StatelessWidget {
                 onPressed: () {
                   AppUtil.saveImage(imgURL);
                   ScaffoldMessenger.of(bc)
-                      .showSnackBar(doneSnackBar('  图片已保存至/Pictures/.'));
+                      .showSnackBar(doneSnackBar('图片已保存.'));
                 }),
           ),
           IconButton(

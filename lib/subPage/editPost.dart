@@ -467,10 +467,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   Future getImage() async {
     // final picker = ImagePicker();
-    FilePickerResult picker = await (FilePicker.platform
-        .pickFiles(type: FileType.image) as FutureOr<FilePickerResult>);
+    FilePickerResult? picker = await FilePicker.platform
+        .pickFiles(type: FileType.image);
     // final file = await picker.getImage(source: ImageSource.gallery);
-    PlatformFile file = picker.files.first;
+    PlatformFile file = picker!.files.first;
     setState(() {
       _localImagePath = file.path;
     });

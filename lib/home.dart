@@ -59,14 +59,15 @@ class HomeScreenState extends State<HomeScreen> {
     sp = await SharedPreferences.getInstance();
     var rs = await getProfile(widget.userID);
     setState(() {
-      _avatarURL = sp.getString('avatarURL');
-
+      _avatarURL =
+          sp.getString('avatarURL') == '' ? null : sp.getString('avatarURL');
+      _avatarURL = rs?.avatarUrl ?? null;
       _followerCount = rs!.followerCount.toString();
       _followingCount = rs.followingCount.toString();
     });
 
     WidgetsBinding.instance!.addPostFrameCallback(
-        (_) => scaffold.showSnackBar(welcomeSnackBar(widget.userName!)));
+        (_) => scaffold.showSnackBar(welcomeSnackBar(widget.userName ?? '')));
   }
 
   @override
@@ -131,7 +132,7 @@ class HomeScreenState extends State<HomeScreen> {
       body: PageTransitionSwitcher(
         child: NestedScrollView(
           controller: _scrollController,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
                 elevation: 2,
@@ -149,7 +150,7 @@ class HomeScreenState extends State<HomeScreen> {
                       tag: 'title',
                       child: Text(
                         'Inforum',
-                        style: Theme.of(context).primaryTextTheme.headline5,
+                        style: Theme.of(context).primaryTextTheme.headline6,
                       ),
                     ),
                   ),
@@ -266,8 +267,9 @@ class HomeScreenState extends State<HomeScreen> {
                       color: Colors.transparent,
                       child: Ink.image(
                         image: (_avatarURL != null
-                            ? CachedNetworkImageProvider(_avatarURL!)
-                            : AssetImage('images/default_avatar.png')) as ImageProvider<Object>,
+                                ? CachedNetworkImageProvider(_avatarURL!)
+                                : AssetImage('images/default_avatar.png'))
+                            as ImageProvider<Object>,
                         fit: BoxFit.cover,
                         width: 85,
                         height: 85,
