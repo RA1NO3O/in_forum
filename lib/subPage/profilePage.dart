@@ -94,14 +94,14 @@ class _ProfilePage extends State<ProfilePage>
       _loadState = false;
     });
     if (widget.userID == sp.getInt('userID')) {
-      sp.setString('userName', _userName!);
-      sp.setString('nickName', _nickName!);
-      sp.setString('avatarURL', _avatarURL!);
-      sp.setString('bannerURL', _bannerURL!);
-      sp.setString('bio', _bio!);
-      sp.setString('location', _location!);
-      sp.setString('birthday', _birthday!);
-      sp.setString('joinTime', _joinTime!);
+      sp.setString('userName', _userName??'');
+      sp.setString('nickName', _nickName??'');
+      sp.setString('avatarURL', _avatarURL??'');
+      sp.setString('bannerURL', _bannerURL??'');
+      sp.setString('bio', _bio??'');
+      sp.setString('location', _location??'');
+      sp.setString('birthday', _birthday??'');
+      sp.setString('joinTime', _joinTime??'');
     }
   }
 
@@ -174,7 +174,7 @@ class _ProfilePage extends State<ProfilePage>
                                         '  ${_birthday != null ? convertBasicDateFormat(_birthday!) : ''}   '),
                                     Icon(Icons.date_range_rounded),
                                     Text(
-                                        '  ${_birthday != null ? convertBasicDateFormat(_joinTime!) : ''} 加入'),
+                                        '  ${_joinTime != null ? convertBasicDateFormat(_joinTime!) : ''} 加入'),
                                   ],
                                 ),
                                 Container(
@@ -219,8 +219,9 @@ class _ProfilePage extends State<ProfilePage>
                           color: Colors.transparent,
                           child: Ink.image(
                             image: (_avatarURL != null
-                                ? CachedNetworkImageProvider(_avatarURL!)
-                                : AssetImage('images/default_avatar.png')) as ImageProvider<Object>,
+                                    ? CachedNetworkImageProvider(_avatarURL!)
+                                    : AssetImage('images/default_avatar.png'))
+                                as ImageProvider<Object>,
                             fit: BoxFit.contain,
                             width: 80,
                             height: 80,

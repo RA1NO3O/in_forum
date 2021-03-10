@@ -47,8 +47,8 @@ class CommentListItem extends StatefulWidget {
 
 class _CommentListItem extends State<CommentListItem> {
   String? _imgURL;
-  int likeState=0; //0缺省,1为点赞,2为踩
-  int likeCount=0;
+  int likeState = 0; //0缺省,1为点赞,2为踩
+  int likeCount = 0;
   String _imgTag = getRandom(6);
   String _avatarHeroTag = getRandom(6);
 
@@ -74,15 +74,16 @@ class _CommentListItem extends State<CommentListItem> {
                   children: [
                     Hero(
                       child: Material(
-                        elevation: 2,
+                        elevation: 1,
                         shape: CircleBorder(),
                         clipBehavior: Clip.hardEdge,
                         color: Colors.transparent,
                         child: Ink.image(
                           image: (widget.commenterAvatarURL != null
-                              ? CachedNetworkImageProvider(
-                                  widget.commenterAvatarURL!)
-                              : AssetImage('images/default_avatar.png')) as ImageProvider<Object>,
+                                  ? CachedNetworkImageProvider(
+                                      widget.commenterAvatarURL!)
+                                  : AssetImage('images/default_avatar.png'))
+                              as ImageProvider<Object>,
                           fit: BoxFit.contain,
                           width: 50,
                           height: 50,
@@ -107,7 +108,7 @@ class _CommentListItem extends State<CommentListItem> {
                         Container(
                           margin: EdgeInsets.only(left: 15),
                           child: Text(
-                            widget.commenterName!,
+                            widget.commenterName ?? 'unknown',
                             style: new TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
@@ -169,10 +170,11 @@ class _CommentListItem extends State<CommentListItem> {
                                     ),
                                   ),
                                 ],
-                        onSelected: (dynamic result) {
+                        onSelected: (dynamic result) async {
                           switch (result) {
                             case 'delete':
-                              if (_deleteConfirmDialog() == '0') {
+                              var result = await _deleteConfirmDialog();
+                              if (result) {
                                 ScaffoldMessenger.of(bc)
                                     .showSnackBar(doneSnackBar('回复已删除.'));
                               }
@@ -192,7 +194,7 @@ class _CommentListItem extends State<CommentListItem> {
                           '回复给 ',
                         ),
                         Text(
-                          widget.commentTarget!,
+                          '@${widget.commentTarget}',
                           style: new TextStyle(color: Colors.blue),
                         )
                       ],
@@ -311,7 +313,7 @@ class _CommentListItem extends State<CommentListItem> {
     }
   }
 
-  _deleteConfirmDialog() async {
+  Future<bool> _deleteConfirmDialog() async {
     bool result = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
@@ -353,8 +355,9 @@ class _CommentListItem extends State<CommentListItem> {
         data: {"postID": widget.postID},
       );
       if (res.data == 'success.') {
-        Navigator.pop(context, '0');
+        return true;
       }
     }
+    return false;
   }
 }

@@ -147,7 +147,7 @@ class _PostListItem extends State<PostListItem> {
                             },
                           ),
                         );
-                        if (result == '0') {
+                        if (result == 'deleted.') {
                           ScaffoldMessenger.of(bc)
                               .showSnackBar(doneSnackBar('帖子已删除.'));
 

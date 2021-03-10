@@ -47,7 +47,7 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
         }
       });
     });
-    commentController.text = widget.contentText!;
+    commentController.text = widget.contentText??'';
     if (widget.imgURL != null) {
       _networkImageLink = widget.imgURL;
     }

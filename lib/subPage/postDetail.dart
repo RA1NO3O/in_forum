@@ -64,16 +64,16 @@ class _PostDetailPageState extends State<PostDetailPage> {
   String? _title;
   String? _fullText;
   List<String>? _tags;
-  bool? isCollect;
+  bool? _isCollect;
   String? _imgURL;
   int _editorID = 0;
-  int likeState = 0; //0缺省,1为点赞,2为踩
-  int likeCount = 0;
-  int dislikeCount = 0;
-  int commentCount = 0;
+  int _likeState = 0; //0缺省,1为点赞,2为踩
+  int _likeCount = 0;
+  int _dislikeCount = 0;
+  int _commentCount = 0;
   late SharedPreferences sp;
   String? authorUserName = '';
-  late bool isAuthor;
+  late bool _isAuthor;
   List<String>? tagStrings;
   List<Widget>? tagWidgets;
   List<Widget> commentList = [];
@@ -87,12 +87,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
   void initState() {
     _avatarHeroTag = getRandom(6);
     _time = widget.time;
-    isAuthor = widget.isAuthor;
-    isCollect = widget.isCollect;
-    likeCount = widget.likeCount!;
-    dislikeCount = widget.dislikeCount!;
-    likeState = widget.likeState!;
-    commentCount = widget.commentCount!;
+    _isAuthor = widget.isAuthor;
+    _isCollect = widget.isCollect;
+    _likeCount = widget.likeCount!;
+    _dislikeCount = widget.dislikeCount!;
+    _likeState = widget.likeState!;
+    _commentCount = widget.commentCount!;
     _commentController = new TextEditingController();
     _refresh();
     super.initState();
@@ -107,7 +107,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         elevation: 1,
         title: const Text('帖子'),
         actions: [
-          isAuthor
+          _isAuthor
               ? new Row(
                   children: [
                     Builder(
@@ -139,15 +139,18 @@ class _PostDetailPageState extends State<PostDetailPage> {
                     IconButton(
                       icon: Icon(Icons.delete_rounded),
                       tooltip: '删除',
-                      onPressed: () => deleteConfirmDialog(),
+                      onPressed: (){
+                        var result = deleteConfirmDialog();
+                        if(result) Navigator.pop(context,'deleted.');
+                      },
                     )
                   ],
                 )
               : Container(),
           new IconButton(
-            icon: isCollect! ? Icon(Icons.star) : Icon(Icons.star_border),
+            icon: _isCollect! ? Icon(Icons.star) : Icon(Icons.star_border),
             onPressed: () => _starButtonClick(),
-            tooltip: isCollect! ? '取消收藏' : '收藏',
+            tooltip: _isCollect! ? '取消收藏' : '收藏',
           )
         ],
       ),
@@ -357,19 +360,19 @@ class _PostDetailPageState extends State<PostDetailPage> {
                           flex: 1,
                           child: ActionButton(
                               fun: () => _likeButtonClick(),
-                              ico: likeState == 0 || likeState == 2
+                              ico: _likeState == 0 || _likeState == 2
                                   ? Icon(Icons.thumb_up_outlined)
                                   : Icon(Icons.thumb_up),
-                              txt: likeCount.toString()),
+                              txt: _likeCount.toString()),
                         ),
                         Expanded(
                           flex: 1,
                           child: ActionButton(
                               fun: () => _dislikeButtonClick(),
-                              ico: likeState == 0 || likeState == 1
+                              ico: _likeState == 0 || _likeState == 1
                                   ? Icon(Icons.thumb_down_outlined)
                                   : Icon(Icons.thumb_down),
-                              txt: dislikeCount.toString()),
+                              txt: _dislikeCount.toString()),
                         ),
                         Expanded(
                             flex: 1,
@@ -377,7 +380,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                               builder: (BuildContext bc) => ActionButton(
                                 fun: () => commentBottomSheet(bc),
                                 ico: Icon(Icons.mode_comment_outlined),
-                                txt: commentCount.toString(),
+                                txt: _commentCount.toString(),
                               ),
                             )),
                         Expanded(
@@ -569,7 +572,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         });
     if (res.data == 'success.') {
       setState(() {
-        isCollect = !isCollect!;
+        _isCollect = !_isCollect!;
       });
     }
   }
@@ -584,23 +587,23 @@ class _PostDetailPageState extends State<PostDetailPage> {
         });
     if (res.data == 'success.') {
       setState(() {
-        switch (likeState) {
+        switch (_likeState) {
           case 0:
-            likeState = 1;
-            likeCount++;
+            _likeState = 1;
+            _likeCount++;
             break;
           case 1:
-            likeState = 0;
-            if (likeCount != 0) {
-              likeCount--;
+            _likeState = 0;
+            if (_likeCount != 0) {
+              _likeCount--;
             }
             break;
           case 2:
-            likeState = 1;
-            if (dislikeCount != 0) {
-              dislikeCount--;
+            _likeState = 1;
+            if (_dislikeCount != 0) {
+              _dislikeCount--;
             }
-            likeCount++;
+            _likeCount++;
             break;
         }
       });
@@ -617,22 +620,22 @@ class _PostDetailPageState extends State<PostDetailPage> {
         });
     if (res.data == 'success.') {
       setState(() {
-        switch (likeState) {
+        switch (_likeState) {
           case 0:
-            likeState = 2;
-            dislikeCount++;
+            _likeState = 2;
+            _dislikeCount++;
             break;
           case 1:
-            likeState = 2;
-            if (likeCount != 0) {
-              likeCount--;
+            _likeState = 2;
+            if (_likeCount != 0) {
+              _likeCount--;
             }
-            dislikeCount++;
+            _dislikeCount++;
             break;
           case 2:
-            likeState = 0;
-            if (dislikeCount != 0) {
-              dislikeCount--;
+            _likeState = 0;
+            if (_dislikeCount != 0) {
+              _dislikeCount--;
             }
             break;
         }
@@ -674,7 +677,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
         _imgURL = rs.imageUrl;
         _time = rs.lastEditTime.toString();
         _tags = rs.tags != null ? rs.tags!.split(',') : null;
-        _editorID = rs.editorId!;
+        _commentCount = rs.commentCount??0;
+        _editorID = rs.editorId??0;
       });
     }
     var _list = await getComment(widget.postID, sp.getInt('userID'));
@@ -726,7 +730,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         data: {"postID": widget.postID},
       );
       if (res.data == 'success.') {
-        Navigator.pop(context, '0');
+        return true;
       }
     }
   }
