@@ -1,6 +1,6 @@
 # inforum_app
 
-A cross-platform forum application, the servive are based on Microsoft SQL Server, NodeJs(with express) and aliyun OSS server.
+A cross-platform forum application, the service are based on Microsoft SQL Server, NodeJs(with express) and aliyun OSS server.
 
 - 🚪Portal to [Inforum_API](http://github.com/RA1NO3O/Inforum_API)
 
