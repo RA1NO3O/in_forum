@@ -35,6 +35,7 @@ class PrimaryPageState extends State<PrimaryPage> {
           radius: Radius.circular(5),
           child: !loadState
               ? StaggeredGridView.extentBuilder(
+                  physics: AlwaysScrollableScrollPhysics(),
                   maxCrossAxisExtent: 240,
                   itemCount: streamList.length,
                   itemBuilder: (context, index) => streamList[index],

@@ -163,7 +163,6 @@ class HomeScreenState extends State<HomeScreen> {
             ];
           },
           body: PageView(
-            physics: AlwaysScrollableScrollPhysics(),
             controller: _pageController,
             onPageChanged: (index) {
               setState(() {
