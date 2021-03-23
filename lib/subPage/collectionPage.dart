@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:inforum/component/postListItem.dart';
 import 'package:inforum/data/collectionListStream.dart';
 
@@ -6,6 +7,7 @@ class CollectionPage extends StatefulWidget {
   final int? userID;
 
   const CollectionPage({Key? key, this.userID}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return _CollectionPage();
@@ -38,8 +40,12 @@ class _CollectionPage extends State<CollectionPage> {
         onRefresh: _refresh,
         child: !loadState
             ? _collectionList.isNotEmpty
-                ? ListView(
-                    children: _collectionList,
+                ? StaggeredGridView.extentBuilder(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    maxCrossAxisExtent: 240,
+                    itemCount: _collectionList.length,
+                    itemBuilder: (context, index) => _collectionList[index],
+                    staggeredTileBuilder: (index) => StaggeredTile.fit(2),
                   )
                 : Center(
                     child: Column(
