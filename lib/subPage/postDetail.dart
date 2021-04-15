@@ -383,7 +383,13 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         Expanded(
                           flex: 0,
                           child: ActionButton(
-                            fun: () => shareNetworkImage(widget.imgURL!),
+                            fun: (){
+                              if(_imgURL!=null){
+                                shareNetworkImage(widget.imgURL!);
+                              }else{
+                                shareTexts(_fullText!);
+                              }
+                            },
                             ico: Icon(Icons.share_outlined),
                           ),
                         ),

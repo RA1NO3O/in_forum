@@ -17,5 +17,7 @@ shareNetworkImage(String imgURL) async {
   }else{
     throw('Desktop platform doesn\'t support share right now.');
   }
-
+}
+shareTexts(String txt) async {
+  Share.share(txt);
 }
