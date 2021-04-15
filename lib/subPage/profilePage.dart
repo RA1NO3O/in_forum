@@ -94,14 +94,14 @@ class _ProfilePage extends State<ProfilePage>
       _loadState = false;
     });
     if (widget.userID == sp.getInt('userID')) {
-      sp.setString('userName', _userName!);
-      sp.setString('nickName', _nickName!);
-      sp.setString('avatarURL', _avatarURL!);
-      sp.setString('bannerURL', _bannerURL!);
-      sp.setString('bio', _bio!);
-      sp.setString('location', _location!);
-      sp.setString('birthday', _birthday!);
-      sp.setString('joinTime', _joinTime!);
+      await sp.setString('userName', _userName!);
+      await sp.setString('nickName', _nickName!);
+      await sp.setString('avatarURL', _avatarURL!);
+      await sp.setString('bannerURL', _bannerURL!);
+      await sp.setString('bio', _bio!);
+      await sp.setString('location', _location!);
+      await sp.setString('birthday', _birthday!);
+      await sp.setString('joinTime', _joinTime!);
     }
   }
 

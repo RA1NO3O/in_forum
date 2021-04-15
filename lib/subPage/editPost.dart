@@ -452,9 +452,9 @@ class _EditPostScreenState extends State<EditPostScreen> {
                     //舍弃时会清空草稿存储
                     SharedPreferences sp =
                         await SharedPreferences.getInstance();
-                    sp.setString('draft_title', '');
-                    sp.setString('draft_content', '');
-                    sp.setStringList('draft_tags', []);
+                    await sp.setString('draft_title', '');
+                    await sp.setString('draft_content', '');
+                    await sp.setStringList('draft_tags', []);
                   },
                 ),
               ],
@@ -485,8 +485,8 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   Future<void> save(String title, String content, List<String> tags) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    sp.setString('draft_title', title);
-    sp.setString('draft_content', content);
-    sp.setStringList('draft_tags', tags);
+    await sp.setString('draft_title', title);
+    await sp.setString('draft_content', content);
+    await sp.setStringList('draft_tags', tags);
   }
 }

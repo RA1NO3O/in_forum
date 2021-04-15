@@ -411,8 +411,8 @@ class HomeScreenState extends State<HomeScreen> {
                     foregroundColor:
                         MaterialStateProperty.all<Color>(Colors.redAccent),
                   ),
-                  onPressed: () {
-                    sp.setBool('isLogin', false);
+                  onPressed: () async {
+                    await sp.setBool('isLogin', false);
                     Navigator.of(context).pop(true);
                   },
                   icon: Icon(Icons.done_rounded),

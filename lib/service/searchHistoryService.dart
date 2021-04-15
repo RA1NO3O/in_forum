@@ -21,10 +21,10 @@ pushSearchHistory(String recent) async {
   _init();
   var l = sp.getStringList('searchHistory') ?? [];
   l.add(recent);
-  sp.setStringList('searchHistory', l);
+  await sp.setStringList('searchHistory', l);
 }
 
 clearSearchHistory() async {
   _init();
-  sp.setStringList('searchHistory', []);
+  await sp.setStringList('searchHistory', []);
 }
