@@ -62,12 +62,13 @@ class HomeScreenState extends State<HomeScreen> {
       _avatarURL =
           sp.getString('avatarURL') == '' ? null : sp.getString('avatarURL');
       _avatarURL = rs?.avatarUrl ?? null;
-      _followerCount = rs!.followerCount.toString();
-      _followingCount = rs.followingCount.toString();
+      _followerCount = rs?.followerCount.toString() ?? '0';
+      _followingCount = rs?.followingCount.toString() ?? '0';
     });
 
-    WidgetsBinding.instance!.addPostFrameCallback(
-        (_) => scaffold.showSnackBar(welcomeSnackBar(widget.userName ?? '')));
+    WidgetsBinding.instance!.addPostFrameCallback((_) => scaffold.showSnackBar(
+        welcomeSnackBar(
+            sp.getString('nickName') ?? sp.getString('userName') ?? '')));
   }
 
   @override
@@ -255,7 +256,7 @@ class HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           Container(
-            height: 230,
+            height: 240,
             child: DrawerHeader(
               child: Column(
                 children: [
@@ -373,6 +374,7 @@ class HomeScreenState extends State<HomeScreen> {
                             MaterialPageRoute(
                                 builder: (BuildContext context) => MainPage(
                                       title: 'Inforum',
+                                  state: 0,
                                     )));
                       }
                     },

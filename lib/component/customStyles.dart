@@ -10,6 +10,9 @@ void getStyleSettings() async {
   themeColor = Color(sp.getInt("ThemeColor")!);
 }
 
+OutlineInputBorder inputBorder =
+    OutlineInputBorder(borderRadius: BorderRadius.circular(5.0));
+
 SnackBar errorSnackBar(String r) {
   return SnackBar(
     content: Row(
@@ -63,4 +66,4 @@ Widget emptyHint() => Center(
 
 TextStyle titleFontStyle =
     new TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
-TextStyle invalidTextStyle = new TextStyle(color: Colors.grey);
+TextStyle invalidTextStyle = new TextStyle(color: Colors.grey, fontSize: 12);

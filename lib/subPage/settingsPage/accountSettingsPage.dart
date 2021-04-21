@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/component/statefulDialog.dart';
 import 'package:inforum/data/webConfig.dart';
+import 'package:inforum/main.dart';
 import 'package:inforum/service/loginService.dart';
+import 'package:inforum/subPage/settingsPage/changePasswordPage.dart';
+import 'package:inforum/subPage/settingsPage/deleteAccountPage.dart';
 import 'package:inforum/subPage/settingsPage/editProfile.dart';
+import 'package:inforum/subPage/supportPage/forgetPasswordPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountSettingsPage extends StatefulWidget {
@@ -17,12 +21,14 @@ class AccountSettingsPage extends StatefulWidget {
 
 class _AccountSettingsPage extends State<AccountSettingsPage> {
   GlobalKey<FormState> _fk = GlobalKey<FormState>();
-  late SharedPreferences sp;
-  var userID;
+  GlobalKey<FormState> _pk = GlobalKey<FormState>();
+
+  int? userID;
   String? userName = 'unknown';
   String? nickName = 'unknown';
   String? avatarURL;
   TextEditingController userNameController = new TextEditingController();
+  TextEditingController passwordController = new TextEditingController();
 
   @override
   void initState() {
@@ -61,24 +67,36 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                               Text('   输入用户名.')
                             ],
                           ),
-                          content: Form(
-                            key: _fk,
-                            child: TextFormField(
-                              autofocus: true,
-                              validator: (value) =>
-                                  (userNameController.text == userName) ||
-                                          userNameController.text.isEmpty
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Form(
+                                key: _fk,
+                                child: TextFormField(
+                                  autofocus: true,
+                                  validator: (value) => userNameController
+                                              .text ==
+                                          userName
                                       ? '请使用新的用户名.'
-                                      : null,
-                              onEditingComplete: () async {
-                                await onUserNameEditDone(bc);
-                              },
-                              controller: userNameController,
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(5.0))),
-                            ),
+                                      : userNameController.text.trim().isEmpty
+                                          ? '用户名是必要的.'
+                                          : null,
+                                  onEditingComplete: () async {
+                                    await onUserNameEditDone(bc);
+                                  },
+                                  controller: userNameController,
+                                  decoration:
+                                      InputDecoration(border: inputBorder),
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(top: 10),
+                                child: Text(
+                                  '您的用户名会用于登录和用户区分,并且显示在您的昵称旁.',
+                                  style: invalidTextStyle,
+                                ),
+                              ),
+                            ],
                           ),
                           actions: [
                             TextButton.icon(
@@ -109,7 +127,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                     leading: Icon(Icons.emoji_people),
                     shape: roundedRectangleBorder,
                     title: Text('个人资料'),
-                    subtitle: Text('修改可供他人查看的个人资料'),
+                    subtitle: Text('点按以修改供他人查看的个人资料.'),
                     onTap: () async {
                       var result = await Navigator.push(
                           context,
@@ -120,6 +138,124 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                       if (result == 0) {
                         ScaffoldMessenger.of(bc)
                             .showSnackBar(doneSnackBar('个人资料已修改.'));
+                      }
+                    },
+                  ),
+                ),
+                Builder(
+                  builder: (BuildContext bc) => ListTile(
+                    leading: Icon(Icons.lock_rounded),
+                    shape: roundedRectangleBorder,
+                    title: Text('密码'),
+                    subtitle: Text('点按以修改密码.'),
+                    onTap: () async {
+                      passwordController.text = '';
+                      final result = await showDialog(
+                        context: context,
+                        builder: (bc) => StatefulDialog(
+                          title: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.lock_rounded, size: 32),
+                              Text('   确认目前的密码')
+                            ],
+                          ),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Form(
+                                key: _pk,
+                                child: TextFormField(
+                                  obscureText: true,
+                                  autofocus: true,
+                                  validator: (value) =>
+                                      passwordController.text.isEmpty
+                                          ? '密码是必需的.'
+                                          : null,
+                                  textInputAction: TextInputAction.done,
+                                  onEditingComplete: () async {
+                                    if (_pk.currentState!.validate()) {
+                                      var r = await tryLogin(
+                                          userName!, passwordController.text);
+                                      if (r != null) {
+                                        Navigator.pop(bc, 'correct.');
+                                      } else {
+                                        Navigator.pop(bc, 'incorrect.');
+                                      }
+                                    }
+                                  },
+                                  controller: passwordController,
+                                  decoration:
+                                      InputDecoration(border: inputBorder),
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(top: 10),
+                                child: Text(
+                                  '验证您的身份.',
+                                  style: invalidTextStyle,
+                                ),
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            TextButton.icon(
+                              onPressed: () =>
+                                  Navigator.pop(bc, 'forgetPassword'),
+                              icon: Icon(Icons.help_center_rounded),
+                              label: Text('忘记密码?'),
+                            ),
+                            TextButton.icon(
+                              onPressed: () async {
+                                if (_pk.currentState!.validate()) {
+                                  var r = await tryLogin(
+                                      userName!, passwordController.text);
+                                  if (r != null) {
+                                    Navigator.pop(bc, 'correct.');
+                                  } else {
+                                    Navigator.pop(bc, 'incorrect.');
+                                  }
+                                }
+                              },
+                              icon: Icon(Icons.arrow_forward_rounded),
+                              label: Text('继续'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (result == 'correct.') {
+                        var result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChangePasswordPage(
+                              userID: userID!,
+                            ),
+                          ),
+                        );
+                        switch (result) {
+                          case 'success.':
+                            ScaffoldMessenger.of(bc)
+                                .showSnackBar(doneSnackBar('密码修改成功.'));
+                            break;
+
+                          case 'error.':
+                            ScaffoldMessenger.of(bc)
+                                .showSnackBar(errorSnackBar('密码修改失败!'));
+                            break;
+
+                          default:
+                            ScaffoldMessenger.of(bc)
+                                .showSnackBar(errorSnackBar('用户取消了密码修改.'));
+                            break;
+                        }
+                      } else if (result == 'forgetPassword') {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForgetPasswordPage()));
+                      } else if (result == 'incorrect.') {
+                        ScaffoldMessenger.of(bc)
+                            .showSnackBar(errorSnackBar('密码错误.'));
                       }
                     },
                   ),
@@ -136,15 +272,34 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                   margin: EdgeInsets.all(5),
                   width: 350,
                   height: 45,
-                  child: ElevatedButton.icon(
-                    icon: Icon(Icons.delete_forever_rounded),
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.redAccent),
+                  child: Builder(
+                    builder: (bc) => ElevatedButton.icon(
+                      icon: Icon(Icons.delete_forever_rounded),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.redAccent),
+                      ),
+                      label: Text('删除账户'),
+                      onPressed: () async {
+                        final r = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (bc) => DeleteAccountPage(userID: userID!),
+                          ),
+                        );
+                        switch (r) {
+                          case 'success.':
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (bc) => MainPage(state: 0)));
+                            break;
+                          default:
+                            ScaffoldMessenger.of(bc)
+                                .showSnackBar(errorSnackBar('账户删除失败.'));
+                        }
+                      },
                     ),
-                    label: Text('删除账户'),
-                    //TODO:删除账户
-                    onPressed: () {},
                   ),
                 ),
               ],
@@ -167,13 +322,14 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
   }
 
   void getUserInfo() async {
-    sp = await SharedPreferences.getInstance();
+    SharedPreferences sp = await SharedPreferences.getInstance();
     setState(() {
       userID = sp.getInt('userID');
       userName = sp.getString('userName');
       nickName = sp.getString('nickName');
       avatarURL = sp.getString('avatarURL');
     });
+    print(userName);
   }
 
   @override
@@ -182,7 +338,8 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
   }
 
   Future<bool> tryEditUserName(String newUserName) async {
-    if (await searchUser(userName) == null) {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    if (await searchUser(newUserName) == null) {
       Response res = await Dio().post('$apiServerAddress/editUserName/',
           options: new Options(contentType: Headers.formUrlEncodedContentType),
           data: {
@@ -193,6 +350,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
         setState(() {
           userName = newUserName;
         });
+        await sp.setString('userName', newUserName);
         return true;
       }
     }

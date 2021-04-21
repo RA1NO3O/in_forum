@@ -35,6 +35,7 @@ Future<void> main() async {
           )
         : MainPage(
             title: 'Inforum',
+            state: 0,
           ),
     localizationsDelegates: [
       GlobalMaterialLocalizations.delegate,
@@ -52,15 +53,29 @@ Future<void> main() async {
 //主界面
 class MainPage extends StatefulWidget {
   final String? title;
+  final int state;
+  final String? userName;
 
-  MainPage({Key? key, this.title}) : super(key: key);
+  MainPage({
+    Key? key,
+    this.title,
+    required this.state,
+    this.userName,
+  }) : super(key: key);
 
   @override
   _MainPageState createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  var state = 0; //0代表初始界面,1代表登录,2代表注册
+  int state = 0; //0代表初始界面,1代表登录,2代表注册
+  @override
+  void initState() {
+    print(widget.userName);
+    state = widget.state;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     onBottom(Widget child) => Positioned.fill(
@@ -103,7 +118,7 @@ class _MainPageState extends State<MainPage> {
                   title: Hero(
                     tag: 'title',
                     child: Text(
-                      widget.title!,
+                      widget.title ?? 'Inforum',
                       style: Theme.of(context).primaryTextTheme.headline6,
                     ),
                   ),
@@ -136,7 +151,9 @@ class _MainPageState extends State<MainPage> {
                       child: state == 0
                           ? defaultPage()
                           : state == 1
-                              ? LoginPage()
+                              ? LoginPage(
+                                  userName: widget.userName,
+                                )
                               : RegPage(),
                     ),
                   ],
@@ -237,16 +254,13 @@ class AnimatedBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     var tween = TimelineTween<AniProps>()
       ..addScene(
-              begin: Duration(milliseconds: 0),
-              duration: Duration(seconds: 5))
+              begin: Duration(milliseconds: 0), duration: Duration(seconds: 5))
           .animate(AniProps.color,
               tween: ColorTween(
                 begin: Colors.red,
                 end: Colors.green.shade600,
               ))
-      ..addScene(
-              begin: Duration(milliseconds: 0),
-              end: Duration(seconds: 5))
+      ..addScene(begin: Duration(milliseconds: 0), end: Duration(seconds: 5))
           .animate(AniProps.color2,
               tween: ColorTween(
                 begin: Colors.purple,
@@ -262,7 +276,10 @@ class AnimatedBackground extends StatelessWidget {
             gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors:[value.get(AniProps.color),value.get(AniProps.color2)])),
+                colors: [
+              value.get(AniProps.color),
+              value.get(AniProps.color2)
+            ])),
       ),
     );
   }

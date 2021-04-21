@@ -59,12 +59,12 @@ class PostListItem extends StatefulWidget {
 
 class _PostListItem extends State<PostListItem> {
   TextStyle? v;
-  bool isCollect=false;
-  int likeState=0; //0缺省,1为点赞,2为踩
-  int collectCount=0;
-  int likeCount=0;
-  int dislikeCount=0;
-  int commentCount=0;
+  bool isCollect = false;
+  int likeState = 0; //0缺省,1为点赞,2为踩
+  int collectCount = 0;
+  int likeCount = 0;
+  int dislikeCount = 0;
+  int commentCount = 0;
   List<String>? tagStrings;
   List<Widget>? tagWidgets;
   String imgTag = getRandom(6);
@@ -150,14 +150,13 @@ class _PostListItem extends State<PostListItem> {
                         if (result == '0') {
                           ScaffoldMessenger.of(bc)
                               .showSnackBar(doneSnackBar('帖子已删除.'));
-
                         }
                       },
                       child: Column(
                         children: [
                           Container(
-                            margin: EdgeInsets.only(
-                                top: 10, left: 5, bottom: 5),
+                            margin:
+                                EdgeInsets.only(top: 10, left: 5, bottom: 5),
                             child: Flex(
                               direction: Axis.horizontal,
                               children: [
@@ -165,17 +164,17 @@ class _PostListItem extends State<PostListItem> {
                                   child: Row(
                                     children: [
                                       Container(
-                                          margin:
-                                          EdgeInsets.only(right: 5),
+                                          margin: EdgeInsets.only(right: 5),
                                           child: CircleAvatar(
                                               radius: 15,
                                               backgroundImage: (widget
-                                                  .imgAuthor !=
-                                                  null
-                                                  ? CachedNetworkImageProvider(
-                                                  widget.imgAuthor!)
-                                                  : AssetImage(
-                                                  'images/default_avatar.png')) as ImageProvider<Object>?)),
+                                                              .imgAuthor !=
+                                                          null
+                                                      ? CachedNetworkImageProvider(
+                                                          widget.imgAuthor!)
+                                                      : AssetImage(
+                                                          'images/default_avatar.png'))
+                                                  as ImageProvider<Object>?)),
                                       Text(widget.authorName!, style: v),
                                     ],
                                   ),
@@ -187,8 +186,7 @@ class _PostListItem extends State<PostListItem> {
                                 Container(
                                   padding: EdgeInsets.only(right: 13),
                                   child: Text(
-                                      DateTimeFormat.handleDate(
-                                          widget.time),
+                                      DateTimeFormat.handleDate(widget.time),
                                       style: v),
                                 ),
                               ],
@@ -203,9 +201,9 @@ class _PostListItem extends State<PostListItem> {
                               style: widget.postID != null
                                   ? titleFontStyle
                                   : new TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey),
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey),
                               textAlign: TextAlign.left,
                             ),
                           ),
@@ -218,7 +216,7 @@ class _PostListItem extends State<PostListItem> {
                               style: widget.postID != null
                                   ? new TextStyle(fontSize: 16)
                                   : new TextStyle(
-                                  fontSize: 16, color: Colors.grey),
+                                      fontSize: 16, color: Colors.grey),
                             ),
                           ),
                         ],
@@ -231,32 +229,32 @@ class _PostListItem extends State<PostListItem> {
                         : EdgeInsets.all(0),
                     child: widget.imgURL != null
                         ? Hero(
-                      child: Material(
-                        elevation: 1,
-                        clipBehavior: Clip.antiAlias,
-                        borderRadius: BorderRadius.circular(5),
-                        child: Ink.image(
-                          width: 400,
-                          height: 200,
-                          fit: BoxFit.cover,
-                          image: CachedNetworkImageProvider(
-                              widget.imgURL!),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                new MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      ImageViewer(
-                                          imgURL: widget.imgURL,
-                                          heroTag: imgTag),
+                            child: Material(
+                              elevation: 1,
+                              clipBehavior: Clip.antiAlias,
+                              borderRadius: BorderRadius.circular(5),
+                              child: Ink.image(
+                                width: 400,
+                                height: 200,
+                                fit: BoxFit.cover,
+                                image:
+                                    CachedNetworkImageProvider(widget.imgURL!),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      new MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            ImageViewer(
+                                                imgURL: widget.imgURL,
+                                                heroTag: imgTag),
+                                      ),
+                                    );
+                                  },
                                 ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      tag: imgTag,
-                    )
+                              ),
+                            ),
+                            tag: imgTag,
+                          )
                         : null,
                   ),
                   Container(
@@ -264,10 +262,10 @@ class _PostListItem extends State<PostListItem> {
                       alignment: Alignment.centerLeft,
                       child: tagWidgets != null
                           ? Wrap(
-                        spacing: 5,
-                        runSpacing: 1,
-                        children: tagWidgets!,
-                      )
+                              spacing: 5,
+                              runSpacing: 1,
+                              children: tagWidgets!,
+                            )
                           : null),
                   Flex(direction: Axis.horizontal, children: [
                     Expanded(
@@ -292,17 +290,17 @@ class _PostListItem extends State<PostListItem> {
                         flex: 1,
                         child: ActionButton(
                             fun: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    NewCommentScreen(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        NewCommentScreen(
                                       targetPostID: widget.postID,
                                       targetUserName: widget.authorName,
                                       targetUserID: widget.editorID,
                                       imgURL: null,
                                     ),
-                              ),
-                            ),
+                                  ),
+                                ),
                             ico: Icon(Icons.mode_comment_outlined),
                             txt: commentCount.toString())),
                     Expanded(

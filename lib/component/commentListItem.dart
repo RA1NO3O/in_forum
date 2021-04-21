@@ -47,8 +47,8 @@ class CommentListItem extends StatefulWidget {
 
 class _CommentListItem extends State<CommentListItem> {
   String? _imgURL;
-  int likeState=0; //0缺省,1为点赞,2为踩
-  int likeCount=0;
+  int likeState = 0; //0缺省,1为点赞,2为踩
+  int likeCount = 0;
   String _imgTag = getRandom(6);
   String _avatarHeroTag = getRandom(6);
 
@@ -80,9 +80,10 @@ class _CommentListItem extends State<CommentListItem> {
                         color: Colors.transparent,
                         child: Ink.image(
                           image: (widget.commenterAvatarURL != null
-                              ? CachedNetworkImageProvider(
-                                  widget.commenterAvatarURL!)
-                              : AssetImage('images/default_avatar.png')) as ImageProvider<Object>,
+                                  ? CachedNetworkImageProvider(
+                                      widget.commenterAvatarURL!)
+                                  : AssetImage('images/default_avatar.png'))
+                              as ImageProvider<Object>,
                           fit: BoxFit.contain,
                           width: 50,
                           height: 50,
@@ -115,7 +116,7 @@ class _CommentListItem extends State<CommentListItem> {
                         Container(
                           margin: EdgeInsets.only(left: 5),
                           child: Text(
-                            '@${widget.commentTarget} · '
+                            // '@${} · '
                             '${DateTimeFormat.handleDate(widget.commentTime)}',
                           ),
                         ),
@@ -192,7 +193,7 @@ class _CommentListItem extends State<CommentListItem> {
                           '回复给 ',
                         ),
                         Text(
-                          widget.commentTarget!,
+                          '@${widget.commentTarget!}',
                           style: new TextStyle(color: Colors.blue),
                         )
                       ],

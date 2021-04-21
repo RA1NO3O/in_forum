@@ -43,8 +43,11 @@ String convertBasicTimeFormat(String t) {
   return result;
 }
 
-String convertBasicDateFormat(String d) {
-  var r = DateTime.parse(d);
-  var result = DateFormat.yMMMd("zh_CN").format(r);
+String convertBasicDateFormat(String? d) {
+  var result = '';
+  if (d != null && d != '' && d != 'null') {
+    var r = DateTime.parse(d);
+    result = DateFormat.yMMMd("zh_CN").format(r);
+  }
   return result;
 }

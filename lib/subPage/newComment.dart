@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/uploadPictureService.dart';
 import 'package:inforum/subPage/profilePage.dart';
@@ -132,8 +133,7 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
                     style: new TextStyle(fontSize: 20),
                     decoration: InputDecoration(
                         hintText: '在此处撰写回复.',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0))),
+                        border: inputBorder),
                   ),
                 ),
                 Container(

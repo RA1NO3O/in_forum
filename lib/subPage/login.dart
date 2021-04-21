@@ -30,7 +30,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     userNameController.text = widget.userName ?? '';
-    userNameController.text = widget.password ?? '';
     userNameController.addListener(idListener);
     pwdController.addListener(pwdListener);
     super.initState();
@@ -91,13 +90,27 @@ class _LoginPageState extends State<LoginPage> {
                         }
                       },
                 keyboardType: TextInputType.emailAddress,
+                // BUG EXISTS
+                // autofillHints: !isUserFound
+                //     ? [
+                //         AutofillHints.email,
+                //         AutofillHints.telephoneNumber,
+                //         AutofillHints.username,
+                //       ]
+                //     : null,
                 controller: userNameController,
                 enabled: (!isUserFound) && (!isProcessing),
                 decoration: InputDecoration(
                     labelText: '用户名,手机或者邮箱地址',
                     prefixIcon: Icon(Icons.person),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0))),
+                    suffixIcon: userNameController.text.isEmpty
+                        ? null
+                        : IconButton(
+                            icon: Icon(Icons.clear),
+                            tooltip: '清除',
+                            onPressed: () => userNameController.clear(),
+                          ),
+                    border: inputBorder),
               ),
             ),
             //密码字段
@@ -112,6 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                       autofocus: true,
                       controller: pwdController,
                       obscureText: !passwordVisible,
+                      autofillHints: [AutofillHints.password],
                       textInputAction: TextInputAction.done,
                       onEditingComplete: isNotFilled
                           ? null
@@ -123,18 +137,19 @@ class _LoginPageState extends State<LoginPage> {
                               }
                             },
                       decoration: InputDecoration(
-                          labelText: '密码',
-                          prefixIcon: Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            icon: Icon(passwordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off),
-                            onPressed: () => setState(() {
-                              passwordVisible = !passwordVisible;
-                            }),
-                          ),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0))),
+                        labelText: '密码',
+                        prefixIcon: Icon(Icons.lock_rounded),
+                        suffixIcon: IconButton(
+                          icon: Icon(passwordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                          tooltip: '显示/隐藏密码',
+                          onPressed: () => setState(() {
+                            passwordVisible = !passwordVisible;
+                          }),
+                        ),
+                        border: inputBorder,
+                      ),
                     )
                   : null,
             ),
@@ -180,23 +195,26 @@ class _LoginPageState extends State<LoginPage> {
 
       if (rs != null) {
         ProfileRecordset? rs2 = await getProfile(rs.id);
-        String _nickName=rs2?.nickname??'';
-        String _userName=rs2?.username??'';
-        String _avatarURL=rs2?.avatarUrl??'';
-        String _bannerURL=rs2?.avatarUrl??'';
-        String _bio=rs2?.bio??'';
-        String _location = rs2?.location??'';
+        String _nickName = rs2?.nickname ?? '';
+        String _userName = rs2?.username ?? '';
+        String _avatarURL = rs2?.avatarUrl ?? '';
+        String _bannerURL = rs2?.avatarUrl ?? '';
+        String _bio = rs2?.bio ?? '';
+        String _location = rs2?.location ?? '';
 
         //写入登录状态
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setInt('userID', rs.id!);
-        prefs.setString('userName', _userName);
-        prefs.setString('nickName', _nickName);
-        prefs.setString('avatarURL', _avatarURL);
-        prefs.setString('bannerURL', _bannerURL);
-        prefs.setString('bio', _bio);
-        prefs.setString('location', _location);
-        prefs.setBool('isLogin', true);
+        print(rs.id);
+        await prefs.setInt('userID', rs.id ?? 0);
+        print(_userName);
+        await prefs.setString('userName', _userName);
+        print(_nickName);
+        await prefs.setString('nickName', _nickName);
+        await prefs.setString('avatarURL', _avatarURL);
+        await prefs.setString('bannerURL', _bannerURL);
+        await prefs.setString('bio', _bio);
+        await prefs.setString('location', _location);
+        await prefs.setBool('isLogin', true);
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) {
           return HomeScreen(
@@ -242,7 +260,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       isProcessing = false;
     });
-    return 'unknown error';
+    return '未知错误,请检查您的网络.';
   }
 
   @override

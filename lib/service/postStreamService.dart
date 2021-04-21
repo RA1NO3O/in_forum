@@ -113,7 +113,7 @@ Future<List<PostListItem>> convertToPostWidgets(List<PostRecordset> rs) async {
       collectCount: value.collectCount,
       isCollect: value.isCollected ?? false,
       imgURL: value.imageUrl ?? null,
-      authorName: value.nickname,
+      authorName: value.nickname??value.editorId.toString(),
       imgAuthor: value.avatarUrl ?? null,
       isAuthor: value.isEditor == 1 ? true : false,
       time: value.lastEditTime.toString(),

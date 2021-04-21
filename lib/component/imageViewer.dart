@@ -6,6 +6,7 @@ import 'package:inforum/service/imageShareService.dart';
 import 'package:photo_view/photo_view.dart';
 
 class ImageViewer extends StatelessWidget {
+  final int? mode;
   final String? imgURL;
   final Widget? loadingChild;
   final Decoration? backgroundDecoration;
@@ -20,26 +21,39 @@ class ImageViewer extends StatelessWidget {
     this.maxScale,
     this.heroTag,
     this.imgURL,
+    this.mode,
   });
 
   @override
   Widget build(BuildContext context) {
+    String? _newImgURL;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: new AppBar(
         elevation: 1,
         backgroundColor: Colors.transparent,
         actions: [
-          Builder(
-            builder: (bc) => IconButton(
-                icon: Icon(Icons.download_rounded),
-                onPressed: () {
-                  AppUtil.saveImage(imgURL);
-                  ScaffoldMessenger.of(bc)
-                      .showSnackBar(doneSnackBar('图片已保存.'));
-                }),
-          ),
+          mode == 1
+              ? Builder(
+                  builder: (bc) => IconButton(
+                      tooltip: '提交更改',
+                      icon: Icon(Icons.done_all_rounded),
+                      onPressed: () {
+                        Navigator.pop(bc, _newImgURL);
+                      }),
+                )
+              : Builder(
+                  builder: (bc) => IconButton(
+                      tooltip: '保存图片',
+                      icon: Icon(Icons.download_rounded),
+                      onPressed: () {
+                        AppUtil.saveImage(imgURL);
+                        ScaffoldMessenger.of(bc)
+                            .showSnackBar(doneSnackBar('图片已保存.'));
+                      }),
+                ),
           IconButton(
+            tooltip: '分享',
             icon: Icon(Icons.share_rounded),
             onPressed: () => shareNetworkImage(imgURL!),
           )

@@ -41,7 +41,7 @@ class _ProfilePage extends State<ProfilePage>
   String? _bannerURL;
   String _followerCount = '0';
   String _followingCount = '0';
-  String? _joinTime;
+  String? _joinDate;
   List<PostListItem> _postListItems = [];
   List<GalleryListItem> _galleryListItems = [];
   List<PostListItem> _likedPostItems = [];
@@ -71,6 +71,7 @@ class _ProfilePage extends State<ProfilePage>
     _likedPostItems
         .addAll(await getLikedPostsByUser(widget.userID, sp.getInt('userID')));
     setState(() {
+      //如果查看的是自己的个人资料,取用本地缓存读取
       if (widget.userID == sp.getInt('userID')) {
         _userName = sp.getString('userName');
         _nickName = sp.getString('nickName');
@@ -79,29 +80,30 @@ class _ProfilePage extends State<ProfilePage>
         _bio = sp.getString('bio');
         _location = sp.getString('location');
         _birthday = sp.getString('birthday');
-        _joinTime = sp.getString('joinTime');
+        _joinDate = sp.getString('joinDate');
       }
-      _userName = rs!.username ?? 'unknown';
-      _nickName = rs.nickname ?? 'unknown';
-      _birthday = rs.birthday.toString();
-      _bio = rs.bio ?? '此用户没有填写个人简介';
-      _location = rs.location ?? 'unknown';
-      _avatarURL = rs.avatarUrl;
-      _bannerURL = rs.bannerUrl;
-      _followerCount = rs.followerCount.toString();
-      _followingCount = rs.followingCount.toString();
-      _joinTime = rs.joinDate.toString();
+
+      _userName = rs?.username ?? '未知';
+      _nickName = rs?.nickname ?? '未知';
+      _birthday = convertBasicDateFormat(rs?.birthday.toString());
+      _bio = rs?.bio ?? '此用户没有填写个人简介';
+      _location = rs?.location ?? '未知';
+      _avatarURL = rs?.avatarUrl;
+      _bannerURL = rs?.bannerUrl;
+      _followerCount = rs?.followerCount.toString() ?? '0';
+      _followingCount = rs?.followingCount.toString() ?? '0';
+      _joinDate = rs?.joinDate.toString() ?? null;
       _loadState = false;
     });
     if (widget.userID == sp.getInt('userID')) {
-      await sp.setString('userName', _userName!);
-      await sp.setString('nickName', _nickName!);
-      await sp.setString('avatarURL', _avatarURL!);
-      await sp.setString('bannerURL', _bannerURL!);
-      await sp.setString('bio', _bio!);
-      await sp.setString('location', _location!);
-      await sp.setString('birthday', _birthday!);
-      await sp.setString('joinTime', _joinTime!);
+      await sp.setString('userName', _userName ?? '');
+      await sp.setString('nickName', _nickName ?? '');
+      await sp.setString('avatarURL', _avatarURL ?? '');
+      await sp.setString('bannerURL', _bannerURL ?? '');
+      await sp.setString('bio', _bio ?? '');
+      await sp.setString('location', _location ?? '');
+      await sp.setString('birthday', _birthday ?? '');
+      await sp.setString('joinTime', _joinDate ?? '');
     }
   }
 
@@ -162,6 +164,7 @@ class _ProfilePage extends State<ProfilePage>
                                       ],
                                     )),
                                 Container(
+                                  height: 60,
                                   margin: EdgeInsets.only(
                                       top: 10, bottom: 10, right: 10),
                                   alignment: Alignment.topLeft,
@@ -170,11 +173,10 @@ class _ProfilePage extends State<ProfilePage>
                                 Row(
                                   children: [
                                     Icon(Icons.cake_rounded),
-                                    Text(
-                                        '  ${_birthday != null ? convertBasicDateFormat(_birthday!) : ''}   '),
+                                    Text('  $_birthday   '),
                                     Icon(Icons.date_range_rounded),
                                     Text(
-                                        '  ${_birthday != null ? convertBasicDateFormat(_joinTime!) : ''} 加入'),
+                                        '  ${convertBasicDateFormat(_joinDate)} 加入'),
                                   ],
                                 ),
                                 Container(
@@ -219,8 +221,9 @@ class _ProfilePage extends State<ProfilePage>
                           color: Colors.transparent,
                           child: Ink.image(
                             image: (_avatarURL != null
-                                ? CachedNetworkImageProvider(_avatarURL!)
-                                : AssetImage('images/default_avatar.png')) as ImageProvider<Object>,
+                                    ? CachedNetworkImageProvider(_avatarURL!)
+                                    : AssetImage('images/default_avatar.png'))
+                                as ImageProvider<Object>,
                             fit: BoxFit.contain,
                             width: 80,
                             height: 80,
@@ -258,7 +261,7 @@ class _ProfilePage extends State<ProfilePage>
                 [
                   Container(
                     child: TabBar(
-                      labelColor: Theme.of(context).primaryColor,
+                      labelColor: Theme.of(context).hintColor,
                       controller: _tabController,
                       tabs: <Widget>[
                         Container(

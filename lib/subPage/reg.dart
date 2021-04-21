@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/home.dart';
+import 'package:inforum/main.dart';
 import 'package:inforum/service/loginService.dart';
-import 'package:inforum/subPage/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RegPage extends StatefulWidget {
@@ -68,11 +68,15 @@ class _RegPage extends State<RegPage> {
           action: SnackBarAction(
             label: '登录',
             onPressed: () => Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => LoginPage(
-                          userName: userNameController.text,
-                        ))),
+              context,
+              MaterialPageRoute(
+                builder: (context) => MainPage(
+                  state: 1,
+                  title: 'Inforum',
+                  userName: userNameController.text,
+                ),
+              ),
+            ),
           ),
         ));
       } else {
@@ -90,28 +94,26 @@ class _RegPage extends State<RegPage> {
           "password": pwdController.text,
           "email": emailController.text.isEmpty ? 'null' : emailController.text,
           "phone": phoneController.text.isEmpty ? 'null' : phoneController.text,
-          // "nickname": nickname,
-          // "birthday": birthday,
-          // "bio": bio,
-          // "gender": gender,
-          // "location": location
+          "nickname": userNameController.text,
         },
       );
       if (res.data == 'success.') {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         LoginRecordset recordset = (await searchUser(userNameController.text))!;
-        prefs.setInt('userID', recordset.id!);
-        prefs.setString('userName', userNameController.text);
-        prefs.setBool('isLogin', true);
-        prefs.setBool('isJustLogin', true);
-        LoginRecordset? rs = await searchUser(userNameController.text);
+        await prefs.setInt('userID', recordset.id!);
+        await prefs.setString('nickName', userNameController.text);
+        await prefs.setString('userName', userNameController.text);
+        await prefs.setBool('isLogin', true);
+        await prefs.setBool('isJustLogin', true);
+        LoginRecordset rs =
+            (await searchUser(userNameController.text)) ?? new LoginRecordset();
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (BuildContext context) => HomeScreen(
-                      userID: rs!.id,
+                      userID: rs.id,
                       userName: userNameController.text,
-                      nickName: nickname,
+                      nickName: nickname ?? userNameController.text,
                     )),
             result: "null");
       }
@@ -128,7 +130,6 @@ class _RegPage extends State<RegPage> {
           key: _formKey,
           child: Column(
             children: [
-              //卡片内容
               new Container(
                 margin: EdgeInsets.only(top: 40, bottom: 30),
                 child: Text(
@@ -145,12 +146,12 @@ class _RegPage extends State<RegPage> {
                   maxLength: 10,
                   validator: (value) => value!.isEmpty ? '此字段为必填项.' : null,
                   keyboardType: TextInputType.name,
+                  autofillHints: [AutofillHints.newUsername],
                   controller: userNameController,
                   decoration: InputDecoration(
                       labelText: '用户名',
                       prefixIcon: Icon(Icons.person),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0))),
+                      border: inputBorder),
                 ),
               ),
               //电子邮箱字段
@@ -160,13 +161,13 @@ class _RegPage extends State<RegPage> {
                 child: TextFormField(
                   maxLength: 30,
                   keyboardType: TextInputType.emailAddress,
+                  autofillHints: [AutofillHints.email],
                   controller: emailController,
                   decoration: InputDecoration(
                       labelText: '电子邮箱地址(可选)',
                       hintText: 'someone@example.com',
                       prefixIcon: Icon(Icons.mail_rounded),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0))),
+                      border: inputBorder),
                 ),
               ),
               new Container(
@@ -175,12 +176,12 @@ class _RegPage extends State<RegPage> {
                 child: TextFormField(
                   maxLength: 14,
                   keyboardType: TextInputType.phone,
+                  autofillHints: [AutofillHints.telephoneNumber],
                   controller: phoneController,
                   decoration: InputDecoration(
                       labelText: '电话号码(可选)',
                       prefixIcon: Icon(Icons.phone),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0))),
+                      border: inputBorder),
                 ),
               ),
               //密码字段
@@ -193,6 +194,7 @@ class _RegPage extends State<RegPage> {
                   controller: pwdController,
                   obscureText: !passwordVisible,
                   textInputAction: TextInputAction.done,
+                  autofillHints: [AutofillHints.newPassword],
                   decoration: InputDecoration(
                       labelText: '密码',
                       prefixIcon: Icon(Icons.lock),
@@ -207,8 +209,7 @@ class _RegPage extends State<RegPage> {
                           passwordVisible = !passwordVisible;
                         }),
                       ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0))),
+                      border: inputBorder),
                 ),
               ),
               new Container(

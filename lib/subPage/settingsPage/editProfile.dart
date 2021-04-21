@@ -1,12 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/component/imageViewer.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/dateTimeFormat.dart';
 import 'package:inforum/service/profileService.dart';
 import 'package:inforum/service/randomGenerator.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfilePage extends StatefulWidget {
   final int? userID;
@@ -34,13 +36,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   _init() async {
     ProfileRecordset? rs = await getProfile(widget.userID);
+    //取用本地缓存读取个人资料
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    print(sp.getString('birthday'));
+    setState(() {
+      _avatarURL = sp.getString('avatarURL') ?? '';
+      _bannerURL = sp.getString('bannerURL') ?? '';
+      _nickNameController.text = sp.getString('nickName') ?? '';
+      _bioController.text = sp.getString('bio') ?? '';
+      _locationController.text = sp.getString('location') ?? '';
+      _birthdayController.text = sp.getString('birthday') ?? '';
+    });
+
     setState(() {
       _avatarURL = rs?.avatarUrl ?? '';
       _bannerURL = rs?.bannerUrl ?? '';
-      _nickNameController.text = rs!.nickname!;
-      _bioController.text = rs.bio!;
-      _locationController.text = rs.location!;
-      _birthdayController.text = convertBasicDateFormat(rs.birthday.toString());
+      _nickNameController.text = rs?.nickname ?? '';
+      _bioController.text = rs?.bio ?? '';
+      _locationController.text = rs?.location ?? '';
+      _birthdayController.text =
+          convertBasicDateFormat(rs?.birthday.toString() ?? '');
     });
   }
 
@@ -52,9 +67,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         actions: [
           Builder(
             builder: (bc) => IconButton(
-              icon: Icon(Icons.done_rounded),
               tooltip: '保存',
+              icon: Icon(Icons.done_rounded),
               onPressed: () async {
+                SharedPreferences sp = await SharedPreferences.getInstance();
                 Response res = await Dio().post(
                   '$apiServerAddress/editProfile/?userID=${widget.userID}',
                   options: new Options(
@@ -62,15 +78,32 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   data: {
                     "avatarURL": _avatarURL,
                     "bannerURL": _bannerURL,
-                    "nickName": _nickNameController.text,
-                    "bio": _bioController.text,
-                    "location": _locationController.text,
-                    "birthday": DateFormat.yMMMd('zh_CN')
-                        .parse(_birthdayController.text),
+                    "nickName": _nickNameController.text.isEmpty
+                        ? 'null'
+                        : _nickNameController.text,
+                    "bio": _bioController.text.isEmpty
+                        ? 'null'
+                        : _bioController.text,
+                    "location": _locationController.text.isEmpty
+                        ? 'null'
+                        : _locationController.text,
+                    "birthday": _birthdayController.text.isEmpty
+                        ? 'null'
+                        : DateFormat.yMMMd('zh_CN')
+                            .parse(_birthdayController.text, true),
                   },
                 );
                 if (res.data == 'success.') {
+                  await sp.setString('nickName', _nickNameController.text);
+                  await sp.setString('avatarURL', _avatarURL);
+                  await sp.setString('bannerURL', _bannerURL);
+                  await sp.setString('bio', _bioController.text);
+                  await sp.setString('location', _locationController.text);
+                  await sp.setString('birthday', _birthdayController.text);
                   Navigator.pop(context, 0);
+                } else {
+                  ScaffoldMessenger.of(bc)
+                      .showSnackBar(errorSnackBar('个人资料修改失败,请检查网络.'));
                 }
               },
             ),
@@ -141,8 +174,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               controller: _nickNameController,
               keyboardType: TextInputType.name,
               maxLines: 1,
-              maxLength: 50,
-              decoration: InputDecoration(labelText: '昵称'),
+              maxLength: 20,
+              decoration: InputDecoration(labelText: '昵称', border: inputBorder),
             ),
           ),
           Container(
@@ -151,9 +184,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
               controller: _bioController,
               keyboardType: TextInputType.multiline,
               maxLines: null,
+              maxLength: 200,
               decoration: InputDecoration(
                 labelText: '简介',
                 alignLabelWithHint: false,
+                border: inputBorder,
               ),
             ),
           ),
@@ -163,7 +198,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
               controller: _locationController,
               maxLines: 1,
               maxLength: 50,
-              decoration: InputDecoration(labelText: '位置'),
+              decoration: InputDecoration(
+                labelText: '位置',
+                border: inputBorder,
+              ),
             ),
           ),
           Container(
@@ -185,7 +223,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       convertBasicDateFormat(result.toString());
                 }
               },
-              decoration: InputDecoration(labelText: '生日'),
+              decoration: InputDecoration(
+                labelText: '生日',
+                border: inputBorder,
+              ),
             ),
           )
         ],

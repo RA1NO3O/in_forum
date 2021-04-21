@@ -49,8 +49,8 @@ class _SettingsPage extends State<SettingsPage> {
                     title: Text('关于 Inforum'),
                     onTap: () => showAboutDialog(
                       context: context,
-                      applicationVersion: '1.0.0',
-                      applicationLegalese: '最后编译日期:2020/12/8 15:46\n'
+                      applicationVersion: '1.0.1',
+                      applicationLegalese: '最后编译日期:2021/4/18 15:52\n'
                           '开发者网站:\n'
                           'https://github.com/RA1NO3O/\n'
                           '项目网站:\n'

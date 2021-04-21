@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:inforum/component/commentListItem.dart';
 import 'package:inforum/service/postCommentService.dart';
+import 'package:inforum/service/postDetailService.dart';
 
 List<CommentListItem> pcis = [];
 Future<List<Widget>> getComment(int? postID, int? userID) async {
   pcis.clear();
 
   List<CommentRecordset> pcl = (await getPostComment(postID, userID))!;
+  var pd = await getPostDetail(postID);
   pcl.forEach((rs) {
     pcis.add(CommentListItem(
       commenterAvatarURL: rs.avatarUrl,
@@ -16,7 +18,7 @@ Future<List<Widget>> getComment(int? postID, int? userID) async {
       commenterName: rs.nickname,
       commentTime: rs.lastEditTime.toString(),
       content: rs.body,
-      commentTarget: rs.username,
+      commentTarget: pd!.username,
       imgURL: rs.imageUrl,
       likeState: rs.likeState ?? 0,
       likeCount: rs.likeCount,

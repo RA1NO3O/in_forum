@@ -217,8 +217,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                       controller: titleController,
                       decoration: InputDecoration(
                           labelText: '标题',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0))),
+                          border: inputBorder),
                     ),
                     Container(
                       constraints: BoxConstraints(
@@ -231,8 +230,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                         style: new TextStyle(fontSize: 20),
                         decoration: InputDecoration(
                             labelText: '正文',
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5.0))),
+                            border: inputBorder),
                       ),
                     ),
                     Container(
@@ -414,7 +412,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
     }
     bool? result = await showDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
+        builder: (bc) => AlertDialog(
               title: Column(
                 children: [
                   Icon(
@@ -437,7 +435,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   onPressed: () {
                     save(titleController.text, contentController.text,
                         tags as List<String>);
-                    Navigator.pop(context, true);
+                    Navigator.pop(bc, true);
                   },
                 ),
                 TextButton.icon(
@@ -448,7 +446,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                   icon: Icon(Icons.delete_rounded),
                   label: Text('舍弃'),
                   onPressed: () async {
-                    Navigator.pop(context, true);
+                    Navigator.pop(bc, true);
                     //舍弃时会清空草稿存储
                     SharedPreferences sp =
                         await SharedPreferences.getInstance();
