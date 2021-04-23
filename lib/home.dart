@@ -366,6 +366,14 @@ class HomeScreenState extends State<HomeScreen> {
                     onTap: () async {
                       bool i = await logOutDialog();
                       if (i) {
+                        await sp.setBool('isLogin', false);
+                        await sp.setInt('userID', 0);
+                        await sp.setString('userName', '');
+                        await sp.setString('nickName', '');
+                        await sp.setString('avatarURL', '');
+                        await sp.setString('bannerURL', '');
+                        await sp.setString('bio', '');
+                        await sp.setString('location', '');
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
@@ -390,7 +398,6 @@ class HomeScreenState extends State<HomeScreen> {
       .copyWith(fontSize: 20, fontWeight: FontWeight.bold);
 
   Future<bool> logOutDialog() async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
     bool? result = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
@@ -411,7 +418,6 @@ class HomeScreenState extends State<HomeScreen> {
                         MaterialStateProperty.all<Color>(Colors.redAccent),
                   ),
                   onPressed: () async {
-                    await sp.setBool('isLogin', false);
                     Navigator.of(context).pop(true);
                   },
                   icon: Icon(Icons.done_rounded),

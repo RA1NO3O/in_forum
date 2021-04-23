@@ -72,7 +72,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                 '相应地,若发布的帖子及回复未予删除,与撰写人相关的用户信息也将显'
                 '示为不存在.他人在此账号帖子名下回复的内容也将随之一并删除,'
                 '此账号关注与被关注的账户列表也将对应地移除.\n\n'
-                '本次操作无法撤销.在此之前,您有权决定以下内容的去留.'),
+                '本次操作无法撤销.但是在此之前,您有权决定以下内容的去留.'),
             Container(
               margin: EdgeInsets.only(top: 10),
               child: Row(

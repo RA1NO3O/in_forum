@@ -21,7 +21,7 @@ class _RegPage extends State<RegPage> {
       phoneController = new TextEditingController(),
       emailController = new TextEditingController(),
       pwdController = new TextEditingController();
-  String? nickname, bio, gender, location;
+  String? nickname;
   DateTime? birthday;
 
   Future<void> btnRegClick() async {

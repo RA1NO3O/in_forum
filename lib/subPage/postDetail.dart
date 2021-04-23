@@ -383,10 +383,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         Expanded(
                           flex: 0,
                           child: ActionButton(
-                            fun: (){
-                              if(_imgURL!=null){
+                            fun: () {
+                              if (_imgURL != null) {
                                 shareNetworkImage(widget.imgURL!);
-                              }else{
+                              } else {
                                 shareTexts(_fullText!);
                               }
                             },
@@ -483,21 +483,23 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 decoration: InputDecoration(
                   hintText: '回复给@$authorUserName',
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.open_in_full_rounded),
-                    tooltip: '全屏撰写',
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => NewCommentScreen(
-                          targetUserID: widget.editorID,
-                          targetPostID: widget.postID,
-                          contentText: _commentController.text,
-                          targetUserName: authorUserName,
-                          imgURL: null,
-                        ),
-                      ),
-                    ),
-                  ),
+                      icon: Icon(Icons.open_in_full_rounded),
+                      tooltip: '全屏撰写',
+                      onPressed: () {
+                        Navigator.pop(bc);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => NewCommentScreen(
+                              targetUserID: widget.editorID,
+                              targetPostID: widget.postID,
+                              contentText: _commentController.text,
+                              targetUserName: authorUserName,
+                              imgURL: null,
+                            ),
+                          ),
+                        );
+                      }),
                 ),
               ),
               Flex(

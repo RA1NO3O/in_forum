@@ -224,10 +224,6 @@ class _MainPageState extends State<MainPage> {
 
   //创建账户按钮
   void btnCreateClick() async {
-    //写入登录状态
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLogin', true);
-
     setState(() {
       state = 2;
     });

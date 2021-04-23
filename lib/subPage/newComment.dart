@@ -48,7 +48,7 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
         }
       });
     });
-    commentController.text = widget.contentText!;
+    commentController.text = widget.contentText ?? '';
     if (widget.imgURL != null) {
       _networkImageLink = widget.imgURL;
     }
@@ -132,8 +132,7 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
                     maxLength: 200,
                     style: new TextStyle(fontSize: 20),
                     decoration: InputDecoration(
-                        hintText: '在此处撰写回复.',
-                        border: inputBorder),
+                        hintText: '在此处撰写回复.', border: inputBorder),
                   ),
                 ),
                 Container(
@@ -231,13 +230,13 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
   }
 
   Future getImage() async {
-    FilePickerResult picker = await (FilePicker.platform.pickFiles(type: FileType.image) as FutureOr<FilePickerResult>);
+    FilePickerResult picker = await (FilePicker.platform
+        .pickFiles(type: FileType.image) as FutureOr<FilePickerResult>);
     PlatformFile file = picker.files.first;
     setState(() {
-
-        setState(() {
-          _localImagePath = file.path;
-        });
+      setState(() {
+        _localImagePath = file.path;
+      });
     });
   }
 
