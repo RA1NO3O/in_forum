@@ -29,7 +29,6 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
   String? phoneNumber = 'unknown';
   String? emailAddress = 'unknown';
   TextEditingController userNameController = new TextEditingController();
-  TextEditingController passwordController = new TextEditingController();
 
   @override
   void initState() {
