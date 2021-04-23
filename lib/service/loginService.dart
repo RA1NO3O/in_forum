@@ -29,6 +29,14 @@ Future<LoginRecordset?> searchUser(String? userName) async {
   return rs;
 }
 
+Future<String> getUserNameByID(int userID) async {
+  Response res = await Dio().get('$apiServerAddress/getUserNameByID'
+      '?userID=$userID');
+  final LoginService ls = loginServiceFromJson(res.toString());
+  final LoginRecordset? rs = ls.recordset!.isEmpty ? null : ls.recordset![0];
+  return rs!.username ?? '';
+}
+
 class LoginService {
   LoginService({
     this.recordsets,
@@ -46,7 +54,8 @@ class LoginService {
         recordsets: json["recordsets"] == null
             ? null
             : List<List<LoginRecordset>>.from(json["recordsets"].map((x) =>
-                List<LoginRecordset>.from(x.map((x) => LoginRecordset.fromJson(x))))),
+                List<LoginRecordset>.from(
+                    x.map((x) => LoginRecordset.fromJson(x))))),
         recordset: json["recordset"] == null
             ? null
             : List<LoginRecordset>.from(

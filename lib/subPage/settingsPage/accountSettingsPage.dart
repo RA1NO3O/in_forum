@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/customStyles.dart';
+import 'package:inforum/component/passwordConfirm.dart';
 import 'package:inforum/component/statefulDialog.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/main.dart';
@@ -21,12 +22,12 @@ class AccountSettingsPage extends StatefulWidget {
 
 class _AccountSettingsPage extends State<AccountSettingsPage> {
   GlobalKey<FormState> _fk = GlobalKey<FormState>();
-  GlobalKey<FormState> _pk = GlobalKey<FormState>();
 
   int? userID;
   String? userName = 'unknown';
   String? nickName = 'unknown';
-  String? avatarURL;
+  String? phoneNumber = 'unknown';
+  String? emailAddress = 'unknown';
   TextEditingController userNameController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
 
@@ -149,80 +150,10 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                     title: Text('密码'),
                     subtitle: Text('点按以修改密码.'),
                     onTap: () async {
-                      passwordController.text = '';
                       final result = await showDialog(
-                        context: context,
-                        builder: (bc) => StatefulDialog(
-                          title: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.lock_rounded, size: 32),
-                              Text('   确认目前的密码')
-                            ],
-                          ),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Form(
-                                key: _pk,
-                                child: TextFormField(
-                                  obscureText: true,
-                                  autofocus: true,
-                                  validator: (value) =>
-                                      passwordController.text.isEmpty
-                                          ? '密码是必需的.'
-                                          : null,
-                                  textInputAction: TextInputAction.done,
-                                  onEditingComplete: () async {
-                                    if (_pk.currentState!.validate()) {
-                                      var r = await tryLogin(
-                                          userName!, passwordController.text);
-                                      if (r != null) {
-                                        Navigator.pop(bc, 'correct.');
-                                      } else {
-                                        Navigator.pop(bc, 'incorrect.');
-                                      }
-                                    }
-                                  },
-                                  controller: passwordController,
-                                  decoration:
-                                      InputDecoration(border: inputBorder),
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(top: 10),
-                                child: Text(
-                                  '验证您的身份.',
-                                  style: invalidTextStyle,
-                                ),
-                              ),
-                            ],
-                          ),
-                          actions: [
-                            TextButton.icon(
-                              onPressed: () =>
-                                  Navigator.pop(bc, 'forgetPassword'),
-                              icon: Icon(Icons.help_center_rounded),
-                              label: Text('忘记密码?'),
-                            ),
-                            TextButton.icon(
-                              onPressed: () async {
-                                if (_pk.currentState!.validate()) {
-                                  var r = await tryLogin(
-                                      userName!, passwordController.text);
-                                  if (r != null) {
-                                    Navigator.pop(bc, 'correct.');
-                                  } else {
-                                    Navigator.pop(bc, 'incorrect.');
-                                  }
-                                }
-                              },
-                              icon: Icon(Icons.arrow_forward_rounded),
-                              label: Text('继续'),
-                            ),
-                          ],
-                        ),
-                      );
+                          context: context,
+                          builder: (bc) => ConfirmPasswordDialog(
+                              userName: userName ?? '', bc: bc));
                       if (result == 'correct.') {
                         var result = await Navigator.push(
                           context,
@@ -260,6 +191,22 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                     },
                   ),
                 ),
+                Builder(
+                  builder: (bc) => ListTile(
+                    leading: Icon(Icons.phone_android_rounded),
+                    title: Text('电话号码'),
+                    subtitle: Text('123****3210'),
+                    onTap: () {},
+                  ),
+                ),
+                Builder(
+                  builder: (bc) => ListTile(
+                    leading: Icon(Icons.email_rounded),
+                    title: Text('邮箱'),
+                    subtitle: Text('123@321.com'),
+                    onTap: () {},
+                  ),
+                ),
                 Container(
                   alignment: Alignment.centerLeft,
                   margin: EdgeInsets.all(10),
@@ -294,6 +241,8 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                                 MaterialPageRoute(
                                     builder: (bc) => MainPage(state: 0)));
                             break;
+                          case null: //通常退出时,不显示提示.
+                            break;
                           default:
                             ScaffoldMessenger.of(bc)
                                 .showSnackBar(errorSnackBar('账户删除失败.'));
@@ -327,7 +276,6 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
       userID = sp.getInt('userID');
       userName = sp.getString('userName');
       nickName = sp.getString('nickName');
-      avatarURL = sp.getString('avatarURL');
     });
     print(userName);
   }

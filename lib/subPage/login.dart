@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
     return Builder(builder: (BuildContext bc) {
       return Container(
         alignment: Alignment.center,
-        height: 350,
+        height: 400,
         child: Column(
           children: [
             Container(
@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                 controller: userNameController,
                 enabled: (!isUserFound) && (!isProcessing),
                 decoration: InputDecoration(
-                    labelText: '用户名,手机或者邮箱地址',
+                    labelText: '用户名,手机或邮箱地址',
                     prefixIcon: Icon(Icons.person),
                     suffixIcon: userNameController.text.isEmpty
                         ? null
@@ -176,6 +176,13 @@ class _LoginPageState extends State<LoginPage> {
                               .showSnackBar(errorSnackBar(r));
                         }
                       },
+              ),
+            ),
+            new Container(
+              margin: EdgeInsets.only(top: 20),
+              child: TextButton(
+                child: Text('遇到登录问题?'),
+                onPressed: () {},
               ),
             ),
           ],

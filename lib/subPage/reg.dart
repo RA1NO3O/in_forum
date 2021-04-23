@@ -124,7 +124,7 @@ class _RegPage extends State<RegPage> {
   Widget build(BuildContext context) {
     return Container(
         alignment: Alignment.center,
-        width: 350,
+        // width: 350,
         height: 600,
         child: Form(
           key: _formKey,

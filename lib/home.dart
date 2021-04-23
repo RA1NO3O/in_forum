@@ -12,6 +12,7 @@ import 'package:inforum/subPage/profilePage.dart';
 import 'package:inforum/subPage/searchPage.dart';
 import 'package:inforum/subPage/settingsPage/settingsPage.dart';
 import 'package:inforum/subPage/notificationPage.dart';
+import 'package:inforum/subPage/supportPage/helpCenterPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'component/customStyles.dart';
@@ -350,19 +351,15 @@ class HomeScreenState extends State<HomeScreen> {
                     leading: Icon(Icons.help_rounded),
                     title: Text('帮助'),
                     shape: roundedRectangleBorder,
-                    onTap: () {},
+                    onTap: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (bc) => HelpCenterPage())),
                   ),
                   ListTile(
-                    leading: Icon(Icons.settings),
-                    title: Text('设置'),
-                    shape: roundedRectangleBorder,
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return SettingsPage();
-                      }));
-                    },
-                  ),
+                      leading: Icon(Icons.settings),
+                      title: Text('设置'),
+                      shape: roundedRectangleBorder,
+                      onTap: () => Navigator.push(context,
+                          MaterialPageRoute(builder: (bc) => SettingsPage()))),
                   ListTile(
                     leading: Icon(Icons.login_rounded),
                     title: Text('登出'),
@@ -374,7 +371,7 @@ class HomeScreenState extends State<HomeScreen> {
                             MaterialPageRoute(
                                 builder: (BuildContext context) => MainPage(
                                       title: 'Inforum',
-                                  state: 0,
+                                      state: 0,
                                     )));
                       }
                     },

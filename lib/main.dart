@@ -181,7 +181,7 @@ class _MainPageState extends State<MainPage> {
 
   Widget defaultPage() {
     return Container(
-      height: 350,
+      height: 400,
       child: Column(
         children: [
           Container(
