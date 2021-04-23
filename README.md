@@ -1,3 +1,4 @@
+
 # inforum_app
 
 A cross-platform forum application, the service are based on Microsoft SQL Server, NodeJs(with express) and aliyun OSS server.
@@ -38,11 +39,5 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 ## Screenshots
-# ![screenshot_1]
-# ![screenshot_2]
-# ![screenshot_3]
-[screenshot_1]: https://ra1nbucket.oss-cn-hangzhou.aliyuncs.com/images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202021-03-09%20224645.png
-[screenshot_2]: https://ra1nbucket.oss-cn-hangzhou.aliyuncs.com/images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202021-03-09%20224838.png
-[screenshot_3]: https://ra1nbucket.oss-cn-hangzhou.aliyuncs.com/images/Screenshot_2021-02-10-18-39-46-503_org.ra1n.Inforum.jpg
-
-A 100% NT by RA1NO3O😎
+#![android](https://user-images.githubusercontent.com/25654559/115859025-3782c780-a462-11eb-9b72-214b569c379b.png)![68747470733a2f2f7261316e6275636b65742e6f73732d636e2d68616e677a686f752e616c6979756e63732e636f6d2f696d616765732f254535254231253846254535254239253935254536253838254141254535253942254245253230323032312d30332d3039253230323234](https://user-images.githubusercontent.com/25654559/115859711-271f1c80-a463-11eb-99ef-ae12ae738f73.png)
+![image](https://user-images.githubusercontent.com/25654559/115859512-e1faea80-a462-11eb-900e-c8ffeb0d99de.png)
