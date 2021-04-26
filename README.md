@@ -32,7 +32,8 @@ String expiration = '2025-01-01T12:00:00.000Z';
 ```
 
 ## Run or build on Desktop
-You should use [hover](https://github.com/go-flutter-desktop/hover)(which is powered by Go) tools with flutter engine to run and build app, the platform dedicated function(such as filePicker) will need it to work on Desktop.And you'd better follow the step by link: https://github.com/go-flutter-desktop/hover/blob/master/README.md
+~~You should use [hover](https://github.com/go-flutter-desktop/hover)(which is powered by Go) tools with flutter engine to run and build app, the platform dedicated function(such as filePicker) will need it to work on Desktop.And you'd better follow the step by link:~~ https://github.com/go-flutter-desktop/hover/blob/master/README.md
+> Now the app has migrated to the official file_selector plugin, no need to worry about. Thanks to the flutter community❤.
 
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
