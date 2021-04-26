@@ -5,7 +5,7 @@ A cross-platform forum application, the service are based on Microsoft SQL Serve
 
 - 🚪Portal to [Inforum_API](http://github.com/RA1NO3O/Inforum_API)
 
-This App can automaticlly fit your screen to display information, with this app, you can easily make a post, leave a comment or share media contents on anywhere.
+This App can automaticlly fit your screen to display information, with this app, you can easily make a post, leave a comment or share media contents on anywhere by any device.
 
 Project codeFile has been updated to the fresh flutter2.0 and migrated to null-safety so you're good to go.
 
