@@ -6,6 +6,7 @@ import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/service/loginService.dart' as LoginRS;
 import 'package:inforum/service/profileService.dart';
+import 'package:inforum/subPage/supportPage/forgetPasswordPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -182,7 +183,10 @@ class _LoginPageState extends State<LoginPage> {
               margin: EdgeInsets.only(top: 20),
               child: TextButton(
                 child: Text('遇到登录问题?'),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(bc,
+                      MaterialPageRoute(builder: (bc) => ForgetPasswordPage()));
+                },
               ),
             ),
           ],

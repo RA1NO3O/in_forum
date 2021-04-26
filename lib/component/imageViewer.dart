@@ -36,8 +36,8 @@ class ImageViewer extends StatelessWidget {
           mode == 1
               ? Builder(
                   builder: (bc) => IconButton(
-                      tooltip: '提交更改',
-                      icon: Icon(Icons.done_all_rounded),
+                      tooltip: '设定并上传图片',
+                      icon: Icon(Icons.done_rounded),
                       onPressed: () {
                         Navigator.pop(bc, _newImgURL);
                       }),
@@ -46,10 +46,12 @@ class ImageViewer extends StatelessWidget {
                   builder: (bc) => IconButton(
                       tooltip: '保存图片',
                       icon: Icon(Icons.download_rounded),
-                      onPressed: () {
-                        AppUtil.saveImage(imgURL);
-                        ScaffoldMessenger.of(bc)
-                            .showSnackBar(doneSnackBar('图片已保存.'));
+                      onPressed: () async {
+                        final r = await AppUtil.saveImage(imgURL);
+                        if (r != null) {
+                          ScaffoldMessenger.of(bc)
+                              .showSnackBar(doneSnackBar('图片已保存.'));
+                        }
                       }),
                 ),
           IconButton(

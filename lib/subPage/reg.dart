@@ -7,6 +7,7 @@ import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/home.dart';
 import 'package:inforum/main.dart';
 import 'package:inforum/service/loginService.dart';
+import 'package:inforum/service/regularExpressionService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RegPage extends StatefulWidget {
@@ -143,8 +144,14 @@ class _RegPage extends State<RegPage> {
                 margin:
                     EdgeInsets.only(left: 25, right: 25, top: 10, bottom: 10),
                 child: TextFormField(
-                  maxLength: 10,
-                  validator: (value) => value!.isEmpty ? '此字段为必填项.' : null,
+                  maxLength: 15,
+                  validator: (value) {
+                    return !isUserameFormat(value!)
+                        ? '用户名只允许使用字母和数字.'
+                        : value.isEmpty
+                            ? '此字段为必填项.'
+                            : null;
+                  },
                   keyboardType: TextInputType.name,
                   autofillHints: [AutofillHints.newUsername],
                   controller: userNameController,

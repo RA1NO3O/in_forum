@@ -176,7 +176,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
                               clipBehavior: Clip.antiAlias,
                               color: Colors.transparent,
                               child: Ink.image(
-                                image: (widget.imgAuthor != null
+                                image: (widget.imgAuthor != null &&
+                                            widget.imgAuthor!.isNotEmpty
                                         ? CachedNetworkImageProvider(
                                             widget.imgAuthor!)
                                         : AssetImage(

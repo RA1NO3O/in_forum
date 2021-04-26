@@ -24,6 +24,7 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
               '您遇到了什么问题?',
               style: titleFontStyle,
             ),
+            AboutListTile()
           ],
         ),
       ),

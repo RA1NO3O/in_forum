@@ -181,11 +181,11 @@ class _MainPageState extends State<MainPage> {
 
   Widget defaultPage() {
     return Container(
-      height: 400,
+      height: 240,
       child: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(top: 40, bottom: 100),
+            margin: EdgeInsets.only(top: 40, bottom: 50),
             child: Text(
               '这是全新的跨平台论坛App!\n',
               style: new TextStyle(fontSize: 22),
@@ -194,7 +194,6 @@ class _MainPageState extends State<MainPage> {
             alignment: Alignment.center,
           ),
           Container(
-            margin: EdgeInsets.only(bottom: 80),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

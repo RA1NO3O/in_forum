@@ -168,8 +168,10 @@ class _PostListItem extends State<PostListItem> {
                                           child: CircleAvatar(
                                               radius: 15,
                                               backgroundImage: (widget
-                                                              .imgAuthor !=
-                                                          null
+                                                                  .imgAuthor !=
+                                                              null &&
+                                                          widget
+                                                              .imgAuthor!.isNotEmpty
                                                       ? CachedNetworkImageProvider(
                                                           widget.imgAuthor!)
                                                       : AssetImage(

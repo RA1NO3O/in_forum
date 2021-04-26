@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/component/imageViewer.dart';
@@ -23,6 +24,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String _avatarURL = '';
   String _avatarHeroTag = getRandom(6);
   String _bannerURL = '';
+  String? _localBannerImagePath;
   TextEditingController _nickNameController = new TextEditingController();
   TextEditingController _bioController = new TextEditingController();
   TextEditingController _locationController = new TextEditingController();
@@ -115,12 +117,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
           Stack(
             children: [
               _bannerURL != ''
-                  ? CachedNetworkImage(
-                      errorWidget: (context, url, error) =>
-                          Icon(Icons.broken_image_rounded),
-                      imageUrl: _bannerURL,
-                      fit: BoxFit.cover,
-                      height: 150,
+                  ? Material(
+                      elevation: 0,
+                      color: Colors.transparent,
+                      child: Ink.image(
+                        image: CachedNetworkImageProvider(_bannerURL),
+                        fit: BoxFit.cover,
+                        height: 150,
+                        child: InkWell(
+                          onTap: () async {
+                            // FilePickerResult? picker = await FilePicker.platform
+                            //     .pickFiles(type: FileType.image);
+                            // PlatformFile file = picker!.files.first;
+                            final typeGroup = XTypeGroup(
+                                label: 'images',
+                                extensions: ['jpg', 'png', 'gif']);
+                            final file =
+                                await openFile(acceptedTypeGroups: [typeGroup]);
+                            if (file != null) {
+                              setState(() {
+                                _localBannerImagePath = file.path;
+                              });
+                            }
+                          },
+                        ),
+                      ),
                     )
                   : Container(
                       height: 150,

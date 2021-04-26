@@ -79,7 +79,8 @@ class _CommentListItem extends State<CommentListItem> {
                         clipBehavior: Clip.hardEdge,
                         color: Colors.transparent,
                         child: Ink.image(
-                          image: (widget.commenterAvatarURL != null
+                          image: (widget.commenterAvatarURL != null &&
+                                      widget.commenterAvatarURL!.isNotEmpty
                                   ? CachedNetworkImageProvider(
                                       widget.commenterAvatarURL!)
                                   : AssetImage('images/default_avatar.png'))
