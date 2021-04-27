@@ -170,19 +170,17 @@ class _PostListItem extends State<PostListItem> {
                                           backgroundImage: (widget.imgAuthor !=
                                                       null &&
                                                   widget.imgAuthor!.isNotEmpty
-                                              ? ResizeImage(
-                                                  CachedNetworkImageProvider(
-                                                      widget.imgAuthor!),
-                                                  width: 80,
-                                                  height: 80,
-                                                )
+                                              ? CachedNetworkImageProvider(
+                                                  widget.imgAuthor!,
+                                                  maxWidth: 80,
+                                                  maxHeight: 80)
                                               : ResizeImage(
                                                   AssetImage(
                                                     'images/default_avatar.png',
                                                   ),
                                                   width: 80,
                                                   height: 80,
-                                                )),
+                                                )) as ImageProvider<Object>,
                                         ),
                                       ),
                                       Text(widget.authorName!, style: v),
@@ -247,9 +245,10 @@ class _PostListItem extends State<PostListItem> {
                                 width: 400,
                                 height: 200,
                                 fit: BoxFit.cover,
-                                image: ResizeImage(
-                                  CachedNetworkImageProvider(widget.imgURL!),
-                                  height:400,
+                                image: CachedNetworkImageProvider(
+                                  widget.imgURL!,
+                                  maxWidth: 400,
+                                  maxHeight: 200,
                                 ),
                                 child: InkWell(
                                   onTap: () {
