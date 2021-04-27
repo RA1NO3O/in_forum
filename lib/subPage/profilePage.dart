@@ -138,7 +138,10 @@ class _ProfilePage extends State<ProfilePage>
                                       Icon(Icons.broken_image_rounded),
                                   imageUrl: _bannerURL!,
                                   fit: BoxFit.cover,
-                                  height: 150,
+                                  width: MediaQuery.of(context)
+                                          .devicePixelRatio
+                                          .toInt() *
+                                      MediaQuery.of(context).size.width,
                                 )
                               : Container(
                                   height: 150,

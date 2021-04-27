@@ -245,10 +245,14 @@ class _PostListItem extends State<PostListItem> {
                                 width: 400,
                                 height: 200,
                                 fit: BoxFit.cover,
-                                image: CachedNetworkImageProvider(
-                                  widget.imgURL!,
-                                  maxWidth: 400,
-                                  maxHeight: 200,
+                                image: ResizeImage(
+                                  CachedNetworkImageProvider(
+                                    widget.imgURL!,
+                                  ),
+                                  width: MediaQuery.of(context)
+                                          .devicePixelRatio
+                                          .toInt() *
+                                      400,
                                 ),
                                 child: InkWell(
                                   onTap: () {
