@@ -164,19 +164,27 @@ class _PostListItem extends State<PostListItem> {
                                   child: Row(
                                     children: [
                                       Container(
-                                          margin: EdgeInsets.only(right: 5),
-                                          child: CircleAvatar(
-                                              radius: 15,
-                                              backgroundImage: (widget
-                                                                  .imgAuthor !=
-                                                              null &&
-                                                          widget
-                                                              .imgAuthor!.isNotEmpty
-                                                      ? CachedNetworkImageProvider(
-                                                          widget.imgAuthor!)
-                                                      : AssetImage(
-                                                          'images/default_avatar.png'))
-                                                  as ImageProvider<Object>?)),
+                                        margin: EdgeInsets.only(right: 5),
+                                        child: CircleAvatar(
+                                          radius: 15,
+                                          backgroundImage: (widget.imgAuthor !=
+                                                      null &&
+                                                  widget.imgAuthor!.isNotEmpty
+                                              ? ResizeImage(
+                                                  CachedNetworkImageProvider(
+                                                      widget.imgAuthor!),
+                                                  width: 80,
+                                                  height: 80,
+                                                )
+                                              : ResizeImage(
+                                                  AssetImage(
+                                                    'images/default_avatar.png',
+                                                  ),
+                                                  width: 80,
+                                                  height: 80,
+                                                )),
+                                        ),
+                                      ),
                                       Text(widget.authorName!, style: v),
                                     ],
                                   ),
@@ -239,8 +247,10 @@ class _PostListItem extends State<PostListItem> {
                                 width: 400,
                                 height: 200,
                                 fit: BoxFit.cover,
-                                image:
-                                    CachedNetworkImageProvider(widget.imgURL!),
+                                image: ResizeImage(
+                                  CachedNetworkImageProvider(widget.imgURL!),
+                                  height:400,
+                                ),
                                 child: InkWell(
                                   onTap: () {
                                     Navigator.of(context).push(

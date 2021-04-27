@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final loginService = loginServiceFromJson(jsonString);
-
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:inforum/data/webConfig.dart';
@@ -20,7 +16,7 @@ Future<LoginRecordset?> tryLogin(String userName, String password) async {
   return rs;
 }
 
-Future<LoginRecordset?> searchUser(String? userName) async {
+Future<LoginRecordset?> searchUser(String userName) async {
   Response res = await Dio().get('$apiServerAddress/searchUser'
       '?userName=$userName');
   final LoginService loginService = loginServiceFromJson(res.toString());

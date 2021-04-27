@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -230,16 +231,24 @@ class _NewCommentScreenState extends State<NewCommentScreen> {
   }
 
   Future getImage() async {
-    // FilePickerResult picker = await (FilePicker.platform
-    //     .pickFiles(type: FileType.image) as FutureOr<FilePickerResult>);
-    // PlatformFile file = picker.files.first;
-    final typeGroup =
-        XTypeGroup(label: 'images', extensions: ['jpg', 'png', 'gif']);
-    final file = await openFile(acceptedTypeGroups: [typeGroup]);
-    if (file != null) {
+    if (Platform.isAndroid || Platform.isIOS) {
+      // final picker = ImagePicker();
+      FilePickerResult? picker =
+          await FilePicker.platform.pickFiles(type: FileType.image);
+      // final file = await picker.getImage(source: ImageSource.gallery);
+      PlatformFile file = picker!.files.first;
       setState(() {
         _localImagePath = file.path;
       });
+    } else {
+      final typeGroup =
+          XTypeGroup(label: 'images', extensions: ['jpg', 'png', 'gif']);
+      final file = await openFile(acceptedTypeGroups: [typeGroup]);
+      if (file != null) {
+        setState(() {
+          _localImagePath = file.path;
+        });
+      }
     }
   }
 

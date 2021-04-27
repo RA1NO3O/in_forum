@@ -99,7 +99,7 @@ class _ChangePasswordPage extends State<ChangePasswordPage> {
 
   Future<void> submitNewPassword() async {
     if (_npk.currentState!.validate()) {
-      Response res = await Dio().post('$apiServerAddress/editUserPassword/',
+      Response res = await Dio().post('$apiServerAddress/updateUserPassword/',
           options: new Options(contentType: Headers.formUrlEncodedContentType),
           data: {
             "userID": widget.userID,

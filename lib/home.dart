@@ -47,6 +47,7 @@ class HomeScreenState extends State<HomeScreen> {
   String _followerCount = '0';
   String _followingCount = '0';
   String _avatarHeroTag = getRandom(6);
+  bool _isJustOpen = true;
 
   @override
   void initState() {
@@ -66,10 +67,12 @@ class HomeScreenState extends State<HomeScreen> {
       _followerCount = rs?.followerCount.toString() ?? '0';
       _followingCount = rs?.followingCount.toString() ?? '0';
     });
-
-    WidgetsBinding.instance!.addPostFrameCallback((_) => scaffold.showSnackBar(
-        welcomeSnackBar(
-            sp.getString('nickName') ?? sp.getString('userName') ?? '')));
+    if (_isJustOpen) {
+      WidgetsBinding.instance!.addPostFrameCallback((_) =>
+          scaffold.showSnackBar(welcomeSnackBar(
+              sp.getString('nickName') ?? sp.getString('userName') ?? '')));
+    }
+    _isJustOpen = false;
   }
 
   @override
@@ -265,7 +268,7 @@ class HomeScreenState extends State<HomeScreen> {
                     child: Material(
                       elevation: 2,
                       shape: CircleBorder(),
-                      clipBehavior: Clip.hardEdge,
+                      clipBehavior: Clip.antiAlias,
                       color: Colors.transparent,
                       child: Ink.image(
                         image: (_avatarURL != null
@@ -358,8 +361,13 @@ class HomeScreenState extends State<HomeScreen> {
                       leading: Icon(Icons.settings),
                       title: Text('设置'),
                       shape: roundedRectangleBorder,
-                      onTap: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (bc) => SettingsPage()))),
+                      onTap: () async {
+                        final r = await Navigator.push(context,
+                            MaterialPageRoute(builder: (bc) => SettingsPage()));
+                        if (r == null) {
+                          init();
+                        }
+                      }),
                   ListTile(
                     leading: Icon(Icons.login_rounded),
                     title: Text('登出'),

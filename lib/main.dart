@@ -263,7 +263,7 @@ class AnimatedBackground extends StatelessWidget {
               ));
 
     return CustomAnimation(
-      control: CustomAnimationControl.MIRROR,
+      control: CustomAnimationControl.mirror,
       tween: tween,
       duration: tween.duration,
       builder: (context, child, dynamic value) => Container(
@@ -295,7 +295,7 @@ class AnimatedWave extends StatelessWidget {
         height: height,
         width: constraints.biggest.width,
         child: CustomAnimation(
-          control: CustomAnimationControl.LOOP,
+          control: CustomAnimationControl.loop,
           duration: Duration(milliseconds: (5000 / speed!).round()),
           tween: Tween(begin: 0.0, end: 2 * pi),
           builder: (context, child, dynamic value) => CustomPaint(

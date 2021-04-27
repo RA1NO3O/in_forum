@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -47,6 +48,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   List<String>? draftTags;
   String? _localImagePath;
   String? _networkImageLink;
+  bool isProcessing = false;
 
   @override
   void initState() {
@@ -206,6 +208,10 @@ class _EditPostScreenState extends State<EditPostScreen> {
           body: ListView(
             children: [
               Container(
+                height: 5,
+                child: isProcessing ? LinearProgressIndicator() : null,
+              ),
+              Container(
                 margin:
                     EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 10),
                 child: Column(
@@ -261,31 +267,43 @@ class _EditPostScreenState extends State<EditPostScreen> {
                                 )
                               ],
                             )
-                          : Dismissible(
-                              key: new Key(''),
-                              // ignore: non_constant_identifier_names
-                              onDismissed: (DismissDirection) {
-                                setState(() {
-                                  _localImagePath = null;
-                                  _networkImageLink = null;
-                                });
-                              },
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                    maxHeight: 400, maxWidth: 400),
-                                child: _localImagePath != null
-                                    ? Image.file(
-                                        File(_localImagePath!),
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Hero(
-                                        child: Image.network(
-                                          _networkImageLink!,
-                                          fit: BoxFit.cover,
-                                        ),
-                                        tag: widget.heroTag ?? '',
-                                      ),
-                              ),
+                          : Column(
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.all(10),
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    '向两侧滑动图片即可移除.',
+                                    style: invalidTextStyle,
+                                  ),
+                                ),
+                                Dismissible(
+                                  key: new Key(''),
+                                  // ignore: non_constant_identifier_names
+                                  onDismissed: (DismissDirection) {
+                                    setState(() {
+                                      _localImagePath = null;
+                                      _networkImageLink = null;
+                                    });
+                                  },
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                        maxHeight: 400, maxWidth: 400),
+                                    child: _localImagePath != null
+                                        ? Image.file(
+                                            File(_localImagePath!),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Hero(
+                                            child: Image.network(
+                                              _networkImageLink!,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            tag: widget.heroTag ?? '',
+                                          ),
+                                  ),
+                                ),
+                              ],
                             ),
                     ),
                   ],
@@ -462,18 +480,24 @@ class _EditPostScreenState extends State<EditPostScreen> {
   }
 
   Future getImage() async {
-    // // final picker = ImagePicker();
-    // FilePickerResult? picker = await FilePicker.platform
-    //     .pickFiles(type: FileType.image);
-    // // final file = await picker.getImage(source: ImageSource.gallery);
-    // PlatformFile file = picker!.files.first;
-    final typeGroup =
-        XTypeGroup(label: 'images', extensions: ['jpg', 'png', 'gif']);
-    final file = await openFile(acceptedTypeGroups: [typeGroup]);
-    if (file != null) {
+    if (Platform.isAndroid || Platform.isIOS) {
+      // final picker = ImagePicker();
+      FilePickerResult? picker =
+          await FilePicker.platform.pickFiles(type: FileType.image);
+      // final file = await picker.getImage(source: ImageSource.gallery);
+      PlatformFile file = picker!.files.first;
       setState(() {
         _localImagePath = file.path;
       });
+    } else {
+      final typeGroup =
+          XTypeGroup(label: 'images', extensions: ['jpg', 'png', 'gif']);
+      final file = await openFile(acceptedTypeGroups: [typeGroup]);
+      if (file != null) {
+        setState(() {
+          _localImagePath = file.path;
+        });
+      }
     }
   }
 

@@ -7,6 +7,7 @@ import 'package:inforum/component/statefulDialog.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/main.dart';
 import 'package:inforum/service/loginService.dart';
+import 'package:inforum/service/userAccountService.dart';
 import 'package:inforum/subPage/settingsPage/changePasswordPage.dart';
 import 'package:inforum/subPage/settingsPage/deleteAccountPage.dart';
 import 'package:inforum/subPage/settingsPage/editProfile.dart';
@@ -53,9 +54,9 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                     leading: Icon(Icons.account_box_rounded),
                     shape: roundedRectangleBorder,
                     title: Text('用户名'),
-                    subtitle: Text(userName!),
+                    subtitle: Text(userName ?? ''),
                     onTap: () async {
-                      userNameController.text = userName!;
+                      userNameController.text = userName ?? '';
                       final result = await showDialog(
                         context: context,
                         builder: (bc) => StatefulDialog(
@@ -194,7 +195,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                   builder: (bc) => ListTile(
                     leading: Icon(Icons.phone_android_rounded),
                     title: Text('电话号码'),
-                    subtitle: Text('123****3210'),
+                    subtitle: Text(phoneNumber ?? ''),
                     onTap: () {},
                   ),
                 ),
@@ -202,7 +203,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                   builder: (bc) => ListTile(
                     leading: Icon(Icons.email_rounded),
                     title: Text('邮箱'),
-                    subtitle: Text('123@321.com'),
+                    subtitle: Text(emailAddress ?? ''),
                     onTap: () {},
                   ),
                 ),
@@ -276,7 +277,13 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
       userName = sp.getString('userName');
       nickName = sp.getString('nickName');
     });
-    print(userName);
+    var rs = await getUserAccountSettings(userID!);
+    if (rs != null) {
+      setState(() {
+        phoneNumber = rs.phone!.replaceFirst(new RegExp(r'\d{4}'), '****', 3);
+        emailAddress = rs.email;
+      });
+    }
   }
 
   @override
@@ -287,7 +294,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
   Future<bool> tryEditUserName(String newUserName) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     if (await searchUser(newUserName) == null) {
-      Response res = await Dio().post('$apiServerAddress/editUserName/',
+      Response res = await Dio().post('$apiServerAddress/updateUserName/',
           options: new Options(contentType: Headers.formUrlEncodedContentType),
           data: {
             "userID": sp.getInt('userID'),

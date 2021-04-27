@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:inforum/component/GalleryListItem.dart';
 import 'package:inforum/component/customStyles.dart';
@@ -130,7 +131,7 @@ class _ProfilePage extends State<ProfilePage>
                       direction: Axis.vertical,
                       children: [
                         Expanded(
-                          flex: 0,
+                          flex: 1,
                           child: _bannerURL != null
                               ? CachedNetworkImage(
                                   errorWidget: (context, url, error) =>
@@ -144,7 +145,7 @@ class _ProfilePage extends State<ProfilePage>
                                 ),
                         ),
                         Expanded(
-                          flex: 1,
+                          flex: 0,
                           child: Container(
                             padding: EdgeInsets.only(left: 25),
                             decoration: BoxDecoration(
