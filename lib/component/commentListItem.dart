@@ -76,7 +76,7 @@ class _CommentListItem extends State<CommentListItem> {
                       child: Material(
                         elevation: 2,
                         shape: CircleBorder(),
-                        clipBehavior: Clip.hardEdge,
+                        clipBehavior: Clip.antiAlias,
                         color: Colors.transparent,
                         child: Ink.image(
                           image: (widget.commenterAvatarURL != null &&
