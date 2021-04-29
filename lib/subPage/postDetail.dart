@@ -281,19 +281,24 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       ),
                     ),
                     new Container(
-                      margin: EdgeInsets.only(top: 10, left: 25, right: 25),
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        _title ?? widget.titleText!,
-                        style: titleFontStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
+                        margin: EdgeInsets.only(top: 10, left: 25, right: 25),
+                        alignment: Alignment.centerLeft,
+                        child: GestureDetector(
+                            child: Text(
+                              _title ?? widget.titleText!,
+                              style: titleFontStyle,
+                              textAlign: TextAlign.left,
+                            ),
+                            onLongPress: () =>
+                                copyText(widget.titleText ?? '', context))),
                     new Container(
                         margin: EdgeInsets.only(top: 10, left: 25, right: 25),
-                        child: Text(
-                          _fullText ?? widget.contentShortText!,
-                          style: new TextStyle(fontSize: 18),
+                        child: GestureDetector(
+                          child: Text(
+                            _fullText ?? widget.contentShortText!,
+                            style: new TextStyle(fontSize: 18),
+                          ),
+                          onLongPress: () => copyText(_fullText ?? '', context),
                         )),
                     new Container(
                       margin: EdgeInsets.only(
@@ -461,6 +466,13 @@ class _PostDetailPageState extends State<PostDetailPage> {
         );
       }),
     );
+  }
+
+  void copyText(String text, BuildContext context) {
+    Clipboard.setData(
+      new ClipboardData(text: text),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(doneSnackBar('已复制文本。'));
   }
 
   Future<void> commentBottomSheet(BuildContext bc) async {

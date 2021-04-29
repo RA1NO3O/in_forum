@@ -43,10 +43,14 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSAppTransportSecurity</key> 
-    <dict>      
-      <key>NSAllowsArbitraryLoads</key>     
-      <true/>   
-    </dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>need photo library permission to save images on your photo library.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>need photo library permission to save images on your photo library.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

@@ -3,10 +3,13 @@ import 'dart:io';
 
 /// 使用 Uint8List 数据类型
 import 'dart:typed_data';
+import 'package:dio/dio.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/services.dart';
 
 /// 使用 DefaultCacheManager 类（可能无法自动引入，需要手动引入）
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:inforum/service/randomGenerator.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -20,32 +23,18 @@ class AppUtil {
   /// 保存图片到相册
   ///
   /// 默认为下载网络图片，如需下载资源图片，需要指定 [isAsset] 为 `true`。
-  static Future<String?> saveImage(String? imageUrl,
-      {bool isAsset: false}) async {
+  static saveImage(String? imageUrl, {bool isAsset: false}) async {
     try {
-      if (imageUrl == null) throw '保存失败，图片不存在！';
-
-      /// 权限检测
-      PermissionStatus storageStatus = await Permission.storage.status;
-      if ((!Platform.isWindows) || (!Platform.isLinux) || (!Platform.isMacOS)) {
-        if (storageStatus != PermissionStatus.granted) {
-          storageStatus = await Permission.storage.request();
-          if (storageStatus != PermissionStatus.granted) {
-            throw '无法存储图片，请先授权！';
-          }
-        }
-      }
-
       /// 保存的图片数据
       Uint8List imageBytes;
       File file;
       if (isAsset == true) {
         /// 保存资源图片
-        ByteData bytes = await rootBundle.load(imageUrl);
+        ByteData bytes = await rootBundle.load(imageUrl!);
         imageBytes = bytes.buffer.asUint8List();
       } else {
         /// 保存网络图片
-        CachedNetworkImage image = CachedNetworkImage(imageUrl: imageUrl);
+        CachedNetworkImage image = CachedNetworkImage(imageUrl: imageUrl!);
         DefaultCacheManager manager =
             image.cacheManager as DefaultCacheManager? ?? DefaultCacheManager();
         Map<String, String>? headers = image.httpHeaders;
@@ -56,12 +45,37 @@ class AppUtil {
         imageBytes = await file.readAsBytes();
       }
 
-      /// 保存图片
-      final dir = await getApplicationDocumentsDirectory();
-      print(dir.path);
-      final result = await File('${dir.path}/${getRandom(8)}.png')
-          .writeAsBytes(imageBytes);
-      return result.path;
+      /// 权限检测
+      if ((!Platform.isWindows) && (!Platform.isLinux) && (!Platform.isMacOS)) {
+        PermissionStatus storageStatus = await Permission.storage.status;
+        if (storageStatus != PermissionStatus.granted) {
+          storageStatus = await Permission.storage.request();
+          if (storageStatus != PermissionStatus.granted) {
+            throw '无法存储图片，请先授权！';
+          }
+        }
+
+        // 保存图片
+        var appDocDir = await getTemporaryDirectory();
+        String savePath = appDocDir.path + '${getRandom(8)}.png';
+        await Dio().download(imageUrl, savePath);
+        final result = await ImageGallerySaver.saveFile(savePath);
+        print(result);
+        return result;
+      } else {
+        final path = await getSavePath(acceptedTypeGroups: <XTypeGroup>[
+          XTypeGroup(
+              label: getRandom(8),
+              extensions: ['png'],
+              mimeTypes: ['image/png'])
+        ]);
+        final name = "${getRandom(8)}.png";
+        final file = XFile.fromData(imageBytes, name: name);
+        if (path != null) {
+          await file.saveTo(path);
+          return path;
+        }
+      }
     } catch (e) {
       print(e.toString());
     }
