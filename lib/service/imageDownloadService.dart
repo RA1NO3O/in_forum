@@ -65,14 +65,13 @@ class AppUtil {
       } else {
         final path = await getSavePath(acceptedTypeGroups: <XTypeGroup>[
           XTypeGroup(
-              label: getRandom(8),
-              extensions: ['png'],
-              mimeTypes: ['image/png'])
+              label: '图片文件', extensions: ['png'], mimeTypes: ['image/png'])
         ]);
         final name = "${getRandom(8)}.png";
         final file = XFile.fromData(imageBytes, name: name);
         if (path != null) {
           await file.saveTo(path);
+          print(path);
           return path;
         }
       }

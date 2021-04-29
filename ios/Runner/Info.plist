@@ -44,9 +44,9 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>need photo library permission to save images on your photo library.</string>
+	<string>我们需要图片库权限使用读取您的图片.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>need photo library permission to save images on your photo library.</string>
+	<string>我们需要图片库添加权限来将图片保存到您的设备上.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
