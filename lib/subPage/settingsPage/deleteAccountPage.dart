@@ -41,7 +41,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                     builder: (bc) =>
                         ConfirmPasswordDialog(userName: _userName, bc: bc));
                 if (r == 'correct.') {
-                  Response res = await Dio().post(
+                  Response res = await Dio().delete(
                       '$apiServerAddress/deleteUser/',
                       options: new Options(
                           contentType: Headers.formUrlEncodedContentType),

@@ -43,6 +43,7 @@ class HomeScreenState extends State<HomeScreen> {
   late SharedPreferences sp;
   static late ScaffoldMessengerState scaffold;
   String? _hintText;
+  String? _nickName;
   String? _avatarURL;
   String _followerCount = '0';
   String _followingCount = '0';
@@ -53,14 +54,17 @@ class HomeScreenState extends State<HomeScreen> {
   void initState() {
     _pageController = PageController(initialPage: 0);
     _scrollController = ScrollController();
-    init();
+    _init();
     super.initState();
   }
 
-  void init() async {
+  void _init() async {
     sp = await SharedPreferences.getInstance();
     var rs = await getProfile(widget.userID);
     setState(() {
+      _nickName = sp.getString('nickName') == ''
+          ? widget.nickName
+          : sp.getString('nickName');
       _avatarURL =
           sp.getString('avatarURL') == '' ? null : sp.getString('avatarURL');
       _avatarURL = rs?.avatarUrl ?? null;
@@ -279,15 +283,17 @@ class HomeScreenState extends State<HomeScreen> {
                         width: 85,
                         height: 85,
                         child: InkWell(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (BuildContext context) {
-                              return ProfilePage(
-                                userID: widget.userID,
-                                avatarHeroTag: _avatarHeroTag,
-                                avatarURL: _avatarURL,
-                              );
-                            }));
+                          onTap: () async {
+                            await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        ProfilePage(
+                                          userID: widget.userID,
+                                          avatarHeroTag: _avatarHeroTag,
+                                          avatarURL: _avatarURL,
+                                        )));
+                            _init();
                           },
                         ),
                       ),
@@ -298,7 +304,7 @@ class HomeScreenState extends State<HomeScreen> {
                     alignment: Alignment.center,
                     margin: EdgeInsets.only(top: 15),
                     child: Text(
-                      widget.userID == null ? 'Unknown' : widget.nickName!,
+                      _nickName ?? 'unknown',
                       style: new TextStyle(fontSize: 25),
                     ),
                   ),
@@ -362,11 +368,9 @@ class HomeScreenState extends State<HomeScreen> {
                       title: Text('设置'),
                       shape: roundedRectangleBorder,
                       onTap: () async {
-                        final r = await Navigator.push(context,
+                        await Navigator.push(context,
                             MaterialPageRoute(builder: (bc) => SettingsPage()));
-                        if (r == null) {
-                          init();
-                        }
+                        _init();
                       }),
                   ListTile(
                     leading: Icon(Icons.login_rounded),

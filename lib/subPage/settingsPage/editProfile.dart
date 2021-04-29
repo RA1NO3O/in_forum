@@ -154,6 +154,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     )
                   : Container(
                       height: 150,
+                      child: InkWell(
+                        onTap: _isProcessing ? null : pickBannerImage,
+                      ),
                     ),
               Container(
                 margin: EdgeInsets.only(top: 105, left: 20),

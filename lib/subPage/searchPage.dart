@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/service/searchHistoryService.dart';
 
 class SearchPage extends StatefulWidget {
@@ -13,10 +14,24 @@ class SearchPage extends StatefulWidget {
 class _SearchPage extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [],
-      ),
+    return ListView(
+      children: [
+        Container(
+          margin: EdgeInsets.all(20),
+          child: Text(
+            '时下热门🔥',
+            style: titleFontStyle,
+          ),
+        ),
+        ListTile(
+          leading: Icon(Icons.tag),
+          title: Text('123'),
+          onTap: () {
+            print('123');
+          },
+        ),
+        Divider(),
+      ],
     );
   }
 }
@@ -95,8 +110,8 @@ class CustomSearchDelegate extends SearchDelegate<String?> {
             flex: 0,
             child: TextButton(
               onPressed: () async {
-                bool? r = false;
-                r = await (showDialog(
+                bool r = false;
+                r = await showDialog(
                   context: context,
                   builder: (bc) => AlertDialog(
                     title: Column(
@@ -128,7 +143,7 @@ class CustomSearchDelegate extends SearchDelegate<String?> {
                       ),
                     ],
                   ),
-                ) as FutureOr<bool>);
+                );
                 if (r) {
                   clearSearchHistory();
                   query = '';

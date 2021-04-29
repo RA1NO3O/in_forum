@@ -200,7 +200,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                   builder: (bc) => ListTile(
                       leading: Icon(Icons.phone_android_rounded),
                       title: Text('电话号码'),
-                      subtitle: Text(_phoneNumber ?? ''),
+                      subtitle: Text(_phoneNumber ?? '未设定'),
                       onTap: () async {
                         final result = await showDialog(
                             context: context,
@@ -272,7 +272,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                   builder: (bc) => ListTile(
                       leading: Icon(Icons.email_rounded),
                       title: Text('邮箱'),
-                      subtitle: Text(_emailAddress ?? ''),
+                      subtitle: Text(_emailAddress ?? '未设定'),
                       onTap: () async {
                         final result = await showDialog(
                           context: context,
@@ -432,7 +432,12 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
     var rs = await getUserAccountSettings(userID!);
     if (rs != null) {
       setState(() {
-        _phoneNumber = rs.phone!.replaceFirst(new RegExp(r'\d{4}'), '****', 3);
+        if (rs.phone != null) {
+          _phoneNumber =
+              rs.phone!.replaceFirst(new RegExp(r'\d{4}'), '****', 3);
+        } else {
+          _phoneNumber = null;
+        }
         _emailAddress = rs.email;
       });
     }
