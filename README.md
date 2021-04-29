@@ -40,7 +40,8 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 ## Screenshots
-#![android](https://user-images.githubusercontent.com/25654559/115859025-3782c780-a462-11eb-9b72-214b569c379b.png)![68747470733a2f2f7261316e6275636b65742e6f73732d636e2d68616e677a686f752e616c6979756e63732e636f6d2f696d616765732f254535254231253846254535254239253935254536253838254141254535253942254245253230323032312d30332d3039253230323234](https://user-images.githubusercontent.com/25654559/115859711-271f1c80-a463-11eb-99ef-ae12ae738f73.png)
+![android](https://user-images.githubusercontent.com/25654559/115859025-3782c780-a462-11eb-9b72-214b569c379b.png)
+![截屏2021-04-29 15 02 45](https://user-images.githubusercontent.com/25654559/116516015-a4cda700-a8ff-11eb-870a-2d866c7995f5.png)
 ![image](https://user-images.githubusercontent.com/25654559/115859512-e1faea80-a462-11eb-900e-c8ffeb0d99de.png)
 ![截屏2021-04-26 22 20 11](https://user-images.githubusercontent.com/25654559/116098439-a91a7a00-a6dd-11eb-871d-b64183abe195.png)
 
