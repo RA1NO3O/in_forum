@@ -23,13 +23,18 @@ class AccountSettingsPage extends StatefulWidget {
 
 class _AccountSettingsPage extends State<AccountSettingsPage> {
   GlobalKey<FormState> _fk = GlobalKey<FormState>();
+  GlobalKey<FormState> _mk = GlobalKey<FormState>();
+  GlobalKey<FormState> _pnk = GlobalKey<FormState>();
 
   int? userID;
   String? userName = 'unknown';
   String? nickName = 'unknown';
-  String? phoneNumber = 'unknown';
-  String? emailAddress = 'unknown';
+  String? _phoneNumber = 'unknown';
+  String? _emailAddress = 'unknown';
   TextEditingController userNameController = new TextEditingController();
+
+  TextEditingController phoneNumberController = new TextEditingController();
+  TextEditingController emailAddressController = new TextEditingController();
 
   @override
   void initState() {
@@ -112,12 +117,12 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                       switch (result) {
                         case '0':
                           ScaffoldMessenger.of(bc)
-                              .showSnackBar(doneSnackBar('用户名已修改.\n'
-                                  '  今后,请使用修改后的用户名进行登录.'));
+                              .showSnackBar(doneSnackBar('用户名已更新.\n'
+                                  '  今后,请使用更新后的用户名进行登录.'));
                           break;
                         case '1':
                           ScaffoldMessenger.of(bc)
-                              .showSnackBar(errorSnackBar('修改失败,\n'
+                              .showSnackBar(errorSnackBar('更新失败,\n'
                                   '  该用户名可能已存在.'));
                       }
                     },
@@ -128,7 +133,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                     leading: Icon(Icons.emoji_people),
                     shape: roundedRectangleBorder,
                     title: Text('个人资料'),
-                    subtitle: Text('点按以修改供他人查看的个人资料.'),
+                    subtitle: Text('点按以更新供他人查看的个人资料.'),
                     onTap: () async {
                       var result = await Navigator.push(
                           context,
@@ -138,7 +143,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                                   )));
                       if (result == 0) {
                         ScaffoldMessenger.of(bc)
-                            .showSnackBar(doneSnackBar('个人资料已修改.'));
+                            .showSnackBar(doneSnackBar('个人资料已更新.'));
                       }
                     },
                   ),
@@ -148,7 +153,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                     leading: Icon(Icons.lock_rounded),
                     shape: roundedRectangleBorder,
                     title: Text('密码'),
-                    subtitle: Text('点按以修改密码.'),
+                    subtitle: Text('点按以更新密码.'),
                     onTap: () async {
                       final result = await showDialog(
                           context: context,
@@ -166,17 +171,17 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                         switch (result) {
                           case 'success.':
                             ScaffoldMessenger.of(bc)
-                                .showSnackBar(doneSnackBar('密码修改成功.'));
+                                .showSnackBar(doneSnackBar('密码更新成功.'));
                             break;
 
                           case 'error.':
                             ScaffoldMessenger.of(bc)
-                                .showSnackBar(errorSnackBar('密码修改失败!'));
+                                .showSnackBar(errorSnackBar('密码更新失败!'));
                             break;
 
                           default:
                             ScaffoldMessenger.of(bc)
-                                .showSnackBar(errorSnackBar('用户取消了密码修改.'));
+                                .showSnackBar(errorSnackBar('用户取消了密码更新.'));
                             break;
                         }
                       } else if (result == 'forgetPassword') {
@@ -193,19 +198,144 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
                 ),
                 Builder(
                   builder: (bc) => ListTile(
-                    leading: Icon(Icons.phone_android_rounded),
-                    title: Text('电话号码'),
-                    subtitle: Text(phoneNumber ?? ''),
-                    onTap: () {},
-                  ),
+                      leading: Icon(Icons.phone_android_rounded),
+                      title: Text('电话号码'),
+                      subtitle: Text(_phoneNumber ?? ''),
+                      onTap: () async {
+                        final result = await showDialog(
+                            context: context,
+                            builder: (bc) => StatefulDialog(
+                                  title: Row(
+                                    //确保对话框不会占满空间
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.phone_android_rounded,
+                                          size: 32),
+                                      Text('   输入新的电话号码.')
+                                    ],
+                                  ),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Form(
+                                        key: _pnk,
+                                        child: TextFormField(
+                                          keyboardType: TextInputType.phone,
+                                          autofillHints: [
+                                            AutofillHints.telephoneNumber
+                                          ],
+                                          autofocus: true,
+                                          validator: (value) =>
+                                              userNameController.text ==
+                                                      userName
+                                                  ? '请使用新的电话号码.'
+                                                  : null,
+                                          onEditingComplete: () async {
+                                            await onPhoneNumberEditDone(bc);
+                                          },
+                                          controller: phoneNumberController,
+                                          decoration: InputDecoration(
+                                              border: inputBorder),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(top: 10),
+                                        child: Text(
+                                          '若要移除电话号码,请留空此字段.',
+                                          style: invalidTextStyle,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton.icon(
+                                        onPressed: () async {
+                                          await onPhoneNumberEditDone(bc);
+                                        },
+                                        icon: Icon(Icons.done),
+                                        label: Text('完成'))
+                                  ],
+                                ));
+                        switch (result) {
+                          case '0':
+                            ScaffoldMessenger.of(bc)
+                                .showSnackBar(doneSnackBar('已更新电话号码.'));
+                            break;
+                          case '1':
+                            ScaffoldMessenger.of(bc)
+                                .showSnackBar(errorSnackBar('更新失败,\n'
+                                    '  该电话号码可能已存在.'));
+                        }
+                      }),
                 ),
                 Builder(
                   builder: (bc) => ListTile(
-                    leading: Icon(Icons.email_rounded),
-                    title: Text('邮箱'),
-                    subtitle: Text(emailAddress ?? ''),
-                    onTap: () {},
-                  ),
+                      leading: Icon(Icons.email_rounded),
+                      title: Text('邮箱'),
+                      subtitle: Text(_emailAddress ?? ''),
+                      onTap: () async {
+                        final result = await showDialog(
+                          context: context,
+                          builder: (bc) => StatefulDialog(
+                            title: Row(
+                              //确保对话框不会占满空间
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.email_rounded, size: 32),
+                                Text('   输入新的邮箱地址.')
+                              ],
+                            ),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Form(
+                                  key: _mk,
+                                  child: TextFormField(
+                                    autofillHints: [AutofillHints.email],
+                                    keyboardType: TextInputType.emailAddress,
+                                    autofocus: true,
+                                    validator: (value) =>
+                                        emailAddressController.text == userName
+                                            ? '请使用新的邮箱地址.'
+                                            : null,
+                                    onEditingComplete: () async {
+                                      await onEmailAddressEditDone(bc);
+                                    },
+                                    controller: emailAddressController,
+                                    decoration:
+                                        InputDecoration(border: inputBorder),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(top: 10),
+                                  child: Text(
+                                    '若要移除电子邮箱,请留空此字段.',
+                                    style: invalidTextStyle,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton.icon(
+                                  onPressed: () async {
+                                    await onEmailAddressEditDone(bc);
+                                  },
+                                  icon: Icon(Icons.done),
+                                  label: Text('完成'))
+                            ],
+                          ),
+                        );
+                        switch (result) {
+                          case '0':
+                            ScaffoldMessenger.of(bc)
+                                .showSnackBar(doneSnackBar('邮箱地址已更新.'));
+                            break;
+                          case '1':
+                            ScaffoldMessenger.of(bc)
+                                .showSnackBar(errorSnackBar('更新失败,\n'
+                                    '  该邮箱地址可能已存在.'));
+                        }
+                      }),
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
@@ -261,7 +391,29 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
 
   onUserNameEditDone(BuildContext bc) async {
     if (_fk.currentState!.validate()) {
-      bool r = await tryEditUserName(userNameController.text);
+      bool r = await tryUpdateUserName(userNameController.text);
+      if (r) {
+        Navigator.pop(bc, '0');
+      } else {
+        Navigator.pop(bc, '1');
+      }
+    }
+  }
+
+  onPhoneNumberEditDone(BuildContext bc) async {
+    if (_pnk.currentState!.validate()) {
+      bool r = await tryUpdatePhoneNumber(phoneNumberController.text);
+      if (r) {
+        Navigator.pop(bc, '0');
+      } else {
+        Navigator.pop(bc, '1');
+      }
+    }
+  }
+
+  onEmailAddressEditDone(BuildContext bc) async {
+    if (_mk.currentState!.validate()) {
+      bool r = await tryUpdateEmailAddress(emailAddressController.text);
       if (r) {
         Navigator.pop(bc, '0');
       } else {
@@ -280,8 +432,8 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
     var rs = await getUserAccountSettings(userID!);
     if (rs != null) {
       setState(() {
-        phoneNumber = rs.phone!.replaceFirst(new RegExp(r'\d{4}'), '****', 3);
-        emailAddress = rs.email;
+        _phoneNumber = rs.phone!.replaceFirst(new RegExp(r'\d{4}'), '****', 3);
+        _emailAddress = rs.email;
       });
     }
   }
@@ -291,7 +443,7 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
     super.dispose();
   }
 
-  Future<bool> tryEditUserName(String newUserName) async {
+  Future<bool> tryUpdateUserName(String newUserName) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     if (await searchUser(newUserName) == null) {
       Response res = await Dio().post('$apiServerAddress/updateUserName/',
@@ -305,6 +457,46 @@ class _AccountSettingsPage extends State<AccountSettingsPage> {
           userName = newUserName;
         });
         await sp.setString('userName', newUserName);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  tryUpdatePhoneNumber(String newPhoneNumber) async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    if (await searchUser(newPhoneNumber) == null) {
+      Response res = await Dio().post(
+          '$apiServerAddress/updateUserPhoneNumber/',
+          options: new Options(contentType: Headers.formUrlEncodedContentType),
+          data: {
+            "userID": sp.getInt('userID'),
+            "phoneNumber": newPhoneNumber.isEmpty ? 'null' : newPhoneNumber,
+          });
+      if (res.data == 'success.') {
+        setState(() {
+          _phoneNumber = newPhoneNumber;
+        });
+        return true;
+      }
+    }
+    return false;
+  }
+
+  tryUpdateEmailAddress(String newEmailAddress) async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    if (await searchUser(newEmailAddress) == null) {
+      Response res = await Dio().post(
+          '$apiServerAddress/updateUserEmailAddress/',
+          options: new Options(contentType: Headers.formUrlEncodedContentType),
+          data: {
+            "userID": sp.getInt('userID'),
+            "emailAddress": newEmailAddress.isEmpty ? 'null' : newEmailAddress,
+          });
+      if (res.data == 'success.') {
+        setState(() {
+          _emailAddress = newEmailAddress;
+        });
         return true;
       }
     }
