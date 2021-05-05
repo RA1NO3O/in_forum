@@ -16,9 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountSettingsPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    return _AccountSettingsPage();
-  }
+  State<StatefulWidget> createState() => _AccountSettingsPage();
 }
 
 class _AccountSettingsPage extends State<AccountSettingsPage> {

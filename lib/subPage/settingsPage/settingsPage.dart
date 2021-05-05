@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:inforum/subPage/settingsPage/accountSettingsPage.dart';
+import 'accountSettingsPage.dart';
+import 'displaySettingsPage.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -46,7 +47,10 @@ class _SettingsPage extends State<SettingsPage> {
                     shape: roundedRectangleBorder,
                     leading: Icon(Icons.smartphone),
                     title: Text('显示'),
-                    onTap: () {},
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (bc) => DisplaySettingsPage())),
                   ),
                   Divider(thickness: 1),
                   ListTile(

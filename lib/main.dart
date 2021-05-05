@@ -22,32 +22,58 @@ Future<void> main() async {
     prefs.setString('draft_content', '');
     prefs.setStringList('draft_tags', []);
   }
-
-  runApp(MaterialApp(
-    title: 'Inforum',
-    theme: ThemeData.light(),
-    darkTheme: ThemeData.dark(),
-    home: isLogin
-        ? HomeScreen(
-            userID: prefs.getInt('userID'),
-            userName: prefs.getString('userName'),
-            nickName: prefs.getString('nickName'),
-          )
-        : MainPage(
-            title: 'Inforum',
-            state: 0,
-          ),
-    localizationsDelegates: [
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate
-    ],
-    supportedLocales: [
-      const Locale("zh", "CH"),
-      const Locale("en", "US"),
-      const Locale("ja", "JP"),
-    ],
-    debugShowCheckedModeBanner: false, //隐藏debug横幅
-  ));
+  // prefs.getBool('isCupertinoMode')??
+  if (false) {
+    runApp(CupertinoApp(
+      title: 'Inforum',
+      home: isLogin
+          ? HomeScreen(
+              userID: prefs.getInt('userID'),
+              userName: prefs.getString('userName'),
+              nickName: prefs.getString('nickName'),
+            )
+          : MainPage(
+              title: 'Inforum',
+              state: 0,
+            ),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [
+        const Locale("zh", "CH"),
+        const Locale("en", "US"),
+        const Locale("ja", "JP"),
+      ],
+      debugShowCheckedModeBanner: false,
+    ));
+  } else {
+    runApp(MaterialApp(
+      title: 'Inforum',
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      home: isLogin
+          ? HomeScreen(
+              userID: prefs.getInt('userID'),
+              userName: prefs.getString('userName'),
+              nickName: prefs.getString('nickName'),
+            )
+          : MainPage(
+              title: 'Inforum',
+              state: 0,
+            ),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [
+        const Locale("zh", "CH"),
+        const Locale("en", "US"),
+        const Locale("ja", "JP"),
+      ],
+      debugShowCheckedModeBanner: false, //隐藏debug横幅
+    ));
+  }
 }
 
 //主界面

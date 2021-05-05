@@ -79,9 +79,8 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                 children: [
                   Checkbox(
                       value: _options,
-                      onChanged: (newValue) => setState(() {
-                            _options = newValue ?? true;
-                          })),
+                      onChanged: (newValue) =>
+                          setState(() => _options = newValue ?? true)),
                   Text('删除此账号发布的一切内容')
                 ],
               ),

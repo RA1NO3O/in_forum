@@ -6,9 +6,7 @@ import 'package:inforum/service/searchHistoryService.dart';
 
 class SearchPage extends StatefulWidget {
   @override
-  _SearchPage createState() {
-    return _SearchPage();
-  }
+  _SearchPage createState() => _SearchPage();
 }
 
 class _SearchPage extends State<SearchPage> {
@@ -90,7 +88,10 @@ class CustomSearchDelegate extends SearchDelegate<String?> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return ListView(children: sh);
+    return Container(
+        alignment: Alignment.centerLeft,
+        margin: EdgeInsets.all(12),
+        child: ListView(children: sh));
   }
 
   Future<void> getHistory(BuildContext context) async {
@@ -101,10 +102,7 @@ class CustomSearchDelegate extends SearchDelegate<String?> {
         children: [
           Expanded(
             flex: 1,
-            child: Container(
-                alignment: Alignment.centerLeft,
-                margin: EdgeInsets.all(15),
-                child: Text('搜索历史')),
+            child: Text('搜索历史'),
           ),
           Expanded(
             flex: 0,
