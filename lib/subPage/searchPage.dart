@@ -104,8 +104,8 @@ class CustomSearchDelegate extends SearchDelegate<String?> {
             flex: 1,
             child: Text('搜索历史'),
           ),
-          Expanded(
-            flex: 0,
+          Container(
+            margin: EdgeInsets.only(right: 10),
             child: TextButton(
               onPressed: () async {
                 bool r = false;

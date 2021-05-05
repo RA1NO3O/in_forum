@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'notificationSettingsPage.dart';
 import 'accountSettingsPage.dart';
-import 'displaySettingsPage.dart';
+import 'displaySettings.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -41,7 +42,10 @@ class _SettingsPage extends State<SettingsPage> {
                     shape: roundedRectangleBorder,
                     leading: Icon(Icons.notifications_rounded),
                     title: Text('通知'),
-                    onTap: () {},
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (bc) => NotificationSettingsPage())),
                   ),
                   ListTile(
                     shape: roundedRectangleBorder,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/component/passwordConfirm.dart';
 import 'package:inforum/data/webConfig.dart';
+import 'package:inforum/subPage/supportPage/forgetPasswordPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DeleteAccountPage extends StatefulWidget {
@@ -34,10 +35,11 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
         actions: [
           Builder(
             builder: (bc) => IconButton(
+              tooltip: '确认删除',
               icon: Icon(Icons.delete_forever_rounded),
               onPressed: () async {
                 final r = await showDialog(
-                    context: bc,
+                    context: context,
                     builder: (bc) =>
                         ConfirmPasswordDialog(userName: _userName, bc: bc));
                 if (r == 'correct.') {
@@ -50,6 +52,13 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                         "deleteAll": _options,
                       });
                   Navigator.pop(context, res.data);
+                } else if (r == 'forgetPassword') {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ForgetPasswordPage()));
+                } else if (r == 'incorrect.') {
+                  ScaffoldMessenger.of(bc).showSnackBar(errorSnackBar('密码错误.'));
                 }
               },
             ),
@@ -75,14 +84,13 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                 '本次操作无法撤销.但是在此之前,您有权决定以下内容的去留.'),
             Container(
               margin: EdgeInsets.only(top: 10),
-              child: Row(
-                children: [
-                  Checkbox(
-                      value: _options,
-                      onChanged: (newValue) =>
-                          setState(() => _options = newValue ?? true)),
-                  Text('删除此账号发布的一切内容')
-                ],
+              child: CheckboxListTile(
+                tristate: false,
+                value: _options,
+                onChanged: (newValue) => setState(() {
+                  _options = newValue ?? true;
+                }),
+                title: Text('删除此账号发布的一切内容'),
               ),
             ),
           ],
