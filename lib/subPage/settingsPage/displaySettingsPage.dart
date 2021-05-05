@@ -85,7 +85,6 @@ class _DisplaySettingsPageState extends State<DisplaySettingsPage> {
         return Future<bool>.value(true);
       }
     }
-
-    return Future<bool>.value(true);
+          return Future<bool>.value(false);
   }
 }

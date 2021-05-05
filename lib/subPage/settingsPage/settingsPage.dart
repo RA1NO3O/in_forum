@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'displaySettingsPage.dart';
 import 'notificationSettingsPage.dart';
 import 'accountSettingsPage.dart';
-import 'displaySettings.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
