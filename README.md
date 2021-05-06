@@ -4,6 +4,7 @@
 A cross-platform forum application, the service are based on Microsoft SQL Server, NodeJs(with express) and aliyun OSS server.
 
 - 🚪Portal to [Inforum_API](http://github.com/RA1NO3O/Inforum_API)
+- 🔵Come check my brother app! It's using iOS-style UI layout. [Inforum_Alter](https://github.com/RA1NO3O/Inforum_Alter)
 
 This App can automaticlly fit your screen to display information, with this app, you can easily make a post, leave a comment or share media contents on anywhere by any device.
 
