@@ -327,11 +327,16 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                 clipBehavior: Clip.antiAlias,
                                 borderRadius: BorderRadius.circular(5),
                                 child: Ink.image(
-                                  width: widget.imgURL != null ? 400 : 0,
-                                  height: widget.imgURL != null ? 200 : 0,
+                                  width: 400,
+                                  height: 200,
                                   fit: BoxFit.cover,
-                                  image: CachedNetworkImageProvider(
-                                      widget.imgURL!),
+                                  image: ResizeImage(
+                                    CachedNetworkImageProvider(widget.imgURL!),
+                                    width: MediaQuery.of(context)
+                                            .devicePixelRatio
+                                            .toInt() *
+                                        400,
+                                  ),
                                   child: InkWell(
                                     onTap: () {
                                       Navigator.of(context).push(

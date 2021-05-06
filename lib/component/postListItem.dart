@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -109,126 +110,92 @@ class _PostListItem extends State<PostListItem> {
   @override
   Widget build(BuildContext context) {
     _getTagWidgets();
-    return Builder(builder: (BuildContext bc) {
-      return Card(
-        margin: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 2),
-        elevation: 1,
-        child: Column(
+    return Container(
+      margin: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 2),
+      child: OpenContainer(
+        closedElevation: 1,
+        closedBuilder: (bc, action) => Column(
           children: [
             Container(
               padding: EdgeInsets.all(15.0),
               child: Container(
                 child: Flex(direction: Axis.vertical, children: [
                   Builder(
-                    builder: (bc) => InkWell(
-                      onTap: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) {
-                              return PostDetailPage(
-                                editorID: widget.editorID,
-                                titleText: widget.titleText,
-                                contentShortText: widget.contentText,
-                                likeCount: likeCount,
-                                dislikeCount: dislikeCount,
-                                likeState: likeState,
-                                commentCount: commentCount,
-                                imgURL: widget.imgURL,
-                                isCollect: isCollect,
-                                imgAuthor: widget.imgAuthor,
-                                authorName: widget.authorName,
-                                isAuthor: widget.isAuthor,
-                                tags: widget.tags,
-                                postID: widget.postID,
-                                time: widget.time,
-                                heroTag: imgTag,
-                              );
-                            },
-                          ),
-                        );
-                        if (result == '0') {
-                          ScaffoldMessenger.of(bc)
-                              .showSnackBar(doneSnackBar('帖子已删除.'));
-                        }
-                      },
-                      child: Column(
-                        children: [
-                          Container(
-                            margin:
-                                EdgeInsets.only(top: 10, left: 5, bottom: 5),
-                            child: Flex(
-                              direction: Axis.horizontal,
-                              children: [
-                                Container(
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        margin: EdgeInsets.only(right: 5),
-                                        child: CircleAvatar(
-                                          radius: 15,
-                                          backgroundImage: (widget.imgAuthor !=
-                                                      null &&
-                                                  widget.imgAuthor!.isNotEmpty
-                                              ? CachedNetworkImageProvider(
-                                                  widget.imgAuthor!,
-                                                  maxWidth: 80,
-                                                  maxHeight: 80)
-                                              : ResizeImage(
-                                                  AssetImage(
-                                                    'images/default_avatar.png',
-                                                  ),
-                                                  width: 80,
-                                                  height: 80,
-                                                )) as ImageProvider<Object>,
-                                        ),
+                    builder: (bc) => Column(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(top: 10, left: 5, bottom: 5),
+                          child: Flex(
+                            direction: Axis.horizontal,
+                            children: [
+                              Container(
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(right: 5),
+                                      child: CircleAvatar(
+                                        radius: 15,
+                                        backgroundImage:
+                                            (widget.imgAuthor != null &&
+                                                    widget.imgAuthor!.isNotEmpty
+                                                ? CachedNetworkImageProvider(
+                                                    widget.imgAuthor!,
+                                                    maxWidth: 80,
+                                                    maxHeight: 80)
+                                                : ResizeImage(
+                                                    AssetImage(
+                                                      'images/default_avatar.png',
+                                                    ),
+                                                    width: 80,
+                                                    height: 80,
+                                                  )) as ImageProvider<Object>,
                                       ),
-                                      Text(widget.authorName!, style: v),
-                                    ],
-                                  ),
+                                    ),
+                                    Text(widget.authorName!, style: v),
+                                  ],
                                 ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Container(),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.only(right: 13),
-                                  child: Text(
-                                      DateTimeFormat.handleDate(widget.time),
-                                      style: v),
-                                ),
-                              ],
-                            ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Container(),
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(right: 13),
+                                child: Text(
+                                    DateTimeFormat.handleDate(widget.time),
+                                    style: v),
+                              ),
+                            ],
                           ),
-                          Container(
-                            alignment: Alignment.topLeft,
-                            padding: EdgeInsets.all(5),
-                            child: Text(
-                              widget.titleText!,
-                              maxLines: 2,
-                              style: widget.postID != null
-                                  ? titleFontStyle
-                                  : new TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey),
-                              textAlign: TextAlign.left,
-                            ),
+                        ),
+                        Container(
+                          alignment: Alignment.topLeft,
+                          padding: EdgeInsets.all(5),
+                          child: Text(
+                            widget.titleText!,
+                            maxLines: 2,
+                            style: widget.postID != null
+                                ? titleFontStyle
+                                : new TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey),
+                            textAlign: TextAlign.left,
                           ),
-                          Container(
-                            alignment: Alignment.topLeft,
-                            padding: EdgeInsets.all(5),
-                            child: Text(
-                              widget.contentText!,
-                              maxLines: 5,
-                              style: widget.postID != null
-                                  ? new TextStyle(fontSize: 16)
-                                  : new TextStyle(
-                                      fontSize: 16, color: Colors.grey),
-                            ),
+                        ),
+                        Container(
+                          alignment: Alignment.topLeft,
+                          padding: EdgeInsets.all(5),
+                          child: Text(
+                            widget.contentText!,
+                            maxLines: 5,
+                            style: widget.postID != null
+                                ? new TextStyle(fontSize: 16)
+                                : new TextStyle(
+                                    fontSize: 16, color: Colors.grey),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                   Container(
@@ -333,8 +300,29 @@ class _PostListItem extends State<PostListItem> {
             ),
           ],
         ),
-      );
-    });
+        openElevation: 2,
+        openBuilder: (bc, action) {
+          return PostDetailPage(
+            editorID: widget.editorID,
+            titleText: widget.titleText,
+            contentShortText: widget.contentText,
+            likeCount: likeCount,
+            dislikeCount: dislikeCount,
+            likeState: likeState,
+            commentCount: commentCount,
+            imgURL: widget.imgURL,
+            isCollect: isCollect,
+            imgAuthor: widget.imgAuthor,
+            authorName: widget.authorName,
+            isAuthor: widget.isAuthor,
+            tags: widget.tags,
+            postID: widget.postID,
+            time: widget.time,
+            heroTag: imgTag,
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _starButtonClick() async {

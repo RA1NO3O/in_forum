@@ -60,7 +60,7 @@ class _DisplaySettingsPageState extends State<DisplaySettingsPage> {
       bool? result = await showDialog(
           context: context,
           builder: (bc) => AlertDialog(
-                title: Row(
+                title: Column(
                   children: [
                     Icon(
                       Icons.info_rounded
@@ -68,7 +68,7 @@ class _DisplaySettingsPageState extends State<DisplaySettingsPage> {
                     ),
                     Container(
                       margin: EdgeInsets.only(top: 10),
-                      child: Text('  更改将在应用重启后生效。'),
+                      child: Text('更改将在应用重启后生效。'),
                     )
                   ],
                 ),
