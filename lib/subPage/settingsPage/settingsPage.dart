@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:inforum/subPage/settingsPage/logPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'displaySettingsPage.dart';
 import 'notificationSettingsPage.dart';
 import 'accountSettingsPage.dart';
@@ -14,6 +16,12 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPage extends State<SettingsPage> {
   RoundedRectangleBorder roundedRectangleBorder =
       RoundedRectangleBorder(borderRadius: BorderRadius.circular(5));
+  int _counter = 0;
+  @override
+  void initState() {
+    _init();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,13 +71,12 @@ class _SettingsPage extends State<SettingsPage> {
                     title: Text('关于 Inforum'),
                     onTap: () => showAboutDialog(
                       context: context,
-                      applicationVersion: '1.0.3',
-                      applicationLegalese: '最后编译日期:2021/4/26 21:33\n'
+                      applicationVersion: '1.0.4',
+                      applicationLegalese: '最后编译日期:2021/5/9 20:18\n'
                           '开发者网站:\n'
                           'https://github.com/RA1NO3O/\n'
                           '项目网站:\n'
                           'https://github.com/RA1NO3O/Inforum',
-                      //TODO:放置app图标
                       applicationIcon: Icon(
                         Icons.info_rounded,
                         size: 30,
@@ -77,10 +84,37 @@ class _SettingsPage extends State<SettingsPage> {
                     ),
                   ),
                   Divider(thickness: 1),
+                  _counter < 3
+                      ? IconButton(
+                          icon: Icon(Icons.developer_mode),
+                          onPressed: () {
+                            setState(() {
+                              _counter++;
+                            });
+                          },
+                        )
+                      : ListTile(
+                          leading: Icon(Icons.manage_search),
+                          title: Text('查看服务器日志'),
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (bc) => LogPage()));
+                          },
+                        )
                 ],
               ))
         ],
       ),
     );
+  }
+
+  void _init() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    _counter = sp.getBool('isDeveloperMode') == true ? 3 : 0;
+  }
+
+  void writeDeveloperMode() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    sp.setBool('isDeveloperMode', true);
   }
 }

@@ -400,6 +400,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 Navigator.pop(context);
               });
             },
+            maxLength: 20,
             decoration: InputDecoration(
               hintText: '输入标签名称',
               suffixIcon: IconButton(

@@ -386,6 +386,7 @@ class HomeScreenState extends State<HomeScreen> {
                         await sp.setString('bannerURL', '');
                         await sp.setString('bio', '');
                         await sp.setString('location', '');
+                        await sp.setBool('isDeveloperMode', false);
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
