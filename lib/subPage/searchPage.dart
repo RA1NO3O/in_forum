@@ -23,10 +23,14 @@ class _SearchPage extends State<SearchPage> {
         ),
         ListTile(
           leading: Icon(Icons.tag),
-          title: Text('123'),
-          onTap: () {
-            print('123');
-          },
+          title: Text('新冠病毒'),
+          onTap: () {},
+        ),
+        Divider(),
+        ListTile(
+          leading: Icon(Icons.tag),
+          title: Text('美俄关系'),
+          onTap: () {},
         ),
         Divider(),
       ],
@@ -75,6 +79,7 @@ class CustomSearchDelegate extends SearchDelegate<String?> {
 
   @override
   Widget buildResults(BuildContext context) {
+    //TODO:实现搜索功能
     pushSearchHistory(query);
     return ListView.builder(
       itemCount: Random().nextInt(10),

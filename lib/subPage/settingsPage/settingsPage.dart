@@ -94,7 +94,7 @@ class _SettingsPage extends State<SettingsPage> {
                           },
                         )
                       : ListTile(
-                          leading: Icon(Icons.manage_search),
+                          leading: Icon(Icons.search),
                           title: Text('查看服务器日志'),
                           onTap: () {
                             Navigator.push(context,

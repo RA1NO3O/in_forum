@@ -114,6 +114,7 @@ class _PostListItem extends State<PostListItem> {
       margin: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 2),
       child: OpenContainer(
         closedElevation: 1,
+        closedColor: Theme.of(context).cardColor,
         closedBuilder: (bc, action) => Column(
           children: [
             Container(

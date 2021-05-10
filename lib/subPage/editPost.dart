@@ -72,41 +72,43 @@ class _EditPostScreenState extends State<EditPostScreen> {
   }
 
   void refreshTagList() {
-    tagChips = [
-      Container(
-        margin: EdgeInsets.only(top: 6, bottom: 6, right: 5),
-        child: Text('标签：'),
-      ),
-      Builder(
-        builder: (BuildContext bc) {
-          return Container(
-            height: 32,
-            child: ActionChip(
-              label: Text('添加标签'),
-              avatar: Icon(Icons.add_rounded),
-              onPressed: () => addTag(bc),
-            ),
-          );
-        },
-      ),
-    ];
-    tagChips.addAll(tags
-        .map((s) => Container(
+    setState(() {
+      tagChips = [
+        Container(
+          margin: EdgeInsets.only(top: 6, bottom: 6, right: 5),
+          child: Text('标签：'),
+        ),
+        Builder(
+          builder: (BuildContext bc) {
+            return Container(
               height: 32,
-              child: InputChip(
-                label: Text('$s'),
-                avatar: Icon(Icons.tag),
-                onDeleted: () {
-                  setState(
-                    () {
-                      tags.remove('$s');
-                      refreshTagList();
-                    },
-                  );
-                },
+              child: ActionChip(
+                label: Text('添加标签'),
+                avatar: Icon(Icons.add_rounded),
+                onPressed: () => addTag(bc),
               ),
-            ))
-        .toList());
+            );
+          },
+        ),
+      ];
+      tagChips.addAll(tags
+          .map((s) => Container(
+                height: 32,
+                child: InputChip(
+                  label: Text('$s'),
+                  avatar: Icon(Icons.tag),
+                  onDeleted: () {
+                    setState(
+                      () {
+                        tags.remove('$s');
+                        refreshTagList();
+                      },
+                    );
+                  },
+                ),
+              ))
+          .toList());
+    });
   }
 
   Future<void> getDraft() async {

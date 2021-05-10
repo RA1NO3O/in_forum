@@ -91,8 +91,12 @@ class _ProfilePage extends State<ProfilePage>
       _location = rs?.location ?? '未知';
       _avatarURL = rs?.avatarUrl;
       _bannerURL = rs?.bannerUrl;
-      _followerCount = rs?.followerCount.toString() ?? '0';
-      _followingCount = rs?.followingCount.toString() ?? '0';
+      _followerCount = rs?.followerCount.toString() == 'null'
+          ? '0'
+          : rs?.followerCount.toString() ?? '0';
+      _followingCount = rs?.followerCount.toString() == 'null'
+          ? '0'
+          : rs?.followerCount.toString() ?? '0';
       _joinDate = rs?.joinDate.toString() ?? null;
       _loadState = false;
     });
@@ -216,7 +220,7 @@ class _ProfilePage extends State<ProfilePage>
                       ],
                     ),
                     Container(
-                      margin: EdgeInsets.only(top: 105, left: 20),
+                      margin: EdgeInsets.only(top: 125, left: 20),
                       child: Hero(
                         child: Material(
                           elevation: 1,
