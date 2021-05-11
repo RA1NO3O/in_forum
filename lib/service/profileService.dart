@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:inforum/component/followListItem.dart';
 import 'package:inforum/data/webConfig.dart';
 
 ProfileService profileServiceFromJson(String str) =>
@@ -16,6 +18,40 @@ Future<ProfileRecordset?> getProfile(int? id) async {
   final ProfileService ps = profileServiceFromJson(res.toString());
   final ProfileRecordset? rs = ps.recordset!.isEmpty ? null : ps.recordset![0];
   return rs;
+}
+
+Future<List<Widget>> getFollowingList(int userID) async {
+  Response res =
+      await Dio().get('$apiServerAddress/getFollowingListByUser/$userID');
+  final ProfileService ps = profileServiceFromJson(res.toString());
+  final List<ProfileRecordset> rs = ps.recordset!.isEmpty ? [] : ps.recordset!;
+  return convertToFollowListWidgets(rs);
+}
+
+Future<List<Widget>> getFollowerList(int userID) async {
+  Response res =
+      await Dio().get('$apiServerAddress/getFollowerListByUser/$userID');
+  final ProfileService ps = profileServiceFromJson(res.toString());
+  final List<ProfileRecordset> rs = ps.recordset!.isEmpty ? [] : ps.recordset!;
+  return convertToFollowListWidgets(rs);
+}
+
+List<Widget> convertToFollowListWidgets(
+    List<ProfileRecordset> rs) {
+  List<Widget> fli = [];
+  rs.asMap().forEach((index, value) {
+    fli.add(FollowListItem(
+      userID: value.id!,
+      avatarURL: value.avatarUrl,
+      nickName: value.nickname!,
+      userName: value.username!,
+      bio: value.bio,
+    ));
+    fli.add(Divider(
+      thickness: 1,
+    ));
+  });
+  return fli;
 }
 
 class ProfileService {

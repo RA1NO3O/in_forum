@@ -94,9 +94,9 @@ class _ProfilePage extends State<ProfilePage>
       _followerCount = rs?.followerCount.toString() == 'null'
           ? '0'
           : rs?.followerCount.toString() ?? '0';
-      _followingCount = rs?.followerCount.toString() == 'null'
+      _followingCount = rs?.followingCount.toString() == 'null'
           ? '0'
-          : rs?.followerCount.toString() ?? '0';
+          : rs?.followingCount.toString() ?? '0';
       _joinDate = rs?.joinDate.toString() ?? null;
       _loadState = false;
     });
@@ -200,10 +200,20 @@ class _ProfilePage extends State<ProfilePage>
                                           style: new TextStyle(
                                               fontWeight: FontWeight.bold),
                                         ),
-                                        onPressed: () {},
+                                        onPressed: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (bc) =>
+                                                    FollowerListPage(
+                                                        widget.userID!))),
                                       ),
                                       TextButton(
-                                        onPressed: () {},
+                                        onPressed: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (bc) =>
+                                                    FollowingListPage(
+                                                        widget.userID!))),
                                         child: Text(
                                           '$_followingCount 正在关注 ',
                                           style: new TextStyle(
@@ -220,7 +230,7 @@ class _ProfilePage extends State<ProfilePage>
                       ],
                     ),
                     Container(
-                      margin: EdgeInsets.only(top: 125, left: 20),
+                      margin: EdgeInsets.only(top: 105, left: 20),
                       child: Hero(
                         child: Material(
                           elevation: 1,
@@ -337,5 +347,77 @@ class _ProfilePage extends State<ProfilePage>
             }),
       ),
     );
+  }
+}
+
+class FollowerListPage extends StatefulWidget {
+  final int userID;
+
+  FollowerListPage(this.userID);
+  @override
+  State<StatefulWidget> createState() => _FollowerListPageState();
+}
+
+class _FollowerListPageState extends State<FollowerListPage> {
+  List<Widget> _list = [];
+  @override
+  void initState() {
+    _init();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('关注者'),
+      ),
+      body: ListView(
+        children: _list,
+      ),
+    );
+  }
+
+  void _init() async {
+    var l = await getFollowerList(widget.userID);
+    setState(() {
+      _list = l;
+    });
+  }
+}
+
+class FollowingListPage extends StatefulWidget {
+  final int userID;
+
+  FollowingListPage(this.userID);
+  @override
+  State<StatefulWidget> createState() => _FollowingListPageState();
+}
+
+class _FollowingListPageState extends State<FollowingListPage> {
+  List<Widget> _list = [];
+  @override
+  void initState() {
+    _init();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('正在关注'),
+      ),
+      body: ListView(
+        children: _list,
+      ),
+    );
+  }
+
+  void _init() async {
+    var l = await getFollowingList(widget.userID);
+    setState(() {
+      _list = l;
+    });
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:inforum/service/profileService.dart';
 import 'package:inforum/service/randomGenerator.dart';
 import 'package:inforum/subPage/collectionPage.dart';
+import 'package:inforum/subPage/demoPage.dart';
 import 'package:inforum/subPage/editPost.dart';
 import 'package:inforum/subPage/messagePage.dart';
 import 'package:inforum/subPage/primaryPage.dart';
@@ -68,8 +69,12 @@ class HomeScreenState extends State<HomeScreen> {
       _avatarURL =
           sp.getString('avatarURL') == '' ? null : sp.getString('avatarURL');
       _avatarURL = rs?.avatarUrl ?? null;
-      _followerCount = rs?.followerCount.toString() ?? '0';
-      _followingCount = rs?.followingCount.toString() ?? '0';
+      _followerCount = rs?.followerCount.toString() == 'null'
+          ? '0'
+          : rs?.followerCount.toString() ?? '0';
+      _followingCount = rs?.followingCount.toString() == 'null'
+          ? '0'
+          : rs?.followingCount.toString() ?? '0';
     });
     if (_isJustOpen) {
       WidgetsBinding.instance!.addPostFrameCallback((_) =>
@@ -244,8 +249,9 @@ class HomeScreenState extends State<HomeScreen> {
                       case 1:
                         break;
                       case 2:
-                        showSearch(
-                            context: context, delegate: CustomSearchDelegate());
+                        Navigator.push(context,MaterialPageRoute(builder: (bc)=>DemoPage()));
+                        // showSearch(
+                        //     context: context, delegate: CustomSearchDelegate());
                         break;
                     }
                   },
@@ -316,6 +322,15 @@ class HomeScreenState extends State<HomeScreen> {
                       children: [
                         Container(
                           margin: EdgeInsets.only(right: 10),
+                          child: Text(_followerCount,
+                              style: new TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              )),
+                        ),
+                        Text('关注者'),
+                        Container(
+                          margin: EdgeInsets.only(left: 20, right: 10),
                           child: Text(_followingCount,
                               style: new TextStyle(
                                 fontSize: 18,
@@ -323,15 +338,6 @@ class HomeScreenState extends State<HomeScreen> {
                               )),
                         ),
                         Text('正在关注'),
-                        Container(
-                          margin: EdgeInsets.only(left: 20, right: 10),
-                          child: Text(_followerCount,
-                              style: new TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              )),
-                        ),
-                        Text('关注者')
                       ],
                     ),
                   )
