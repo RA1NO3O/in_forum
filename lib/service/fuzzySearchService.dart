@@ -8,17 +8,33 @@ import 'package:inforum/component/postListItem.dart';
 import 'package:inforum/data/webConfig.dart';
 import 'package:inforum/service/postStreamService.dart';
 import 'package:inforum/service/profileService.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<List<List<Widget>>> fuzzySearch(String query) async {
+  SharedPreferences sp = await SharedPreferences.getInstance();
   Response res = await Dio().get('$apiServerAddress/fuzzySearch/?query=$query');
   final FuzzySearchService fss = fuzzySearchServiceFromJson(res.toString());
-  return convertToSearchResultWidgets(fss);
+  final List<PostRecordset> pors =
+      fss.posts!.recordset!.isEmpty ? [] : fss.posts!.recordset!;
+  for (int i = 0; i < pors.length; i++) {
+    for (int j = i + 1; j < pors.length; j++) {
+      if (pors[i].postId == pors[j].postId &&
+          pors[i].userId != sp.getInt('userID')) {
+        pors.removeAt(i);
+        j--;
+      }
+    }
+  }
+  final List<ProfileRecordset> pfrs =
+      fss.users!.recordset!.isEmpty ? [] : fss.users!.recordset!;
+  return convertToSearchResultWidgets(pors, pfrs);
 }
 
-List<List<Widget>> convertToSearchResultWidgets(FuzzySearchService fss) {
+List<List<Widget>> convertToSearchResultWidgets(
+    List<PostRecordset> pors, List<ProfileRecordset> pfrs) {
   List<Widget> posts = [];
   List<Widget> users = [];
-  fss.posts!.recordset!.asMap().forEach((index, value) {
+  pors.asMap().forEach((index, value) {
     String? t = value.tags;
     posts.add(PostListItem(
       postID: value.postId,
@@ -41,7 +57,7 @@ List<List<Widget>> convertToSearchResultWidgets(FuzzySearchService fss) {
       index: index,
     ));
   });
-  fss.users!.recordset!.asMap().forEach((index, value) {
+  pfrs.asMap().forEach((index, value) {
     users.add(FollowListItem(
       userID: value.id!,
       avatarURL: value.avatarUrl,

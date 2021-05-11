@@ -21,7 +21,6 @@ class FollowListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        height: 100,
         child: ListTile(
           leading: CircleAvatar(
             backgroundImage: (avatarURL != null

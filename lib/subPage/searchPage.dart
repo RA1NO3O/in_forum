@@ -4,7 +4,9 @@ import 'package:inforum/component/customStyles.dart';
 import 'package:inforum/service/fuzzySearchService.dart';
 import 'package:inforum/service/searchHistoryService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 late SharedPreferences sp;
+
 class SearchPage extends StatefulWidget {
   @override
   _SearchPage createState() => _SearchPage();
@@ -16,6 +18,7 @@ class _SearchPage extends State<SearchPage> {
     _init();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -30,13 +33,19 @@ class _SearchPage extends State<SearchPage> {
         ListTile(
           leading: Icon(Icons.tag),
           title: Text('新冠病毒'),
-          onTap: () {},
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (bc) => SearchResultPage(query: '新冠病毒'))),
         ),
         Divider(),
         ListTile(
           leading: Icon(Icons.tag),
           title: Text('美俄关系'),
-          onTap: () {},
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (bc) => SearchResultPage(query: '美俄关系'))),
         ),
         Divider(),
       ],
@@ -50,10 +59,6 @@ class _SearchPage extends State<SearchPage> {
 
 class CustomSearchDelegate extends SearchDelegate<String?> {
   List<Widget> sh = [];
-  List<List<Widget>> sr = [];
-  Future<void> _init() async {
-    sr = await fuzzySearch(query);
-  }
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -96,7 +101,6 @@ class CustomSearchDelegate extends SearchDelegate<String?> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    fuzzySearch(query);
     List<String> h = sp.getStringList('searchHistory') ?? [];
     final suggestionsList = query.isEmpty
         ? h
@@ -122,13 +126,11 @@ class CustomSearchDelegate extends SearchDelegate<String?> {
               ),
             ),
             onTap: () {
-              _init();
               Navigator.push(
                 context,
                 new MaterialPageRoute(
                   builder: (context) => new SearchResultPage(
-                    posts: sr[0],
-                    users: sr[1],
+                    query: h[index],
                   ),
                 ),
               );
@@ -138,33 +140,59 @@ class CustomSearchDelegate extends SearchDelegate<String?> {
   }
 }
 
-class SearchResultPage extends StatelessWidget {
-  final List<Widget> posts;
-  final List<Widget> users;
+class SearchResultPage extends StatefulWidget {
+  final String query;
 
-  const SearchResultPage({Key? key, required this.posts, required this.users})
-      : super(key: key);
+  const SearchResultPage({Key? key, required this.query}) : super(key: key);
+  @override
+  State<StatefulWidget> createState() => _SearchResultPageState();
+}
+
+class _SearchResultPageState extends State<SearchResultPage> {
+  List<List<Widget>> sr = [];
+  Future<void> _init() async {
+    sr = await fuzzySearch(widget.query);
+  }
+
+  @override
+  void initState() {
+    _init();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('搜索结果'),
-      ),
-      body: DefaultTabController(
-          length: 2,
-          child: ListView(children: [
-            TabBar(
-              tabs: [Text('帖子'), Text('用户')],
-            ),
-            TabBarView(children: [
-              Column(
-                children: posts,
-              ),
-              Column(
-                children: users,
-              )
-            ])
-          ])),
-    );
+    return FutureBuilder(
+        future: fuzzySearch(widget.query),
+        builder: (bc, ss) {
+          if (ss.hasData) {
+            return DefaultTabController(
+                length: 2,
+                child: Scaffold(
+                  appBar: AppBar(
+                    title: Text('\"${widget.query}\" 的搜索结果'),
+                    bottom: TabBar(
+                      tabs: [
+                        Tab(
+                          text: '帖子',
+                        ),
+                        Tab(
+                          text: '用户',
+                        )
+                      ],
+                    ),
+                  ),
+                  body: TabBarView(children: [
+                    ListView(
+                      children: sr[0],
+                    ),
+                    ListView(
+                      children: sr[1],
+                    )
+                  ]),
+                ));
+          }
+          return Icon(Icons.hourglass_bottom);
+        });
   }
 }

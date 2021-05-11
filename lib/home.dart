@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:inforum/service/profileService.dart';
 import 'package:inforum/service/randomGenerator.dart';
 import 'package:inforum/subPage/collectionPage.dart';
-import 'package:inforum/subPage/demoPage.dart';
 import 'package:inforum/subPage/editPost.dart';
 import 'package:inforum/subPage/messagePage.dart';
 import 'package:inforum/subPage/primaryPage.dart';
@@ -249,9 +248,9 @@ class HomeScreenState extends State<HomeScreen> {
                       case 1:
                         break;
                       case 2:
-                        Navigator.push(context,MaterialPageRoute(builder: (bc)=>DemoPage()));
-                        // showSearch(
-                        //     context: context, delegate: CustomSearchDelegate());
+                        // Navigator.push(context,MaterialPageRoute(builder: (bc)=>DemoPage()));
+                        showSearch(
+                            context: context, delegate: CustomSearchDelegate());
                         break;
                     }
                   },
